@@ -145,7 +145,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SendMessageResponse'
+                $ref: '#/components/schemas/PaymentUrlResponse'
         "400":
           description: Bad request
           content:
@@ -306,6 +306,16 @@ components:
           enum:
             - OK
             - NO_CHANNELS_ENABLED
+
+    PaymentUrlResponse:
+      type: object
+      description: "Payment URL"
+      properties:
+        paymentUrl:
+          type: string
+          description: "URL to the payment page"
+      example:
+        paymentUrl: "https://example.com/payment/123e4567-e89b-12d3-a456-426614174000?fiscalCode=1234567890&noticeNumber=302000100000019421"
           
     Problem:
       $ref: './remote-refs.yaml#/components/schemas/Problem'
