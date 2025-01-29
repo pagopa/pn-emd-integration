@@ -44,6 +44,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found (TPP not found or retrieval inactive)
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Problem'
         "500":
           description: Server error
           content:
@@ -72,6 +78,12 @@ paths:
                 $ref: '#/components/schemas/Problem'
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found (TPP not found or retrieval inactive)
           content:
             application/json:
               schema:
