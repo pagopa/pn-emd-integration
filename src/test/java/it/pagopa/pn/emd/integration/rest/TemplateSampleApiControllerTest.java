@@ -1,11 +1,9 @@
-package it.pagopa.pn.template.rest;
+package it.pagopa.pn.emd.integration.rest;
 
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest
 public class TemplateSampleApiControllerTest {

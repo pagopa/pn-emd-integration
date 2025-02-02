@@ -1,6 +1,6 @@
-package it.pagopa.pn.template.rest;
+package it.pagopa.pn.emd.integration.rest;
 
-import it.pagopa.pn.template.rest.v1.api.TemplateSampleApi;
+import it.pagopa.pn.emd.integration.generated.openapi.server.v1.api.TemplateSampleApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @RestController
-public class TemplateSampleApiController implements TemplateSampleApi {
+public class PnEmdIntegrationController implements TemplateSampleApi {
 
     @Override
     public Mono<ResponseEntity<Map<String, List<String>>>> getHttpHeadersMap(ServerWebExchange exchange) {
@@ -21,8 +21,7 @@ public class TemplateSampleApiController implements TemplateSampleApi {
 
         return Mono.fromSupplier(() ->{
             log.debug("Start getHttpHeadersMap");
-            Map<String, List<String>> headers = new HashMap<>();
-            exchange.getRequest().getHeaders().forEach((k, v) -> headers.put(k, v));
+            Map<String, List<String>> headers = new HashMap<>(exchange.getRequest().getHeaders());
             return ResponseEntity.ok(headers);
         });
 
