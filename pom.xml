@@ -81,6 +81,25 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.2</version>
+				<executions>
+					<execution>
+						<id>unpack-dependencies</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<includeArtifactIds>pn-commons</includeArtifactIds>
+							<outputDirectory>${project.build.directory}/dependency-resources</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<configuration>
@@ -92,14 +111,14 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>5.4.0</version>
+				<version>7.11.0</version>
 				<executions>					
 					<execution>
 						<id>generate-emd-private-server</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
-						<phase>process-resources</phase>
+						<phase>generate-resources</phase>
 						<configuration>
 							<inputSpec>${project.basedir}/docs/openapi/api-private.yaml</inputSpec>
 							<generatorName>spring</generatorName>
@@ -107,6 +126,7 @@
 							<generateApiDocumentation>false</generateApiDocumentation>
 							<generateApiTests>false</generateApiTests>
 							<generateModelTests>false</generateModelTests>
+							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/server</templateDirectory>
 							<configOptions>
 								<dateLibrary>java11</dateLibrary>
 								<delegatePattern>true</delegatePattern>
@@ -114,7 +134,7 @@
 								<annotationLibrary>none</annotationLibrary>
 								<documentationProvider>source</documentationProvider>
 								<openApiNullable>false</openApiNullable>
-								<additionalModelTypeAnnotations>@lombok.Builder; @lombok.NoArgsConstructor; @lombok.AllArgsConstructor</additionalModelTypeAnnotations>
+								<additionalModelTypeAnnotations>@lombok.Builder(toBuilder = true); @lombok.NoArgsConstructor; @lombok.AllArgsConstructor;</additionalModelTypeAnnotations>
 								<reactive>true</reactive>
 								<skipDefaultInterface>false</skipDefaultInterface>
 								<useTags>true</useTags>
