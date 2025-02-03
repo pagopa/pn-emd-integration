@@ -1,57 +1,328 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
-  title: PN Template BE Microservice
-  description: Documentation APIs v1.0
-  termsOfService: https://termofservice.it
-  x-api-id: api-internal-template
-  x-summary: 'Piattaforma Notifiche: API template'
-  version: '1.0.0'
+  title: EMD Integration Microservice
+  version: 3.0.0
+  description: Private API for Multi-channel Integration
   contact:
     email: pn@pagopa.it
-  license:
-    name: Licenza di PN
-    url: 'https://da-definire/'
 servers:
-  - url: https://api.pn.pagopa.it
-    description: Generated server url
+  - url: https://api.notifichedigitali.it
+    description: Ambiente di produzione
+  - url: https://api.uat.notifichedigitali.it
+    description: Ambiente di collaudo
+tags:
+  - name: Check TPP
+    description: Services to check and retrieve informations about TPP
+  - name: Message
+    description: Services to handle messages to TPP
+  - name: Payment
+    description: Services to handle and retrieve informations about payments
 paths:
-  /status:
+  '/emd-integration-private/token/check-tpp':
     get:
-      summary: healthCheck path
-      description: health check path per verificare lo stato del micro servizio
-      tags:
-        - HealthCheck
-      operationId: status
+      operationId: tokenCheckTPP
+      description: 'Returns retrival_payload informations'
+      tags: [Check TPP]
+      parameters:
+        - $ref: '#/components/parameters/retrievalId'
       responses:
-        '200':
+        "200":
           description: Ok
-        '500':
-          description: Internal Server Error
-  /template/api/httpheaders:
-    get:
-      summary: Build a map of all the Http Header for the request
-      operationId: getHttpHeadersMap
-      tags:
-        - TemplateSample
-      responses:
-        '200':
-          description: OK
           content:
             application/json:
               schema:
-                  type: object
-                  additionalProperties:
-                    type: array
-                    items:
-                      type: string
-        '500':
-            description: InternalServerError
+                $ref: '#/components/schemas/RetrievalPayload'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found (TPP not found or retrieval inactive)
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Problem'
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  '/emd-integration-private/emd/check-tpp':
+    get:
+      operationId: emdCheckTPP
+      description: 'Returns retrival_payload informations'
+      tags: [Check TPP]
+      parameters:
+        - $ref: '#/components/parameters/retrievalId'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrievalPayload'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "404":
+          description: Not found (TPP not found or retrieval inactive)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  '/emd-integration-private/send-message':
+    post:
+      operationId: sendMessage
+      description: 'Send message to third party partners'
+      tags: [Message]
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema:
+                $ref: "#/components/schemas/SendMessageRequest"
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendMessageResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  '/emd-integration-private/payment-url':
+    get:
+      operationId: getPaymentUrl
+      description: 'Retrieve the payment url given payment informations'
+      tags: [Payment]
+      parameters:
+        - $ref: '#/components/parameters/retrievalId'
+        - $ref: '#/components/parameters/noticeCode'
+        - $ref: '#/components/parameters/paTaxId'
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentUrlResponse'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  # ========================================================
+  # Parameters
+  # ========================================================
+  parameters:
+    retrievalId:
+      name: retrievalId
+      in: query
+      required: true
+      schema:
+        type: string
+        description: 'Unique ID that identify retrieval payload'
+        pattern: "^[ -~]{1,50}$"
+        minLength: 50
+        maxLength: 50
+        example: "0e4c6629-8753-234s-b0da-1f796999ec2-15038637960920"
+    noticeCode:
+      name: noticeCode
+      in: query
+      required: true
+      description: Payment notice number - numero avviso
+      example: '302000100000019421'
+      schema:
+        type: string
+        maxLength: 18
+        minLength: 18
+        pattern: '^\d+$'
+    paTaxId:
+      name: paTaxId
+      in: query
+      required: true
+      description: Payment PA fiscal code
+      example: '77777777777'
+      schema:
+        type: string
+        maxLength: 11
+        minLength: 11
+        pattern: '^\d+$'
+    
+  # ========================================================
+  # Schemas
+  # ========================================================
+  schemas:
+    RetrievalPayload:
+      type: object
+      required:
+        - retrievalId
+      description: "Retrieval Response information"
+      properties:
+        retrievalId:
+          type: string
+          description: 'Unique ID that identify retrieval payload'
+          pattern: "^[ -~]{1,50}$"
+          minLength: 50
+          maxLength: 50
+          example: "0e4c6629-8753-234s-b0da-1f796999ec2-15038637960920"
+        tppId:
+          type: string
+          description: 'Unique ID that identify TPP on PagoPA systems'
+          pattern: "^[ -~]{1,50}$"
+          minLength: 50
+          maxLength: 50
+          example: "0e3bee29-8753-447c-b0da-1f7965558ec2-1706867960900"
+        deeplink:
+          type: string
+          description: "Represents the deep link (DeepLink) that allows direct redirection to a specific section or feature of the TPP app. It must be an alphanumeric string respecting a specific format and be between 48 and 128 characters in length."
+          pattern: "^[a-zA-Z0-9._~:/?#\\[\\]@!$&'()*+,;=-]{48,128}$"
+          minLength: 10
+          maxLength: 128
+          example: "https://example.com/deeplink/123e4567-e89b-12d3-a456-426614174000?userId=1234567890&session=abcdef"
+        paymentButton:
+          type: string
+          description: "Payment button label (e.g., the name of the payment provider)."
+          pattern: "^[a-zA-Z0-9 ]{1,15}$"
+          minLength: 1
+          maxLength: 15
+          example: "Banca1"
+        originId:
+          type: string
+          description: "ID of the original message"
+          pattern: "^[ -~]{24,36}$"
+          minLength: 24
+          maxLength: 36
+          example: "XRUZ-GZAJ-ZUEJ-202407-W-1"
+          
+    SendMessageRequest:
+      type: object
+      description: "Retrieval Response information"
+      required:
+        - messageId
+        - recipientId
+        - message
+        - associatedPayment
+      properties:
+        messageId:
+          description: Unique ID of the message
+          type: string
+          pattern: "^[ -~]{24,64}$"
+          minLength: 24
+          maxLength: 64
+        recipientId:
+          description: ID of the recipient
+          type: string
+          pattern: "^[ -~]{8,64}$"
+          minLength: 8
+          maxLength: 64
+        senderDescription:
+          description: Description of the subject who originated the message
+          type: string
+          pattern: "^[ -~]{1,50}$"
+          minLength: 1
+          maxLength: 50
+        originId:
+          description: ID of the original message
+          type: string
+          pattern: "^[ -~]{24,36}$"
+          minLength: 24
+          maxLength: 36
+        content:
+          description: Content of the message
+          type: string
+          pattern: "^[ -~]{1,140}$"
+          minLength: 1
+          maxLength: 140
+        associatedPayment:
+          description: The notification has an associated payment
+          type: boolean
+      example:
+        messageId: "8a32fa8a-5036-4b39-8f2e-47d3a6d23f9e"
+        recipientId: "RSSMRA85T10A562S"
+        message: "You have a ticket!"
+        originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
+        senderDescription: "Comune di Milano"
+        
+    SendMessageResponse:
+      type: object
+      required:
+        - retrievalId
+      description: "Send message Response information"
+      properties:
+        outcome:
+          description: "Outcome of the send attempt"
+          type: string
+          enum:
+            - OK
+            - NO_CHANNELS_ENABLED
 
-#  securitySchemes:                                      # ONLY EXTERNAL
-#    bearerAuth:                                         # ONLY EXTERNAL
-#      type: http                                        # ONLY EXTERNAL
-#      scheme: bearer                                    # ONLY EXTERNAL
-#      bearerFormat: JWT                                 # ONLY EXTERNAL
-#security:                                               # ONLY EXTERNAL
-# - bearerAuth: []                                       # ONLY EXTERNAL
-              
+    PaymentUrlResponse:
+      type: object
+      description: "Payment URL"
+      properties:
+        paymentUrl:
+          type: string
+          description: "URL to the payment page"
+      example:
+        paymentUrl: "https://example.com/payment/123e4567-e89b-12d3-a456-426614174000?fiscalCode=1234567890&noticeNumber=302000100000019421"
+          
+    Problem:
+      $ref: './remote-refs.yaml#/components/schemas/Problem'
+ 
+  
+   

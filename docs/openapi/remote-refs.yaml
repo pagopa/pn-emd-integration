@@ -1,0 +1,9 @@
+info:
+  version: v1.0
+components:
+  schemas:
+    ############################################################################################
+    ###                          STRUTTURE DATI DI PN-COMMONS                                ###
+    ############################################################################################
+    Problem:
+      $ref: 'https://raw.githubusercontent.com/pagopa/pn-commons/1f35c430aa794428df1e751432e0ddc1b8e8ae81/docs/openapi/pn-errors.yaml#/components/schemas/Problem'
