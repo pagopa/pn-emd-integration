@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@ConfigurationProperties( prefix = "pn.emd.integration")
+@ConfigurationProperties( prefix = "pn.emd-integration")
 @Data
 @Import({SharedAutoConfiguration.class})
 public class PnEmdIntegrationConfigs {
