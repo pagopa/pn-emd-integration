@@ -67,21 +67,52 @@ Parameters:
     Type: String
     Description: 'keep track of used projects commitIds'
 
+  # Logging parameters
+  WireTapLogActivation:
+    Type: String
+    Default: false
+    Description: Activation of wire logs
+    AllowedValues:
+      - true
+      - false
+
+  PnCronAnalyzer:
+    Type: String
+    Default: '-'
+    Description: Cron for which you send the metric to CloudWatch
+
+  # EFS parameters
+  FargateEFSFileSystemID:
+    Type: String
+    Description: "EFS Filesystem"
+
+  MountEfs:
+    Type: String
+    Default: false
+    AllowedValues:
+      - "true"
+      - "false"
+
 Resources:
 
   # PN-TemplateBeMs microservice
-  TemplateBeMsMicroservice:
+  EmdIntegrationMicroservice:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub "${TemplateBucketBaseUrl}/fragments/ecs-service.yaml"
       Parameters:
-        MicroServiceUniqueName: !Sub '${ProjectName}-template-ms-be'
+        MicroServiceUniqueName: !Sub '${ProjectName}-emd-integration'
         CpuValue: 512
         MemoryAmount: 2GB
         AlarmSNSTopicArn: !Ref AlarmSNSTopicArn
+        EfsFilesystem: !Ref FargateEFSFileSystemID
+        MountEfs: !Ref MountEfs
+        WireTapLogActivation: !Ref WireTapLogActivation
         ContainerImageURI: !Sub '${ContainerImageUri}'
         ContainerEnvEntry1: !Sub 'AWS_REGIONCODE=${AWS::Region}'
-        MappedPaths: '/template-ms-be/*'
+        ContainerEnvEntry2: !Sub 'PN_CRON_ANALYZER=${PnCronAnalyzer}'
+        ContainerEnvEntry3: !Sub 'WIRE_TAP_LOG=${WireTapLogActivation}'
+        MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
         Subnets: !Ref SubnetsIds
         VpcId: !Ref VpcId

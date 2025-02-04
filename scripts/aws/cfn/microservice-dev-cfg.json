@@ -1,3 +1,7 @@
 {
-  "Parameters" : {}
+  "Parameters" : {
+    "PnCronAnalyzer": "-",
+    "WireTapLogActivation": "false",
+    "MountEfs": "false"
+  }
 }

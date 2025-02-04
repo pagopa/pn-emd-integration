@@ -255,7 +255,9 @@ components:
       required:
         - messageId
         - recipientId
-        - message
+        - senderDescription
+        - originId
+        - content
         - associatedPayment
       properties:
         messageId:
@@ -267,6 +269,7 @@ components:
         recipientId:
           description: ID of the recipient
           type: string
+          x-field-extra-annotation: "@lombok.ToString.Exclude"
           pattern: "^[ -~]{8,64}$"
           minLength: 8
           maxLength: 64
@@ -294,9 +297,10 @@ components:
       example:
         messageId: "8a32fa8a-5036-4b39-8f2e-47d3a6d23f9e"
         recipientId: "RSSMRA85T10A562S"
-        message: "You have a ticket!"
+        content: "You have a ticket!"
         originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
         senderDescription: "Comune di Milano"
+        associatedPayment: true
         
     SendMessageResponse:
       type: object
