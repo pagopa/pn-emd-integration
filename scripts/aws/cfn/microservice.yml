@@ -93,6 +93,18 @@ Parameters:
       - "true"
       - "false"
 
+  MilClientSecret:
+    Type: String
+    Description: 'Client secret for the MIL service'
+
+  MilClientId:
+    Type: String
+    Description: 'Client id for the MIL service'
+
+  milBasePath:
+    Type: String
+    Description: 'Base path for the MIL service'
+
 Resources:
 
   # PN-TemplateBeMs microservice
@@ -112,6 +124,9 @@ Resources:
         ContainerEnvEntry1: !Sub 'AWS_REGIONCODE=${AWS::Region}'
         ContainerEnvEntry2: !Sub 'PN_CRON_ANALYZER=${PnCronAnalyzer}'
         ContainerEnvEntry3: !Sub 'WIRE_TAP_LOG=${WireTapLogActivation}'
+        ContainerEnvEntry4: !Sub 'MIL_CLIENT_SECRET=${MilClientSecret}'
+        ContainerEnvEntry5: !Sub 'MIL_CLIENT_ID=${MilClientId}'
+        ContainerEnvEntry6: !Sub 'MIL_BASE_PATH=${milBasePath}'
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
         Subnets: !Ref SubnetsIds

@@ -145,6 +145,33 @@
 							</configOptions>				
 						</configuration>
 					</execution>
+					<execution>
+						<phase>generate-resources</phase>
+						<id>generate-auth-client</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/docs/wsclient/mil-auth-client.yaml</inputSpec>
+							<generatorName>java</generatorName>
+							<library>webclient</library>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
+							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
+							<configOptions>
+								<apiPackage>${project.groupId}.emd.integration.generated.openapi.msclient.milauth.api</apiPackage>
+								<modelPackage>${project.groupId}.emd.integration.generated.openapi.msclient.milauth.model</modelPackage>
+								<annotationLibrary>none</annotationLibrary>
+								<dateLibrary>java8</dateLibrary>
+								<documentationProvider>source</documentationProvider>
+								<openApiNullable>false</openApiNullable>
+								<useAbstractionForFiles>true</useAbstractionForFiles>
+								<useBeanValidation>false</useBeanValidation>
+								<additionalModelTypeAnnotations>@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY)</additionalModelTypeAnnotations>
+							</configOptions>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>			 		 
 		</plugins>

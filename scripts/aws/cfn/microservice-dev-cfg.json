@@ -2,6 +2,9 @@
   "Parameters" : {
     "PnCronAnalyzer": "-",
     "WireTapLogActivation": "false",
-    "MountEfs": "false"
+    "MountEfs": "false",
+    "MilClientSecret": "secret",
+    "MilClientId": "06b60d7f-09f5-4ed5-83ad-2e18f293f107",
+    "MilBasePath": "http://localhost:3000"
   }
 }

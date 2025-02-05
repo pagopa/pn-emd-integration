@@ -11,5 +11,8 @@ import org.springframework.context.annotation.Import;
 @Data
 @Import({SharedAutoConfiguration.class})
 public class PnEmdIntegrationConfigs {
-
+    private String milClientSecret;
+    private String milClientId;
+    private String milBasePath;
+    private long milTokenExpirationBuffer;
 }
