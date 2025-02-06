@@ -8,6 +8,6 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class AccessTokenRequestDto {
-    private String client_id;
-    private String client_secret;
+    private String clientId;
+    private String clientSecret;
 }

@@ -23,8 +23,8 @@ public class TokenProvider {
 
     private AccessTokenRequestDto buildRequestDto() {
         return AccessTokenRequestDto.builder().
-                client_id(pnEmdIntegrationConfigs.getMilClientId()).
-                client_secret(pnEmdIntegrationConfigs.getMilClientSecret()).
+                clientId(pnEmdIntegrationConfigs.getMilClientId()).
+                clientSecret(pnEmdIntegrationConfigs.getMilClientSecret()).
                 build();
     }
 }

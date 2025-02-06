@@ -28,8 +28,8 @@ public class MilAuthClientImpl implements MilAuthClient {
         log.logInvokingExternalService(MIL_AUTH, "getAccessTokens");
         return tokenApi.getAccessTokens(
                 ClientCredentialsGrantType.CLIENT_CREDENTIALS,
-                UUID.fromString(accessTokenRequestDto.getClient_id()),
-                accessTokenRequestDto.getClient_secret(),
+                UUID.fromString(accessTokenRequestDto.getClientId()),
+                accessTokenRequestDto.getClientSecret(),
                 UUID.randomUUID()
             )
             .doOnError(throwable -> {

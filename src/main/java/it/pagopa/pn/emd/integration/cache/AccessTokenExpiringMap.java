@@ -23,7 +23,7 @@ public class AccessTokenExpiringMap {
     private static final String TOKEN_KEY = "milToken";
 
     protected ExpiringMap<String, AccessToken> expiringMap = ExpiringMap.builder()
-            .asyncExpirationListener((tokenKey, entry) -> log.info("token for key {} has expired", tokenKey))
+            .asyncExpirationListener((tokenKey, entry) -> log.info("A token has expired"))
             .variableExpiration()
             .build();
 
