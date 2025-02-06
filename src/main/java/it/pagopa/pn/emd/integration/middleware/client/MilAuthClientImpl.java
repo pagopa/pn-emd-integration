@@ -1,15 +1,20 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.emd.integration.dto.AccessTokenRequestDto;
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.api.TokenApi;
 import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.model.AccessToken;
 import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.model.ClientCredentialsGrantType;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
+
+import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.MIL_AUTH_ERROR;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +30,15 @@ public class MilAuthClientImpl implements MilAuthClient {
                 ClientCredentialsGrantType.CLIENT_CREDENTIALS,
                 UUID.fromString(accessTokenRequestDto.getClient_id()),
                 accessTokenRequestDto.getClient_secret(),
-                UUID.randomUUID());
+                UUID.randomUUID()
+            )
+            .doOnError(throwable -> {
+                log.logInvokationResultDownstreamFailed(MIL_AUTH, throwable.getMessage());
+                if (throwable instanceof WebClientResponseException e) {
+                    throw new PnEmdIntegrationException(e.getMessage(), e.getRawStatusCode(), MIL_AUTH_ERROR);
+                }
+
+                throw new PnEmdIntegrationException(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), MIL_AUTH_ERROR);
+            });
     }
-    //TODO: gestire casi di errore
 }

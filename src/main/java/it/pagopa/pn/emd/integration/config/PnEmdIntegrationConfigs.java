@@ -14,5 +14,6 @@ public class PnEmdIntegrationConfigs {
     private String milClientSecret;
     private String milClientId;
     private String milBasePath;
+    // Token expiration buffer in milliseconds
     private long milTokenExpirationBuffer;
 }
