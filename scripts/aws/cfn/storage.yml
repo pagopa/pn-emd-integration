@@ -24,11 +24,26 @@ Parameters:
     Type: String
     Description: 'Where to send CDC'
 
+  LogRetention:
+    Type: Number
+    Default: 14
+
+  LogsKinesisSourceStreamArn:
+    Type: String
+    Description: 'Where to send Logs'
+
 Resources:
-    NullResource:
-        Type: AWS::CloudFormation::WaitConditionHandle
+  EmdIntegrationLogGroup:
+    Type: AWS::CloudFormation::Stack
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Properties:
+      TemplateURL: !Sub "${TemplateBucketBaseUrl}/fragments/log-group.yaml"
+      Parameters:
+        LogGroupName: !Sub '${ProjectName}-emd-integration'
+        LogsKinesisSourceStreamArn: !Ref LogsKinesisSourceStreamArn
+        LogGroupRetention: !Ref LogRetention
 
 Outputs:
-    SampleOutput:
-      Description: A Sample Output
-      Value: 'na'
+  EcsLogGroup:
+    Value: !GetAtt EmdIntegrationLogGroup.Outputs.LogGroupName

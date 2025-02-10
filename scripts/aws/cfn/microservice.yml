@@ -109,6 +109,62 @@ Parameters:
     Type: String
     Description: 'Token expiration buffer for the MIL service (expressed in milliseconds)'
 
+  # Logging parameters
+  EcsLogGroup:
+    Type: String
+    Description: Log group for ECS
+
+  LogAlarmStrategy:
+    Type: String
+    Description: Log alarm strategy
+    Default: 'FATAL'
+
+  # Redis parameters
+  RedisServerlessArn:
+    Type: String
+    Description: 'RedisServerless ARN'
+
+  ElasticCacheEmdIntegrationUserArn:
+    Type: String
+    Description: 'ElastiCacheUser for emd-integration'
+
+  ElasticacheEndpoint:
+    Type: String
+    Description: elasticache endpoint
+
+  ElasticacheMode:
+    Type: String
+    Description: elasticache mode
+    Default: serverless
+    AllowedValues:
+      - serverless
+      - managed
+
+  ElasticacheUserId:
+    Type: String
+    Description: the username to connect to elasticache
+
+  ElasticacheCacheName:
+    Type: String
+    Description: the name of the cache
+
+  ElasticacheCacheRegion:
+    Type: String
+    Description: the region of the cache
+
+  ElasticachePort:
+    Type: String
+    Description: the port of the cache
+
+  ElasticacheSecurityGroup:
+    Type: String
+    Description: Elasticache security group
+
+  RetrievalPayloadCacheExpiration:
+    Type: String
+    Description: 'Expiration time for the retrieval payload cache'
+    Default: '10m'
+
 Resources:
 
   # PN-TemplateBeMs microservice
@@ -131,12 +187,48 @@ Resources:
         ContainerEnvEntry5: !Sub 'PN_EMDINTEGRATION_MILCLIENTID=${MilClientId}'
         ContainerEnvEntry6: !Sub 'PN_EMDINTEGRATION_MILBASEPATH=${MilBasePath}'
         ContainerEnvEntry7: !Sub 'PN_EMDINTEGRATION_MILTOKENEXPIRATIONBUFFER=${MilTokenExpirationBuffer}'
+        ContainerEnvEntry8: !Sub 'PN_EMDINTEGRATION_CORSALLOWEDDOMAINS=${CorsAllowedDomains}'
+        ContainerEnvEntry9: !Sub 'PN_EMDINTEGRATION_REDISCACHE_HOSTNAME=${ElasticacheEndpoint}'
+        ContainerEnvEntry10: !Sub 'PN_EMDINTEGRATION_REDISCACHE_PORT=${ElasticachePort}'
+        ContainerEnvEntry11: !Sub 'PN_EMDINTEGRATION_REDISCACHE_USERID=${ElasticacheUserId}'
+        ContainerEnvEntry12: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHENAME=${ElasticacheCacheName}'
+        ContainerEnvEntry13: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHEREGION=${ElasticacheCacheRegion}'
+        ContainerEnvEntry14: !Sub 'PN_EMDINTEGRATION_REDISCACHE_MODE=${ElasticacheMode}'
+        ContainerEnvEntry15: !Sub 'PN_EMDINTEGRATION_RETRIEVALPAYLOADCACHEEXPIRATION=${RetrievalPayloadCacheExpiration}'
         ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration-8V6f4m:MilAuthClientSecret:AWSCURRENT:'
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
         Subnets: !Ref SubnetsIds
         VpcId: !Ref VpcId
-        EcsDefaultSecurityGroup: !Ref EcsDefaultSecurityGroup
+        EcsDefaultSecurityGroup: !Ref ElasticacheSecurityGroup
         LoadBalancerListenerArn: !Ref ApplicationLoadBalancerListenerArn
         LoadbalancerRulePriority: !Ref MicroserviceNumber
         CloudwatchLogKinesisStreamArn: !Ref LogsKinesisSourceStreamArn
+        EcsLogGroup: !Ref EcsLogGroup
+        LogAlarmStrategyV1: !Ref LogAlarmStrategy
+        TaskRoleManagedPolicyArn: !Ref EmdIntegrationMicroserviceTaskManagedPolicy
+
+  EmdIntegrationMicroserviceTaskManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: RedisAuth
+            Action:
+              - elasticache:Connect
+            Effect: Allow
+            Resource:
+              - !Ref RedisServerlessArn
+              - !Ref ElasticCacheEmdIntegrationUserArn
+
+  ## Dashboard
+  EmdIntegrationMicroserviceCloudWatchDashboard:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "${TemplateBucketBaseUrl}/fragments/microservice-cloudwatch-dashboard.yaml"
+      Parameters:
+        DashboardName: !Sub "${ProjectName}-emd-integration"
+        LogGroupsNames: !Join
+          - ','
+          - - !Sub '/aws/ecs/${ProjectName}-emd-integration'
