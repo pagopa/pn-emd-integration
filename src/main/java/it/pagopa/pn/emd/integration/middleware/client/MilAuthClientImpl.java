@@ -21,11 +21,10 @@ import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionC
 @CustomLog
 public class MilAuthClientImpl implements MilAuthClient {
     private final TokenApi tokenApi;
-    private static final String MIL_AUTH = "MIL_AUTH";
 
     @Override
     public Mono<AccessToken> getAccessTokens(AccessTokenRequestDto accessTokenRequestDto) {
-        log.logInvokingExternalService(MIL_AUTH, "getAccessTokens");
+        log.logInvokingExternalService(CLIENT_NAME, "getAccessTokens");
         return tokenApi.getAccessTokens(
                 ClientCredentialsGrantType.CLIENT_CREDENTIALS,
                 UUID.fromString(accessTokenRequestDto.getClientId()),
@@ -33,7 +32,7 @@ public class MilAuthClientImpl implements MilAuthClient {
                 UUID.randomUUID()
             )
             .doOnError(throwable -> {
-                log.logInvokationResultDownstreamFailed(MIL_AUTH, throwable.getMessage());
+                log.logInvokationResultDownstreamFailed(CLIENT_NAME, throwable.getMessage());
                 if (throwable instanceof WebClientResponseException e) {
                     throw new PnEmdIntegrationException(e.getMessage(), e.getRawStatusCode(), MIL_AUTH_ERROR);
                 }
