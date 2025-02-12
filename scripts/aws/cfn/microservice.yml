@@ -93,10 +93,6 @@ Parameters:
       - "true"
       - "false"
 
-  MilClientSecret:
-    Type: String
-    Description: 'Client secret for the MIL service'
-
   MilClientId:
     Type: String
     Description: 'Client id for the MIL service'
@@ -124,9 +120,10 @@ Parameters:
     Type: String
     Description: 'RedisServerless ARN'
 
-  ElasticCacheEmdIntegrationUserArn:
-    Type: String
-    Description: 'ElastiCacheUser for emd-integration'
+  #TODO Scommentare quando sarà terminato il task di infra che può valorizzare questo parametro
+  #ElasticCacheEmdIntegrationUserArn:
+  #  Type: String
+  #  Description: 'ElastiCacheUser for emd-integration'
 
   ElasticacheEndpoint:
     Type: String
@@ -195,7 +192,7 @@ Resources:
         ContainerEnvEntry13: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHEREGION=${ElasticacheCacheRegion}'
         ContainerEnvEntry14: !Sub 'PN_EMDINTEGRATION_REDISCACHE_MODE=${ElasticacheMode}'
         ContainerEnvEntry15: !Sub 'PN_EMDINTEGRATION_RETRIEVALPAYLOADCACHEEXPIRATION=${RetrievalPayloadCacheExpiration}'
-        ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration-8V6f4m:MilAuthClientSecret:AWSCURRENT:'
+        ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration:MilAuthClientSecret:AWSCURRENT:'
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
         Subnets: !Ref SubnetsIds
@@ -220,7 +217,7 @@ Resources:
             Effect: Allow
             Resource:
               - !Ref RedisServerlessArn
-              - !Ref ElasticCacheEmdIntegrationUserArn
+              #- !Ref ElasticCacheEmdIntegrationUserArn TODO Scommentare quando sarà terminato il task di infra che può valorizzare questo parametro
 
   ## Dashboard
   EmdIntegrationMicroserviceCloudWatchDashboard:

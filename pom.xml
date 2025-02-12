@@ -98,10 +98,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>3.1.2</version>
@@ -119,6 +115,10 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -132,7 +132,7 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>7.11.0</version>
+				<version>5.4.0</version>
 				<executions>					
 					<execution>
 						<id>generate-emd-private-server</id>
@@ -159,10 +159,10 @@
 								<reactive>true</reactive>
 								<skipDefaultInterface>false</skipDefaultInterface>
 								<useTags>true</useTags>
-								<basePackage>${project.groupId}.emd.integration.generated.openapi.server.v1</basePackage>
-								<modelPackage>${project.groupId}.emd.integration.generated.openapi.server.v1.dto</modelPackage>
-								<apiPackage>${project.groupId}.emd.integration.generated.openapi.server.v1.api</apiPackage>
-								<configPackage>${project.groupId}.emd.integration.generated.openapi.server.v1.config</configPackage>
+								<basePackage>${project.groupId}.emdintegration.generated.openapi.server.v1</basePackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.dto</modelPackage>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.api</apiPackage>
+								<configPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.config</configPackage>
 							</configOptions>				
 						</configuration>
 					</execution>
@@ -180,9 +180,10 @@
 							<generateModelTests>false</generateModelTests>
 							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
 							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
+							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/client</templateDirectory>
 							<configOptions>
-								<apiPackage>${project.groupId}.emd.integration.generated.openapi.msclient.milauth.api</apiPackage>
-								<modelPackage>${project.groupId}.emd.integration.generated.openapi.msclient.milauth.model</modelPackage>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.milauth.api</apiPackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.milauth.model</modelPackage>
 								<annotationLibrary>none</annotationLibrary>
 								<dateLibrary>java8</dateLibrary>
 								<documentationProvider>source</documentationProvider>

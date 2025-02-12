@@ -2,9 +2,8 @@ package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.emd.integration.dto.AccessTokenRequestDto;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
-import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.api.TokenApi;
-import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.model.AccessToken;
-import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.model.ClientCredentialsGrantType;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.api.TokenApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -38,7 +37,7 @@ class MilAuthClientImplTest {
     @Test
     void getAccessTokens_returnsAccessToken() {
         AccessToken expectedToken = new AccessToken();
-        when(tokenApi.getAccessTokens(any(ClientCredentialsGrantType.class), any(UUID.class), any(String.class), any(UUID.class)))
+        when(tokenApi.getAccessTokens(any(String.class), any(UUID.class), any(String.class), any(UUID.class)))
                 .thenReturn(Mono.just(expectedToken));
 
         AccessTokenRequestDto requestDto = new AccessTokenRequestDto(clientId, clientSecret);
@@ -49,7 +48,7 @@ class MilAuthClientImplTest {
 
     @Test
     void getAccessTokens_handlesWebClientResponseException() {
-        when(tokenApi.getAccessTokens(any(ClientCredentialsGrantType.class), any(UUID.class), any(String.class), any(UUID.class)))
+        when(tokenApi.getAccessTokens(any(String.class), any(UUID.class), any(String.class), any(UUID.class)))
                 .thenReturn(Mono.error(new WebClientResponseException(403, "Forbidden", null, null, null)));
 
         AccessTokenRequestDto requestDto = new AccessTokenRequestDto(clientId, clientSecret);
@@ -61,7 +60,7 @@ class MilAuthClientImplTest {
 
     @Test
     void getAccessTokens_handlesGenericException() {
-        when(tokenApi.getAccessTokens(any(ClientCredentialsGrantType.class), any(UUID.class), any(String.class), any(UUID.class)))
+        when(tokenApi.getAccessTokens(any(String.class), any(UUID.class), any(String.class), any(UUID.class)))
                 .thenReturn(Mono.error(new RuntimeException("Generic Error")));
 
         AccessTokenRequestDto requestDto = new AccessTokenRequestDto(clientId, clientSecret);

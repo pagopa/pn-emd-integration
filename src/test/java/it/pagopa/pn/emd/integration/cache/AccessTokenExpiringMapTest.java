@@ -1,7 +1,7 @@
 package it.pagopa.pn.emd.integration.cache;
 
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
-import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.model.AccessToken;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
 import it.pagopa.pn.emd.integration.service.TokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

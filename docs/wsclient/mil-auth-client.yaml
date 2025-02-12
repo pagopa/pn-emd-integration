@@ -31,7 +31,14 @@ paths:
       parameters:
         - $ref: '#/components/parameters/RequestId'
       requestBody:
-        $ref: '#/components/requestBodies/GetAccessToken'
+        description: |
+          Request to get an access token and refresh token
+          (if `scope=offline_access`) by means of username and password or by
+          refresh token or by client secret
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/GetAccessTokenByClientCredentials'
       responses:
         "200":
           #description: Ok
@@ -74,57 +81,21 @@ components:
       pattern: "^[ -~]{1,2048}$"
       minLength: 1
       maxLength: 2048
-    AcquirerId:
-      description: Acquirer ID assigned by PagoPA
-      type: string
-      pattern: "^\\d{1,11}$"
-      minLength: 1
-      maxLength: 11
-      example: "4585625"
-    AcquirerIdOrNa:
-      description: Acquirer ID assigned by PagoPA or 'NA'
-      type: string
-      pattern: "^(\\d{1,11}|NA)$"
-      minLength: 1
-      maxLength: 11
-      example: "NA"
     BearerTokenType:
       description: Token type for bearer token
       type: string
       enum:
         - Bearer
       example: "Bearer"
-    Channel:
-      description: Channel
-      enum:
-        - ATM
-        - POS
-        - TOTEM
-        - CASH_REGISTER
-        - CSA
-      type: string
-      example: "ATM"
-    ChannelOrNa:
-      description: Channel or 'NA'
-      enum:
-        - ATM
-        - POS
-        - TOTEM
-        - CASH_REGISTER
-        - CSA
-        - NA
-      type: string
-      example: "NA"
     ClientCredentialsGrantType:
       description: Grant type to get an access token with client credentials
-      enum:
-        - client_credentials
       type: string
-      example: "client_credentials"
+      pattern: "client_credentials"
     ClientSecret:
       description: Client secret (63 ^ 36 ≃ 6e64)
       type: string
       pattern: "^[0-9a-zA-Z-]{36}$"
+      x-field-extra-annotation: "@lombok.ToString.Exclude"
       minLength: 36
       maxLength: 36
       example: "c7a1b24b058347792ebdbaa-Az7fn37dh-q9"
@@ -142,80 +113,6 @@ components:
       minLength: 0
       maxLength: 256
       example: "Duplicate key"
-    FiscalCode:
-      description: User fiscal (tax) code
-      type: string
-      pattern: "^(([A-Z]{6}\\d{2}[A-Z]\\d{2}[A-Z]\\d{3}[A-Z])|(\\d{11}))$"
-      minLength: 11
-      maxLength: 16
-      example: "RSSMRA85T10A562S"
-    KeyId:
-      description: Key ID
-      type: string
-      pattern: "^[ -~]{1,512}$"
-      minLength: 1
-      maxLength: 512
-      example: "0ffa8f8d-d92b-46ee-a4e7-8f26651a2a96"
-    KeyType:
-      description: Key type
-      enum:
-        - RSA
-      type: string
-      example: "RSA"
-    MerchantId:
-      description: Merchant ID. Mandatory when Channel equals POS.
-      type: string
-      pattern: "^[0-9a-zA-Z]{1,15}$"
-      minLength: 1
-      maxLength: 15
-      example: "28405fHfk73x88D"
-    MerchantIdOrNa:
-      description: Merchant ID or 'NA'
-      type: string
-      pattern: "^([0-9a-zA-Z]{1,15}|NA)$"
-      minLength: 1
-      maxLength: 15
-      example: "NA"
-    Modulus:
-      description: Modulus
-      type: string
-      pattern: ^[A-Za-z0-9_-]{172,683}$ # Base64/RFC4648 URL safe w/o padding
-      minLength: 172 # 128 bytes * 4 / 3
-      maxLength: 683 # 512 bytes * 4 / 3
-      example: "qjcVEWJTTySeKxHsJSsmVGk2cEvXJ4tBC4uyU5MxYwBAiIWuZb_yDOIjLz7JN8QsJs3QrZtS3vqv18ljW2db6ED90OUo9CVJveSF4eNRozDHOvnHGT0HR-8Wf5GxcNy63zfQLrnfdp5F9TrhMFRMkEA0TCT7PhT3yF6YvwLtQyMciER1_KKnpGomfAkW-UpaF2nHfXiFPrOIHMuNb5BoRR1f0349tqloLgLd7vyMy1jg-BldmEgRV1bcFqjH0Cg3leROjDy9HzdFauRIlSb4VZrqNni2hgaTUHI5Xp7aCwpS9Y_mf19KpxN0_8d-f3UVRlwtI1dryelpdC5jowxia2Pf8UgSZyMs2ZxDf6eU0SH8wHEvMpeFpwmiBD1XcsISoTan0Yv7w_CLo6JOqX6EfogDQZUBzKKlVCZSoSinAz0_7Bj2orgWKQ9sbfgJWgJweKkJLH-bNSRaVcu02boxPnlJeay3wROhSAgtiKWZnsU1_FpPNG0JBFCh_x-VjkuBoREpNEyJM5NvhRCmyObtzocS4eCtAgvmo3EFv_Xa-rp0p5ez4A-_QUb5OsYOswqYbIV1GbtiAfCTOrNbv6K86LaTllZ9WqYrKgDv7KA-604K37k33LHROqcO9Q-bCN8hKzQDWs7M3DFNP6P5iBUUVs-gtWncHvIuUWTth-fBXa8"
-    OfflineAccessScope:
-      description: Scope for offline_access
-      enum:
-        - offline_access
-      type: string
-      example: "offline_access"
-    Password:
-      description: User password
-      type: string
-      pattern: "^[ -~]{1,64}$"
-      minLength: 1
-      maxLength: 64
-      example: "Password-001$"
-    PageNumber:
-      description: Number of the page
-      type: integer
-      format: int32 # TotalPages and TotalElements are int64 but PageNumber is int32 due to Panache APIs limits.
-      minimum: 0
-      maximum: 2147483647
-      example: 1
-    PageSize:
-      description: Size of the page
-      type: integer
-      format: int32
-      minimum: 1
-      maximum: 128 # See #/components/schemas/Clients.maxItems
-      example: 20
-    PasswordGrantType:
-      description: Grant type to get an access token with resource owner password
-      enum:
-        - password
-      type: string
-      example: "password"
     PositiveInteger:
       description: Non negative integer
       type: integer
@@ -223,26 +120,6 @@ components:
       minimum: 1
       maximum: 2147483647
       example: 234
-    PublicExponent:
-      description: Public key exponent
-      type: string
-      pattern: ^[A-Za-z0-9_-]{2,683}$ # Base64/RFC4648 URL safe w/o padding
-      minLength: 2 # 1 byte * 4 / 3 = 2
-      maxLength: 683 # 512 bytes * 4 / 3 = 683
-      example: "AQAB"
-    PublicKeyUse:
-      description: Public key use
-      enum:
-        - sig
-        - enc
-      type: string
-      example: "sig"
-    RefreshGrantType:
-      description: Grant type to refresh an access token
-      enum:
-        - refresh_token
-      type: string
-      example: "refresh_token"
     RateLimitLimit:
       description: The number of allowed requests in the current period
       type: integer
@@ -268,34 +145,14 @@ components:
       format: int32
       minimum: 1
       maximum: 240
-    TerminalId:
-      description: ID of the terminal originating the transaction. It must be unique per acquirer and channel.
-      type: string
-      pattern: "^[0-9a-zA-Z]{1,8}$"
-      minLength: 1
-      maxLength: 8
-      example: "0aB9wXyZ"
-    TerminalIdOrNa:
-      description: ID of the terminal or 'NA'
-      type: string
-      pattern: "^([0-9a-zA-Z]{1,8}|NA)$"
-      minLength: 1
-      maxLength: 8
-      example: "NA"
     Token:
       description: Token
       type: string
+      x-field-extra-annotation: "@lombok.ToString.Exclude"
       pattern: "^[a-zA-Z0-9_-]{1,1024}\\.[a-zA-Z0-9_-]{1,1024}\\.[a-zA-Z0-9_-]{1,1024}$"
       minLength: 5
       maxLength: 3074
       example: "eyJraWQiOiI2OWQzZDEwZi03MGRhLTQ5ODItYjI4ZC03MmU4MTQ4MzI4YTMiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL21pbC1kLWFwaW0uYXp1cmUtYXBpLm5ldC9taWwtaWRwIiwiYXVkIjpbImh0dHBzOi8vbWlsLWQtYXBpbS5henVyZS1hcGkubmV0L21pbC1wYXltZW50LW5vdGljZSIsImh0dHBzOi8vbWlsLWQtYXBpbS5henVyZS1hcGkubmV0L21pbC1mZWUtY2FsY3VsYXRvciJdLCJleHAiOjE2Nzg3ODkyOTUsInNjb3BlIjoidmVyaWZ5QnlRckNvZGUgYWN0aXZhdGVCeVFyQ29kZSB2ZXJpZnlCeVRheENvZGVBbmROb3RpY2VOdW1iZXIgYWN0aXZhdGVCeVRheENvZGVBbmROb3RpY2VOdW1iZXIgY2xvc2UgZ2V0UGF5bWVudFN0YXR1cyBnZXRGZWUifQ.UJ8Vwv0NwF5S3fajgsdpgV-t6VeZAVC9dR0QGVpevC6Rw35tTx_1pJq2kI0GVAp0Vm7mNmgpZgzqx14QJfBmtTz3ZMJuUYVJUfHHQxxRxEyVBslrloOCqc8LfFkC-jmVQG5_9p9f6Tb7MB-h9J_f9ivtFX9gz7jK2Q_llD3HU0FujMgHEJiloKl7sp2uDaMIiy9dOKT7m0M6sA1tA84kwuJASudd_KWotideFsiA8LMBy_fGlEO7ogF-WytXD0XfW6VIBwQKq5KB3L3HxUuOZE1Gr2hubZ9SCeGAptiaPCWeEDf4w4x3IvKUL-rmm4bs4xalCmUbWcnTkKJi5f4N_8d2aRBrCL7k01rEK-OI1NH1-cCCk97eanNxvFEAKk_9t8rggipYt9BuL929p11LHVeYqqfemz1yrzc58LJXWPNgSMZ8XjKoITzsEiKWtGMYNV6GodJs_USnMKGIlc_uynZS0Q9mUV5IWhFaOZWFkM1nNwebMq9edg-kxtj1WpNkXfP1lahOMt36a9Rn2rWBLAhMBnerigsxFmUpi90EmbDkgOKTEXd3adOWLBb0jQSw0gPlNHe4bHh_LxBNNWljd6P9yZ4CYvZsWFwt_85d-PS56y-mNWV5oFMgPd-_qeF3Fn-QMj3Q5qySoqNCLzX7pnqjzXrveazLcR-CrroIUGM"
-    Username:
-      description: User name
-      type: string
-      pattern: "^[ -~]{1,64}$"
-      minLength: 1
-      maxLength: 64
-      example: "Merchant-001"
     UUID:
       description: UUID
       type: string
@@ -372,134 +229,10 @@ components:
         grant_type: "client_credentials"
         client_id: "d0d654e6-97da-4848-b568-99fedccb642b"
         client_secret: "265a5ac0-c651-428e-bed6-763f6cd244b5"
-    GetAccessTokenByPassword:
-      description: |
-        Request to get an access token and refresh token
-        (is scope = offline_access) by means of username and password
-      type: object
-      additionalProperties: false
-      properties:
-        grant_type:
-          $ref: '#/components/schemas/PasswordGrantType'
-        username:
-          $ref: '#/components/schemas/Username'
-        password:
-          $ref: '#/components/schemas/Password'
-        scope:
-          $ref: '#/components/schemas/OfflineAccessScope'
-        client_id:
-          $ref: '#/components/schemas/UUID'
-      required:
-        - grant_type
-        - username
-        - password
-        - client_id
-      example:
-        grant_type: "password"
-        username: "Merchant-001"
-        password: "Password-001$"
-        scope: "offline_access"
-        client_id: "d0d654e6-97da-4848-b568-99fedccb642b"
-    PublicKey:
-      description: Public key
-      type: object
-      additionalProperties: false
-      properties:
-        kty:
-          $ref: '#/components/schemas/KeyType'
-        e:
-          $ref: '#/components/schemas/PublicExponent'
-        use:
-          $ref: '#/components/schemas/PublicKeyUse'
-        kid:
-          $ref: '#/components/schemas/KeyId'
-        exp:
-          $ref: '#/components/schemas/PositiveInteger'
-        iat:
-          $ref: '#/components/schemas/PositiveInteger'
-        n:
-          $ref: '#/components/schemas/Modulus'
-      required:
-        - kty
-        - e
-        - use
-        - kid
-        - exp
-        - iat
-        - n
-      example:
-        kty: "RSA"
-        e: "AQAB"
-        use: "sig"
-        kid: "0ffa8f8d-d92b-46ee-a4e7-8f26651a2a96"
-        exp: 1678975089
-        iat: 1678888689
-        n: "qjcVEWJTTySeKxHsJSsmVGk2cEvXJ4tBC4uyU5MxYwBAiIWuZb_yDOIjLz7JN8QsJs3QrZtS3vqv18ljW2db6ED90OUo9CVJveSF4eNRozDHOvnHGT0HR-8Wf5GxcNy63zfQLrnfdp5F9TrhMFRMkEA0TCT7PhT3yF6YvwLtQyMciER1_KKnpGomfAkW-UpaF2nHfXiFPrOIHMuNb5BoRR1f0349tqloLgLd7vyMy1jg-BldmEgRV1bcFqjH0Cg3leROjDy9HzdFauRIlSb4VZrqNni2hgaTUHI5Xp7aCwpS9Y_mf19KpxN0_8d-f3UVRlwtI1dryelpdC5jowxia2Pf8UgSZyMs2ZxDf6eU0SH8wHEvMpeFpwmiBD1XcsISoTan0Yv7w_CLo6JOqX6EfogDQZUBzKKlVCZSoSinAz0_7Bj2orgWKQ9sbfgJWgJweKkJLH-bNSRaVcu02boxPnlJeay3wROhSAgtiKWZnsU1_FpPNG0JBFCh_x-VjkuBoREpNEyJM5NvhRCmyObtzocS4eCtAgvmo3EFv_Xa-rp0p5ez4A-_QUb5OsYOswqYbIV1GbtiAfCTOrNbv6K86LaTllZ9WqYrKgDv7KA-604K37k33LHROqcO9Q-bCN8hKzQDWs7M3DFNP6P5iBUUVs-gtWncHvIuUWTth-fBXa8"
-    PublicKeys:
-      description: Public keys
-      type: object
-      additionalProperties: false
-      properties:
-        keys:
-          type: array
-          maxItems: 32
-          items:
-            $ref: '#/components/schemas/PublicKey'
-      required:
-        - keys
-      example:
-        keys:
-          - kty: "RSA"
-            e: "AQAB"
-            use: "sig"
-            kid: "0ffa8f8d-d92b-46ee-a4e7-8f26651a2a96"
-            exp: 1678975089
-            iat: 1678888689
-            n: "qjcVEWJTTySeKxHsJSsmVGk2cEvXJ4tBC4uyU5MxYwBAiIWuZb_yDOIjLz7JN8QsJs3QrZtS3vqv18ljW2db6ED90OUo9CVJveSF4eNRozDHOvnHGT0HR-8Wf5GxcNy63zfQLrnfdp5F9TrhMFRMkEA0TCT7PhT3yF6YvwLtQyMciER1_KKnpGomfAkW-UpaF2nHfXiFPrOIHMuNb5BoRR1f0349tqloLgLd7vyMy1jg-BldmEgRV1bcFqjH0Cg3leROjDy9HzdFauRIlSb4VZrqNni2hgaTUHI5Xp7aCwpS9Y_mf19KpxN0_8d-f3UVRlwtI1dryelpdC5jowxia2Pf8UgSZyMs2ZxDf6eU0SH8wHEvMpeFpwmiBD1XcsISoTan0Yv7w_CLo6JOqX6EfogDQZUBzKKlVCZSoSinAz0_7Bj2orgWKQ9sbfgJWgJweKkJLH-bNSRaVcu02boxPnlJeay3wROhSAgtiKWZnsU1_FpPNG0JBFCh_x-VjkuBoREpNEyJM5NvhRCmyObtzocS4eCtAgvmo3EFv_Xa-rp0p5ez4A-_QUb5OsYOswqYbIV1GbtiAfCTOrNbv6K86LaTllZ9WqYrKgDv7KA-604K37k33LHROqcO9Q-bCN8hKzQDWs7M3DFNP6P5iBUUVs-gtWncHvIuUWTth-fBXa8"
-    RefreshAccessToken:
-      description: |
-        Request to get a new couple access/refresh token by means of a refresh
-        token
-      type: object
-      #additionalProperties: true
-      properties:
-        grant_type:
-          $ref: '#/components/schemas/RefreshGrantType'
-        client_id:
-          $ref: '#/components/schemas/UUID'
-        refresh_token:
-          $ref: '#/components/schemas/Token'
-      required:
-        - grant_type
-        - client_id
-      example:
-        grant_type: "refresh_token"
-        client_id: "d0d654e6-97da-4848-b568-99fedccb642b"
-        refresh_token: "eyJraWQiOiIxN2YwNWViZC1hMWMzLTRjNWMtODM4Ny1jOWZlNjU4MDRiMDEiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL21pbC1kLWFwaW0uYXp1cmUtYXBpLm5ldC9taWwtaWRwIiwiYXVkIjoiaHR0cHM6Ly9taWwtZC1hcGltLmF6dXJlLWFwaS5uZXQvbWlsLWlkcCIsImV4cCI6MTY3ODg4MTA1NSwic2NvcGUiOiJvZmZsaW5lX2FjY2VzcyJ9.Bu-BXKRMoE8fdBfuoPAa70WQYUWVH3BK3VFMw-9mr7hGlKBSONXQY8vcrFuh4OLm6vHX2hUagYuJ3yS_Anm5AHU8Kpay0dGm30fyPxFAyv5s_Yn_ET3VExPZBedBSlHl0Rzt0JQ_9X07X0JkCwWacxWMueKNoVndAh3QxswbkwtEANAKvQcvAtdLjh-93eDYFq0vvS8qNRReTZf46fldIL9H5-0MMqjfVi5A6y8YCzx7_kOHKq8wCy7u75QtKhPRzYnY0JcBVMALZgQovpCYpnlPkP3JV3cgdmlDGWmGHbKQz9iQ5bY1071e3vhxqR2iEqFJwn7nohYq9sxkMQGxNxz2BI-w3v_SQ3zS3mI1qK_qm1c7yzyF3c_lB920T5hBup9RozIXVb2OkX38pW6JKORETgSLlhnqLc8Rr1_HaQ2qN_JYcn7Urv_0mSJh-i8zS39F1glY3ejHHiVbl8cSJsPPw-ehpKAozf6h0_JiZBe0TuBtyTNULQH1iri19C9z_XBgBnfC1DtrnQn-UIgGbJq1TnIgtVmtTnReJqDpcf6_MGDLqCL-x192UQszb8GgWjD8tRusJ9X5HG1RHUAVyQ5gfOCegHmymyB7Dx7e5fCOghDUTT0t2dvVKbIXZGilrddKBg70iBGDA5j5-01lvnl2aaxBv51Y_zr-3IZdAyA"
-  # ========================================================
-  # Request bodies
-  # ========================================================
-  requestBodies:
-    GetAccessToken:
-      description: |
-        Request to get an access token and refresh token
-        (if `scope=offline_access`) by means of username and password or by
-        refresh token or by client secret
-      content:
-        application/x-www-form-urlencoded:
-          schema:
-            $ref: '#/components/schemas/GetAccessTokenByClientCredentials'
   # ========================================================
   # Parameters
   # ========================================================
   parameters:
-    ClientId:
-      name: clientId
-      in: path
-      description: Client ID
-      required: true
-      schema:
-        $ref: '#/components/schemas/UUID'
     RequestId:
       name: RequestId
       in: header
@@ -572,43 +305,3 @@ components:
             type: string
             pattern: "^[ -~]{0,65535}$"
             maxLength: 65535
-    Jwks:
-      description: Public keys
-      headers:
-        Access-Control-Allow-Origin:
-          description: Indicates whether the response can be shared with requesting code from the given origin
-          required: false
-          schema:
-            $ref: '#/components/schemas/AccessControlAllowOrigin'
-        RateLimit-Limit:
-          description: The number of allowed requests in the current period
-          required: false
-          schema:
-            $ref: '#/components/schemas/RateLimitLimit'
-        RateLimit-Reset:
-          description: The number of seconds left in the current period
-          required: false
-          schema:
-            $ref: '#/components/schemas/RateLimitReset'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/PublicKeys'
-    NoContent:
-      description: No content response
-      headers:
-        Access-Control-Allow-Origin:
-          description: Indicates whether the response can be shared with requesting code from the given origin
-          required: false
-          schema:
-            $ref: '#/components/schemas/AccessControlAllowOrigin'
-        RateLimit-Limit:
-          description: The number of allowed requests in the current period
-          required: false
-          schema:
-            $ref: '#/components/schemas/RateLimitLimit'
-        RateLimit-Reset:
-          description: The number of seconds left in the current period
-          required: false
-          schema:
-            $ref: '#/components/schemas/RateLimitReset'

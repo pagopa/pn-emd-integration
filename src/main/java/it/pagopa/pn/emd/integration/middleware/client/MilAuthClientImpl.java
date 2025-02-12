@@ -2,9 +2,8 @@ package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.emd.integration.dto.AccessTokenRequestDto;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
-import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.api.TokenApi;
-import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.model.AccessToken;
-import it.pagopa.pn.emd.integration.generated.openapi.msclient.milauth.model.ClientCredentialsGrantType;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.api.TokenApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,12 +20,13 @@ import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionC
 @CustomLog
 public class MilAuthClientImpl implements MilAuthClient {
     private final TokenApi tokenApi;
+    private static final String GRANT_TYPE = "client_credentials";
 
     @Override
     public Mono<AccessToken> getAccessTokens(AccessTokenRequestDto accessTokenRequestDto) {
         log.logInvokingExternalService(CLIENT_NAME, "getAccessTokens");
         return tokenApi.getAccessTokens(
-                ClientCredentialsGrantType.CLIENT_CREDENTIALS,
+                GRANT_TYPE,
                 UUID.fromString(accessTokenRequestDto.getClientId()),
                 accessTokenRequestDto.getClientSecret(),
                 UUID.randomUUID()

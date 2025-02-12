@@ -1,12 +1,12 @@
 package it.pagopa.pn.emd.integration.rest;
 
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.api.MessageApi;
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.api.PaymentApi;
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.api.CheckTppApi;
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.dto.PaymentUrlResponse;
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.dto.RetrievalPayload;
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.dto.SendMessageRequest;
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.dto.SendMessageResponse;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.CheckTppApi;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.MessageApi;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequiredArgsConstructor
 public class PnEmdIntegrationController implements MessageApi, PaymentApi, CheckTppApi {
+
     @Override
     public Mono<ResponseEntity<SendMessageResponse>> sendMessage(Mono<SendMessageRequest> sendMessageRequest, final ServerWebExchange exchange) {
         return null;
