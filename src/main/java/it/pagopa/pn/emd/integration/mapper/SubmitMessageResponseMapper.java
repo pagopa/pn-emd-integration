@@ -7,7 +7,7 @@ public class SubmitMessageResponseMapper {
 
     public static SendMessageResponse toSendMessageResponse(InlineResponse200 submitMessageResponse) {
         SendMessageResponse sendMessageResponse = new SendMessageResponse();
-        sendMessageResponse.setOutcome(SendMessageResponse.OutcomeEnum.valueOf(submitMessageResponse.getOutcome().name()));
+        sendMessageResponse.setOutcome(SendMessageResponse.OutcomeEnum.valueOf(submitMessageResponse.getOutcome().getValue()));
         return sendMessageResponse;
     }
 }
