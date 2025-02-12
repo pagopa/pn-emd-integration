@@ -20,7 +20,7 @@ import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionC
 @CustomLog
 public class MilAuthClientImpl implements MilAuthClient {
     private final TokenApi tokenApi;
-    private final static String GRANT_TYPE = "client_credentials";
+    private static final String GRANT_TYPE = "client_credentials";
 
     @Override
     public Mono<AccessToken> getAccessTokens(AccessTokenRequestDto accessTokenRequestDto) {
