@@ -42,7 +42,7 @@ public class MsgDispatcherImpl {
 
     private SendMessageRequest sendMessageRequestMap(SendMessageRequestBody request) {
         return SendMessageRequest.builder()
-                .messageId(request.getOriginId()+"_"+ Utils.removePrefix(request.getInternalRecipientId())+"_SEND_MESSAGE")
+                .messageId(request.getOriginId()+"_"+ Utils.removePrefix(request.getInternalRecipientId()))
                 .recipientId(request.getRecipientId())
                 .content(PnEmdIntegrationCostants.COURTESY_MESSAGE_CONTENT)
                 .triggerDateTime(Instant.now())
