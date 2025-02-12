@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.NO_CHANNELS_ENABLED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -78,7 +77,7 @@ public class MsgDispatcherImplTest {
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
         when(emdClient.submitMessage(any(SendMessageRequest.class), any(String.class), any(String.class)))
-                .thenReturn(Mono.error(new RuntimeException(NO_CHANNELS_ENABLED)));
+                .thenReturn(Mono.error(new RuntimeException(Outcome.NO_CHANNELS_ENABLED.getValue())));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
         // Act
@@ -87,7 +86,7 @@ public class MsgDispatcherImplTest {
         // Assert
         StepVerifier.create(result)
                 .assertNext(response ->
-                        response.getOutcome().equals(NO_CHANNELS_ENABLED))
+                        response.getOutcome().equals(Outcome.NO_CHANNELS_ENABLED.getValue()))
                 .verifyComplete();
     }
 }
