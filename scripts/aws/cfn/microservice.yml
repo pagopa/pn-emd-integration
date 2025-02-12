@@ -93,10 +93,6 @@ Parameters:
       - "true"
       - "false"
 
-  MilClientSecret:
-    Type: String
-    Description: 'Client secret for the MIL service'
-
   MilClientId:
     Type: String
     Description: 'Client id for the MIL service'
@@ -124,9 +120,10 @@ Parameters:
     Type: String
     Description: 'RedisServerless ARN'
 
-  ElasticCacheEmdIntegrationUserArn:
-    Type: String
-    Description: 'ElastiCacheUser for emd-integration'
+  #TODO Scommentare quando sarà terminato il task di infra che può valorizzare questo parametro
+  #ElasticCacheEmdIntegrationUserArn:
+  #  Type: String
+  #  Description: 'ElastiCacheUser for emd-integration'
 
   ElasticacheEndpoint:
     Type: String
@@ -220,7 +217,7 @@ Resources:
             Effect: Allow
             Resource:
               - !Ref RedisServerlessArn
-              - !Ref ElasticCacheEmdIntegrationUserArn
+              #- !Ref ElasticCacheEmdIntegrationUserArn TODO Scommentare quando sarà terminato il task di infra che può valorizzare questo parametro
 
   ## Dashboard
   EmdIntegrationMicroserviceCloudWatchDashboard:
