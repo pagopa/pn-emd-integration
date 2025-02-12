@@ -1,14 +1,19 @@
 package it.pagopa.pn.emd.integration.config;
 
+/*
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
+ */
 import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.context.annotation.Configuration;
+/*
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
@@ -21,7 +26,7 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
 import java.net.URISyntaxException;
-
+*/
 
 @Configuration
 @EnableCaching
@@ -30,6 +35,7 @@ import java.net.URISyntaxException;
 public class CacheConfig {
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
 
+    /*
     @Bean
     @Primary
     @Profile("!local")
@@ -65,4 +71,6 @@ public class CacheConfig {
                         .build();
         return new ReactiveRedisTemplate<>(factory, serializationContext);
     }
+
+     */
 }
