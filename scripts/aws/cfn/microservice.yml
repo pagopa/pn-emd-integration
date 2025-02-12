@@ -105,6 +105,14 @@ Parameters:
     Type: String
     Description: 'Token expiration buffer for the MIL service (expressed in milliseconds)'
 
+  EmdCoreBasePath:
+    Type: String
+    Description: 'Base path for the EMD Core service'
+
+  OriginalMessageUrl:
+    Type: String
+    Description: 'URL to retrieve original message'
+
   # Logging parameters
   EcsLogGroup:
     Type: String
@@ -192,6 +200,8 @@ Resources:
         ContainerEnvEntry13: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHEREGION=${ElasticacheCacheRegion}'
         ContainerEnvEntry14: !Sub 'PN_EMDINTEGRATION_REDISCACHE_MODE=${ElasticacheMode}'
         ContainerEnvEntry15: !Sub 'PN_EMDINTEGRATION_RETRIEVALPAYLOADCACHEEXPIRATION=${RetrievalPayloadCacheExpiration}'
+        ContainerEnvEntry16: !Sub 'PN_EMDINTEGRATION_EMDCOREBASEPATH=${EmdCoreBasePath}'
+        ContainerEnvEntry17: !Sub 'PN_EMDINTEGRATION_ORIGINALMESSAGEURL=${OriginalMessageUrl}'
         ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration:MilAuthClientSecret:AWSCURRENT:'
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName

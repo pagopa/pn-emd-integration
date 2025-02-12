@@ -104,7 +104,7 @@ paths:
         content:
           application/json:
               schema:
-                $ref: "#/components/schemas/SendMessageRequest"
+                $ref: "#/components/schemas/SendMessageRequestBody"
       responses:
         "200":
           description: Ok
@@ -249,22 +249,21 @@ components:
           maxLength: 36
           example: "XRUZ-GZAJ-ZUEJ-202407-W-1"
           
-    SendMessageRequest:
+    SendMessageRequestBody:
       type: object
       description: "Retrieval Response information"
       required:
-        - messageId
+        - internalRecipientId
         - recipientId
         - senderDescription
         - originId
-        - content
         - associatedPayment
       properties:
-        messageId:
-          description: Unique ID of the message
+        internalRecipientId:
+          description: ID of the recipient for internal use
           type: string
-          pattern: "^[ -~]{24,64}$"
-          minLength: 24
+          pattern: "^[ -~]{8,64}$"
+          minLength: 8
           maxLength: 64
         recipientId:
           description: ID of the recipient
@@ -285,19 +284,11 @@ components:
           pattern: "^[ -~]{24,36}$"
           minLength: 24
           maxLength: 36
-        content:
-          description: Content of the message
-          type: string
-          pattern: "^[ -~]{1,140}$"
-          minLength: 1
-          maxLength: 140
         associatedPayment:
           description: The notification has an associated payment
           type: boolean
       example:
-        messageId: "8a32fa8a-5036-4b39-8f2e-47d3a6d23f9e"
         recipientId: "RSSMRA85T10A562S"
-        content: "You have a ticket!"
         originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
         senderDescription: "Comune di Milano"
         associatedPayment: true
