@@ -3,7 +3,7 @@ package it.pagopa.pn.emd.integration.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import it.pagopa.pn.emd.integration.generated.openapi.server.v1.dto.RetrievalPayload;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;

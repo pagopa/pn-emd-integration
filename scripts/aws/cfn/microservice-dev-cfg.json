@@ -4,7 +4,7 @@
     "WireTapLogActivation": "false",
     "MountEfs": "false",
     "MilClientId": "06b60d7f-09f5-4ed5-83ad-2e18f293f107",
-    "MilBasePath": "http://pn-ex-Appli-1TF83JFIR9AF3-439926467.eu-south-1.elb.amazonaws.com:8080/emd-mock/auth",
+    "MilBasePath": "http://pn-ex-Appli-1TF83JFIR9AF3-439926467.eu-south-1.elb.amazonaws.com:8080/emd-mock",
     "MilTokenExpirationBuffer": "1000",
     "ElasticacheMode": "serverless",
     "ElasticacheUserId": "iam-user-emdintegration",
