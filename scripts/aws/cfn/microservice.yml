@@ -216,6 +216,7 @@ Resources:
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
         Subnets: !Ref VpcEgressSubnetsIds
+        VpcId: !Ref VpcId
         EcsDefaultSecurityGroup: !Ref ElasticacheSecurityGroup
         LoadBalancerListenerArn: !Ref ApplicationLoadBalancerListenerArn
         LoadbalancerRulePriority: !Ref MicroserviceNumber
