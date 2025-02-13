@@ -295,8 +295,6 @@ components:
         
     SendMessageResponse:
       type: object
-      required:
-        - retrievalId
       description: "Send message Response information"
       properties:
         outcome:
