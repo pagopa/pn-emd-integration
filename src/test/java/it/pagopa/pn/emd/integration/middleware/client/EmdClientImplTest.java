@@ -16,7 +16,7 @@ import reactor.test.StepVerifier;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class EmdClientImplTest {
+class EmdClientImplTest {
 
     @Mock
     private SubmitApi submitApi;
@@ -25,13 +25,13 @@ public class EmdClientImplTest {
     private EmdClientImpl emdClient;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         when(submitApi.getApiClient()).thenReturn(new ApiClient());
     }
 
     @Test
-    public void submitMessageSuccess() {
+    void submitMessageSuccess() {
         SendMessageRequest request = new SendMessageRequest();
         String accessToken = "token";
         String requestID = "requestID";
@@ -48,7 +48,7 @@ public class EmdClientImplTest {
     }
 
     @Test
-    public void submitMessageError() {
+    void submitMessageError() {
         SendMessageRequest request = new SendMessageRequest();
         String accessToken = "token";
         String requestID = "requestID";

@@ -17,7 +17,7 @@ import reactor.test.StepVerifier;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class PnEmdIntegrationControllerTest {
+class PnEmdIntegrationControllerTest {
 
     @Mock
     private MsgDispatcherImpl msgDispatcherImpl;
@@ -26,7 +26,7 @@ public class PnEmdIntegrationControllerTest {
     private PnEmdIntegrationController pnEmdIntegrationController;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 

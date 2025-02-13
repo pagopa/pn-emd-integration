@@ -34,12 +34,12 @@ public class MsgDispatcherImplTest {
     private MsgDispatcherImpl msgDispatcher;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    public void testSubmitMessage() {
+    void testSubmitMessage() {
         // Arrange
         SendMessageRequestBody requestBody = new SendMessageRequestBody();
         requestBody.setRecipientId("recipientId");
@@ -65,7 +65,7 @@ public class MsgDispatcherImplTest {
     }
 
     @Test
-    public void testSubmitMessageError() {
+    void testSubmitMessageError() {
         // Arrange
         SendMessageRequestBody requestBody = new SendMessageRequestBody();
         requestBody.setRecipientId("recipientId");
@@ -86,7 +86,7 @@ public class MsgDispatcherImplTest {
         // Assert
         StepVerifier.create(result)
                 .assertNext(response ->
-                        response.getOutcome().equals(Outcome.NO_CHANNELS_ENABLED.getValue()))
+                        response.getOutcome().equals(Outcome.NO_CHANNELS_ENABLED))
                 .verifyComplete();
     }
 }

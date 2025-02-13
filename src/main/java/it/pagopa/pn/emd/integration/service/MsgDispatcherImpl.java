@@ -9,7 +9,6 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.mode
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.SendMessageRequest;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
-import it.pagopa.pn.emd.integration.utils.PnEmdIntegrationCostants;
 import it.pagopa.pn.emd.integration.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +43,7 @@ public class MsgDispatcherImpl {
         return SendMessageRequest.builder()
                 .messageId(request.getOriginId()+"_"+ Utils.removePrefix(request.getInternalRecipientId()))
                 .recipientId(request.getRecipientId())
-                .content(PnEmdIntegrationCostants.COURTESY_MESSAGE_CONTENT)
+                .content(pnEmdIntegrationConfigs.getCourtesyMessageContent())
                 .triggerDateTime(Instant.now())
                 .senderDescription(request.getSenderDescription())
                 .associatedPayment(request.getAssociatedPayment())
