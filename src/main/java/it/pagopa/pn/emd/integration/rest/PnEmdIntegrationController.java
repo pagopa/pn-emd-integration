@@ -1,12 +1,14 @@
 package it.pagopa.pn.emd.integration.rest;
 
-import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.CheckTppApi;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.MessageApi;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.CheckTppApi;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
-import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
+import it.pagopa.pn.emd.integration.mapper.SubmitMessageResponseMapper;
+import it.pagopa.pn.emd.integration.service.MsgDispatcherImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,16 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequiredArgsConstructor
 public class PnEmdIntegrationController implements MessageApi, PaymentApi, CheckTppApi {
+    private final MsgDispatcherImpl msgDispatcherImpl;
 
     @Override
-    public Mono<ResponseEntity<SendMessageResponse>> sendMessage(Mono<SendMessageRequest> sendMessageRequest, final ServerWebExchange exchange) {
-        return null;
+    public Mono<ResponseEntity<SendMessageResponse>> sendMessage(Mono<SendMessageRequestBody> sendMessageRequest, final ServerWebExchange exchange) {
+        return sendMessageRequest
+                .flatMap(request -> msgDispatcherImpl.submitMessage(request)
+                        .map(response -> {
+                            SendMessageResponse sendMessageResponse = SubmitMessageResponseMapper.toSendMessageResponse(response);
+                            return ResponseEntity.ok(sendMessageResponse);
+                        }));
     }
     @Override
     public Mono<ResponseEntity<PaymentUrlResponse>> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, final ServerWebExchange exchange) {

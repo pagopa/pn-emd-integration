@@ -17,11 +17,15 @@ public class PnEmdIntegrationConfigs {
     private String milClientSecret;
     private String milClientId;
     private String milBasePath;
+    private String emdCoreBasePath;
+    private String originalMessageUrl;
     // Token expiration buffer in milliseconds
     private long milTokenExpirationBuffer;
 
     private CacheConfigs redisCache;
     private Duration retrievalPayloadCacheExpiration;
+
+    private String courtesyMessageContent;
 
     @Data
     public static class CacheConfigs {
