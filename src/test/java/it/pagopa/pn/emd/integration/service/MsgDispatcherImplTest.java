@@ -19,7 +19,7 @@ import reactor.test.StepVerifier;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class MsgDispatcherImplTest {
+class MsgDispatcherImplTest {
 
     @Mock
     private EmdClientImpl emdClient;
