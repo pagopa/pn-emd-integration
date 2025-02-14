@@ -208,6 +208,7 @@
 							<generateModelTests>false</generateModelTests>
 							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
 							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
+							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/client</templateDirectory>
 							<configOptions>
 								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.msgdispatcher.api</apiPackage>
 								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.msgdispatcher.model</modelPackage>
