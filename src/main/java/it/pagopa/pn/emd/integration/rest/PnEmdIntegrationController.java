@@ -8,7 +8,7 @@ import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayl
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
 import it.pagopa.pn.emd.integration.mapper.SubmitMessageResponseMapper;
-import it.pagopa.pn.emd.integration.service.MsgDispatcherImpl;
+import it.pagopa.pn.emd.integration.service.EmdCoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,27 +20,31 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequiredArgsConstructor
 public class PnEmdIntegrationController implements MessageApi, PaymentApi, CheckTppApi {
-    private final MsgDispatcherImpl msgDispatcherImpl;
+    private final EmdCoreService emdCoreService;
 
     @Override
     public Mono<ResponseEntity<SendMessageResponse>> sendMessage(Mono<SendMessageRequestBody> sendMessageRequest, final ServerWebExchange exchange) {
         return sendMessageRequest
-                .flatMap(request -> msgDispatcherImpl.submitMessage(request)
+                .flatMap(request -> emdCoreService.submitMessage(request)
                         .map(response -> {
                             SendMessageResponse sendMessageResponse = SubmitMessageResponseMapper.toSendMessageResponse(response);
                             return ResponseEntity.ok(sendMessageResponse);
                         }));
     }
+
     @Override
     public Mono<ResponseEntity<PaymentUrlResponse>> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, final ServerWebExchange exchange) {
         return null;
     }
+
     @Override
     public Mono<ResponseEntity<RetrievalPayload>> emdCheckTPP(String retrievalId, final ServerWebExchange exchange) {
         return null;
     }
+
     @Override
-    public Mono<ResponseEntity<RetrievalPayload>> tokenCheckTPP(String retrievalId,  final ServerWebExchange exchange) {
-        return null;
+    public Mono<ResponseEntity<RetrievalPayload>> tokenCheckTPP(String retrievalId, final ServerWebExchange exchange) {
+        return emdCoreService.getTokenRetrievalPayload(retrievalId)
+                .map(ResponseEntity.ok()::body);
     }
 }

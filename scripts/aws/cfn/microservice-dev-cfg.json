@@ -14,6 +14,6 @@
     "ElasticacheCacheName": "pn-redis-serverless",
     "ElasticacheCacheRegion": "eu-south-1",
     "ElasticachePort": "6379",
-    "RetrievalPayloadCacheExpiration": "15m"
+    "RetrievalPayloadCacheTtl": "15m"
   }
 }

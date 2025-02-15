@@ -1,15 +1,18 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.ApiClient;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.api.SubmitApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.Outcome;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.ApiClient;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -21,6 +24,9 @@ class EmdClientImplTest {
     @Mock
     private SubmitApi submitApi;
 
+    @Mock
+    private PaymentApi paymentApi;
+
     @InjectMocks
     private EmdClientImpl emdClient;
 
@@ -28,6 +34,7 @@ class EmdClientImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         when(submitApi.getApiClient()).thenReturn(new ApiClient());
+        when(paymentApi.getApiClient()).thenReturn(new ApiClient());
     }
 
     @Test
@@ -61,6 +68,51 @@ class EmdClientImplTest {
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
                         throwable.getMessage().equals("Failed to submit message"))
+                .verify();
+    }
+
+    @Test
+    void getRetrievalSuccess() {
+        String retrievalId = "retrievalId";
+        String accessToken = "token";
+        RetrievalResponseDTO expectedResponse = new RetrievalResponseDTO();
+
+        when(paymentApi.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(expectedResponse));
+
+        Mono<RetrievalResponseDTO> result = emdClient.getRetrieval(retrievalId, accessToken);
+
+        StepVerifier.create(result)
+                .expectNext(expectedResponse)
+                .verifyComplete();
+    }
+
+    @Test
+    void getRetrievalNotFound() {
+        String retrievalId = "retrievalId";
+        String accessToken = "token";
+
+        when(paymentApi.getRetrieval(any(String.class), any(String.class)))
+                .thenReturn(Mono.error(new WebClientResponseException(404, "Not Found", null, null, null, null)));
+
+        Mono<RetrievalResponseDTO> result = emdClient.getRetrieval(retrievalId, accessToken);
+
+        StepVerifier.create(result)
+                .verifyComplete();
+    }
+
+    @Test
+    void getRetrievalHandlesError() {
+        String retrievalId = "retrievalId";
+        String accessToken = "token";
+
+        when(paymentApi.getRetrieval(any(String.class), any(String.class)))
+                .thenReturn(Mono.error(new RuntimeException("Generic Error")));
+
+        Mono<RetrievalResponseDTO> result = emdClient.getRetrieval(retrievalId, accessToken);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
+                        throwable.getMessage().equals("Generic Error"))
                 .verify();
     }
 }

@@ -196,12 +196,12 @@
 					</execution>
 					<execution>
 						<phase>generate-resources</phase>
-						<id>generate-msgdispatcher-client</id>
+						<id>generate-emd-core-client</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/docs/wsclient/msg-dispatcher.yaml</inputSpec>
+							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client.yaml</inputSpec>
 							<generatorName>java</generatorName>
 							<library>webclient</library>
 							<generateApiTests>false</generateApiTests>
@@ -210,8 +210,8 @@
 							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
 							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/client</templateDirectory>
 							<configOptions>
-								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.msgdispatcher.api</apiPackage>
-								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.msgdispatcher.model</modelPackage>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.api</apiPackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.model</modelPackage>
 								<annotationLibrary>none</annotationLibrary>
 								<dateLibrary>java8</dateLibrary>
 								<documentationProvider>source</documentationProvider>

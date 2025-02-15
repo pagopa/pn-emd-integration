@@ -1,27 +1,46 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.api.SubmitApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
-
-import static it.pagopa.pn.emd.integration.middleware.client.MilAuthClient.CLIENT_NAME;
 
 @Component
 @RequiredArgsConstructor
 @CustomLog
 public class EmdClientImpl implements EmdClient{
     private final SubmitApi submitApi;
-
+    private final PaymentApi paymentApi;
+    private static final String ACCEPT_LANGUAGE = "it-IT";
     @Override
     public Mono<InlineResponse200> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
-        log.logInvokingExternalService(CLIENT_NAME, "submitMessage");
+        log.logInvokingExternalService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
         submitApi.getApiClient().setBearerToken(accessToken);
         return submitApi.submitMessage(requestID, request)
                 .doOnError(
-                        throwable -> log.logInvokationResultDownstreamFailed("submitMessage", throwable.getMessage()));
+                        throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage()));
+    }
+
+    @Override
+    public Mono<RetrievalResponseDTO> getRetrieval(String retrievalId, String accessToken) {
+        log.logInvokingExternalService(CLIENT_NAME, GET_RETRIEVAL_METHOD);
+        paymentApi.getApiClient().setBearerToken(accessToken);
+        return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
+                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage()))
+                .onErrorResume(this::isNotFoundException, e -> Mono.empty());
+    }
+
+    private boolean isNotFoundException(Throwable e) {
+        if (!(e instanceof WebClientResponseException webClientResponseException)) {
+            return false;
+        }
+        return webClientResponseException.getStatusCode().equals(HttpStatus.NOT_FOUND);
     }
 }

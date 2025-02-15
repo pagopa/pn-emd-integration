@@ -23,7 +23,7 @@ public class PnEmdIntegrationConfigs {
     private long milTokenExpirationBuffer;
 
     private CacheConfigs redisCache;
-    private Duration retrievalPayloadCacheExpiration;
+    private Duration retrievalPayloadCacheTtl;
 
     private String courtesyMessageContent;
 
