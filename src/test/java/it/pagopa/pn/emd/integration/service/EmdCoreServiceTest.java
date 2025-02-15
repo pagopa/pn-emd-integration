@@ -129,7 +129,7 @@ class EmdCoreServiceTest {
         Mono<RetrievalPayload> result = emdCoreService.getTokenRetrievalPayload(retrievalId);
 
         StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException)
+                .expectError(PnEmdIntegrationNotFoundException.class)
                 .verify();
     }
 

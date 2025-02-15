@@ -15,7 +15,7 @@ import java.time.Duration;
 public class RetrievalPayloadRedisService implements ReactiveRedisService<RetrievalPayload> {
     private final ReactiveRedisTemplate<String, RetrievalPayload> retrievalPayloadOps;
 
-    private final static String CACHE_PREFIX = NAMESPACE + "retrievalPayload::";
+    private static final String CACHE_PREFIX = NAMESPACE + "retrievalPayload::";
 
     @Override
     public Mono<RetrievalPayload> get(String retrievalId) {
