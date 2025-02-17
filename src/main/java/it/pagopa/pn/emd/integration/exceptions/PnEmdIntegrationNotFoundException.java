@@ -8,11 +8,6 @@ import org.springframework.http.HttpStatus;
 public class PnEmdIntegrationNotFoundException extends PnRuntimeException {
 
     public PnEmdIntegrationNotFoundException(String message, String description, String errorcode) {
-        super(message, description, HttpStatus.NOT_FOUND.value(), errorcode, null, null);
+        super(message, description, HttpStatus.NOT_FOUND.value(), errorcode, null, description);
     }
-
-    public PnEmdIntegrationNotFoundException(String message, String description, String errorcode, Throwable ex) {
-        super(message, description, HttpStatus.NOT_FOUND.value(), errorcode, null, null, ex);
-    }
-
 }

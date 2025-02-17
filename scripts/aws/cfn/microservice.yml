@@ -173,9 +173,9 @@ Parameters:
     Type: String
     Description: Elasticache security group
 
-  RetrievalPayloadCacheExpiration:
+  RetrievalPayloadCacheTtl:
     Type: String
-    Description: 'Expiration time for the retrieval payload cache'
+    Description: 'TTL for the retrieval payload entries in cache'
     Default: '10m'
 
 Resources:
@@ -208,7 +208,7 @@ Resources:
         ContainerEnvEntry12: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHENAME=${ElasticacheCacheName}'
         ContainerEnvEntry13: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHEREGION=${ElasticacheCacheRegion}'
         ContainerEnvEntry14: !Sub 'PN_EMDINTEGRATION_REDISCACHE_MODE=${ElasticacheMode}'
-        ContainerEnvEntry15: !Sub 'PN_EMDINTEGRATION_RETRIEVALPAYLOADCACHEEXPIRATION=${RetrievalPayloadCacheExpiration}'
+        ContainerEnvEntry15: !Sub 'PN_EMDINTEGRATION_RETRIEVALPAYLOADCACHETTL=${RetrievalPayloadCacheTtl}'
         ContainerEnvEntry16: !Sub 'PN_EMDINTEGRATION_EMDCOREBASEPATH=${EmdCoreBasePath}'
         ContainerEnvEntry17: !Sub 'PN_EMDINTEGRATION_ORIGINALMESSAGEURL=${OriginalMessageUrl}'
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'

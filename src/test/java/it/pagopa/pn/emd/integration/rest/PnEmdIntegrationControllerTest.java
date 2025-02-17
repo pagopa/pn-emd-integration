@@ -1,10 +1,12 @@
 package it.pagopa.pn.emd.integration.rest;
 
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.Outcome;
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.msgdispatcher.model.InlineResponse200;
-import it.pagopa.pn.emd.integration.service.MsgDispatcherImpl;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emd.integration.service.EmdCoreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,7 +22,7 @@ import static org.mockito.Mockito.when;
 class PnEmdIntegrationControllerTest {
 
     @Mock
-    private MsgDispatcherImpl msgDispatcherImpl;
+    private EmdCoreService emdCoreService;
 
     @InjectMocks
     private PnEmdIntegrationController pnEmdIntegrationController;
@@ -41,7 +43,7 @@ class PnEmdIntegrationControllerTest {
         SendMessageResponse sendMessageResponse = new SendMessageResponse();
         sendMessageResponse.setOutcome(SendMessageResponse.OutcomeEnum.OK);
 
-        when(msgDispatcherImpl.submitMessage(any(SendMessageRequestBody.class)))
+        when(emdCoreService.submitMessage(any(SendMessageRequestBody.class)))
                 .thenReturn(Mono.just(new InlineResponse200().outcome(Outcome.OK)));
 
         Mono<ResponseEntity<SendMessageResponse>> response = pnEmdIntegrationController.sendMessage(Mono.just(requestBody), null);
@@ -51,5 +53,31 @@ class PnEmdIntegrationControllerTest {
                 .verifyComplete();
     }
 
+    @Test
+    void tokenCheckTPPReturnsPayload() {
+        String retrievalId = "retrievalId";
+        RetrievalPayload expectedPayload = new RetrievalPayload();
+        expectedPayload.setRetrievalId(retrievalId);
 
+        when(emdCoreService.getTokenRetrievalPayload(retrievalId)).thenReturn(Mono.just(expectedPayload));
+
+        Mono<ResponseEntity<RetrievalPayload>> result = pnEmdIntegrationController.tokenCheckTPP(retrievalId, null);
+
+        StepVerifier.create(result)
+                .expectNextMatches(response -> response.getStatusCode().is2xxSuccessful() && response.getBody().getRetrievalId().equals(retrievalId))
+                .verifyComplete();
+    }
+
+    @Test
+    void tokenCheckTPPHandlesNotFound() {
+        String retrievalId = "retrievalId";
+
+        when(emdCoreService.getTokenRetrievalPayload(retrievalId)).thenReturn(Mono.error(new PnEmdIntegrationNotFoundException("Not Found", null, null)));
+
+        Mono<ResponseEntity<RetrievalPayload>> result = pnEmdIntegrationController.tokenCheckTPP(retrievalId, null);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException && throwable.getMessage().equals("Not Found"))
+                .verify();
+    }
 }
