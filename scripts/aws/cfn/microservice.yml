@@ -188,7 +188,7 @@ Resources:
         MicroServiceUniqueName: !Sub '${ProjectName}-emd-integration'
         CpuValue: 512
         MemoryAmount: 2GB
-        HealthCheckPath: /actuator
+        HealthCheckPath: /actuator/health
         AlarmSNSTopicArn: !Ref AlarmSNSTopicArn
         EfsFilesystem: !Ref FargateEFSFileSystemID
         MountEfs: !Ref MountEfs
