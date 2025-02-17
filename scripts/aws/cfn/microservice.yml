@@ -136,10 +136,9 @@ Parameters:
     Type: String
     Description: 'RedisServerless ARN'
 
-  #TODO Scommentare quando sarà terminato il task di infra che può valorizzare questo parametro
-  #ElasticCacheEmdIntegrationUserArn:
-  #  Type: String
-  #  Description: 'ElastiCacheUser for emd-integration'
+  ElasticCacheEmdIntegrationUserArn:
+    Type: String
+    Description: 'ElastiCacheUser for emd-integration'
 
   ElasticacheEndpoint:
     Type: String
@@ -237,7 +236,7 @@ Resources:
             Effect: Allow
             Resource:
               - !Ref RedisServerlessArn
-              #- !Ref ElasticCacheEmdIntegrationUserArn TODO Scommentare quando sarà terminato il task di infra che può valorizzare questo parametro
+              - !Ref ElasticCacheEmdIntegrationUserArn
 
   ## Dashboard
   EmdIntegrationMicroserviceCloudWatchDashboard:
