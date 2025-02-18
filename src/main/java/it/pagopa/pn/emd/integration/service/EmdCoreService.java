@@ -74,14 +74,13 @@ public class EmdCoreService {
     }
 
     public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId) {
-        String paymentUrl = String.format("%s/%s?fiscalCode=%s&noticeNumber=%s",
+        log.info("getPaymentUrl for retrievalId: {}, noticeCode: {}, paTaxId: {}", retrievalId, noticeCode, paTaxId);
+        String paymentUrl = String.format("%s?retrievalId=%s&fiscalCode=%s&noticeNumber=%s",
                                           pnEmdIntegrationConfigs.getEmdPaymentEndpoint(),
                                           retrievalId,
                                           paTaxId,
                                           noticeCode);
-        PaymentUrlResponse response = new PaymentUrlResponse();
-        response.setPaymentUrl(paymentUrl);
-        return Mono.just(response);
+        return Mono.just(new PaymentUrlResponse(paymentUrl));
     }
 
     private Mono<RetrievalPayload> getAccessTokenAndRetrievePayload(String retrievalId) {
