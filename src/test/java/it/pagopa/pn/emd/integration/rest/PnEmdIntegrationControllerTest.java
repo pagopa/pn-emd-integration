@@ -80,4 +80,32 @@ class PnEmdIntegrationControllerTest {
                 .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException && throwable.getMessage().equals("Not Found"))
                 .verify();
     }
+
+    @Test
+    void emdCheckTPPReturnsPayload() {
+        String retrievalId = "retrievalId";
+        RetrievalPayload expectedPayload = new RetrievalPayload();
+        expectedPayload.setRetrievalId(retrievalId);
+
+        when(emdCoreService.getEmdRetrievalPayload(retrievalId)).thenReturn(Mono.just(expectedPayload));
+
+        Mono<ResponseEntity<RetrievalPayload>> result = pnEmdIntegrationController.emdCheckTPP(retrievalId, null);
+
+        StepVerifier.create(result)
+                .expectNextMatches(response -> response.getStatusCode().is2xxSuccessful() && response.getBody().getRetrievalId().equals(retrievalId))
+                .verifyComplete();
+    }
+
+    @Test
+    void emdCheckTPPHandlesNotFound() {
+        String retrievalId = "retrievalId";
+
+        when(emdCoreService.getEmdRetrievalPayload(retrievalId)).thenReturn(Mono.error(new PnEmdIntegrationNotFoundException("Not Found", null, null)));
+
+        Mono<ResponseEntity<RetrievalPayload>> result = pnEmdIntegrationController.emdCheckTPP(retrievalId, null);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException && throwable.getMessage().equals("Not Found"))
+                .verify();
+    }
 }

@@ -39,7 +39,8 @@ public class PnEmdIntegrationController implements MessageApi, PaymentApi, Check
 
     @Override
     public Mono<ResponseEntity<RetrievalPayload>> emdCheckTPP(String retrievalId, final ServerWebExchange exchange) {
-        return null;
+        return emdCoreService.getEmdRetrievalPayload(retrievalId)
+                .map(ResponseEntity.ok()::body);
     }
 
     @Override
