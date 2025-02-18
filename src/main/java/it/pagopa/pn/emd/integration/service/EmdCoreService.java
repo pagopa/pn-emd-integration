@@ -9,6 +9,7 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.mode
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
@@ -70,6 +71,17 @@ public class EmdCoreService {
         log.info("Start getEmdRetrievalPayload for retrievalId: {}", retrievalId);
         return redisService.get(retrievalId)
                 .switchIfEmpty(getAccessTokenAndRetrievePayload(retrievalId));
+    }
+
+    public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId) {
+        String paymentUrl = String.format("%s/%s?fiscalCode=%s&noticeNumber=%s",
+                                          pnEmdIntegrationConfigs.getEmdPaymentEndpoint(),
+                                          retrievalId,
+                                          paTaxId,
+                                          noticeCode);
+        PaymentUrlResponse response = new PaymentUrlResponse();
+        response.setPaymentUrl(paymentUrl);
+        return Mono.just(response);
     }
 
     private Mono<RetrievalPayload> getAccessTokenAndRetrievePayload(String retrievalId) {

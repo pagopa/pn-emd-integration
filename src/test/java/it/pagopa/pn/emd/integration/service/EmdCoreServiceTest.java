@@ -8,6 +8,7 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.Acce
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
@@ -215,6 +216,22 @@ class EmdCoreServiceTest {
                 .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
                         throwable.getMessage().equals("Generic Error"))
                 .verify();
+    }
+
+    @Test
+    void getPaymentUrlReturnsCorrectUrl() {
+        String retrievalId = "retrievalId";
+        String noticeCode = "noticeCode";
+        String paTaxId = "paTaxId";
+        String emdPaymentEndpoint = "http://example.com/emd_endpoint";
+
+        when(pnEmdIntegrationConfigs.getEmdPaymentEndpoint()).thenReturn(emdPaymentEndpoint);
+
+        Mono<PaymentUrlResponse> result = emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId);
+
+        StepVerifier.create(result)
+                .expectNextMatches(response -> response.getPaymentUrl().equals("http://example.com/emd_endpoint/retrievalId?fiscalCode=paTaxId&noticeNumber=noticeCode"))
+                .verifyComplete();
     }
 
     private void mockAccessTokenExpiringMap() {
