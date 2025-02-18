@@ -149,6 +149,74 @@ class EmdCoreServiceTest {
                 .verify();
     }
 
+
+    @Test
+    void getEmdRetrievalPayloadReturnsPayloadFromCache() {
+        String retrievalId = "retrievalId";
+        RetrievalPayload expectedPayload = new RetrievalPayload();
+        expectedPayload.setRetrievalId(retrievalId);
+
+        mockAccessTokenExpiringMap();
+        when(redisService.get(retrievalId)).thenReturn(Mono.just(expectedPayload));
+
+        Mono<RetrievalPayload> result = emdCoreService.getEmdRetrievalPayload(retrievalId);
+
+        StepVerifier.create(result)
+                .expectNextMatches(payload -> payload.getRetrievalId().equals(retrievalId))
+                .verifyComplete();
+    }
+
+    @Test
+    void getEmdRetrievalPayloadReturnsPayloadFromClient() {
+        String retrievalId = "retrievalId";
+        RetrievalResponseDTO responseDTO = new RetrievalResponseDTO();
+        responseDTO.setRetrievalId(retrievalId);
+        RetrievalPayload expectedPayload = new RetrievalPayload();
+        expectedPayload.setRetrievalId(retrievalId);
+
+        mockAccessTokenExpiringMap();
+        when(redisService.get(retrievalId)).thenReturn(Mono.empty());
+        when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));
+
+        Mono<RetrievalPayload> result = emdCoreService.getEmdRetrievalPayload(retrievalId);
+
+        StepVerifier.create(result)
+                .expectNextMatches(payload -> payload.getRetrievalId().equals(retrievalId))
+                .verifyComplete();
+    }
+
+    @Test
+    void getEmdRetrievalPayloadHandlesNotFound() {
+        String retrievalId = "retrievalId";
+
+        when(redisService.get(retrievalId)).thenReturn(Mono.empty());
+        when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.empty());
+
+        mockAccessTokenExpiringMap();
+        Mono<RetrievalPayload> result = emdCoreService.getEmdRetrievalPayload(retrievalId);
+
+        StepVerifier.create(result)
+                .expectError(PnEmdIntegrationNotFoundException.class)
+                .verify();
+    }
+
+    @Test
+    void getEmdRetrievalPayloadHandlesError() {
+        String retrievalId = "retrievalId";
+
+        mockAccessTokenExpiringMap();
+        when(redisService.get(retrievalId)).thenReturn(Mono.empty());
+        when(emdClient.getRetrieval(any(String.class), any(String.class)))
+                .thenReturn(Mono.error(new RuntimeException("Generic Error")));
+
+        Mono<RetrievalPayload> result = emdCoreService.getEmdRetrievalPayload(retrievalId);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
+                        throwable.getMessage().equals("Generic Error"))
+                .verify();
+    }
+
     private void mockAccessTokenExpiringMap() {
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken("token");

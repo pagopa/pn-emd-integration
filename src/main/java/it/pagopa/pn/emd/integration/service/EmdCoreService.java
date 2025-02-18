@@ -66,6 +66,12 @@ public class EmdCoreService {
                                 .thenReturn(retrievalPayload));
     }
 
+    public Mono<RetrievalPayload> getEmdRetrievalPayload(String retrievalId) {
+        log.info("Start getEmdRetrievalPayload for retrievalId: {}", retrievalId);
+        return redisService.get(retrievalId)
+                .switchIfEmpty(getAccessTokenAndRetrievePayload(retrievalId));
+    }
+
     private Mono<RetrievalPayload> getAccessTokenAndRetrievePayload(String retrievalId) {
         log.info("Retrieving payload for retrievalId: {}", retrievalId);
         return accessTokenExpiringMap.getAccessToken()
