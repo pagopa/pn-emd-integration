@@ -119,7 +119,7 @@ Parameters:
 
   EmdPaymentEndpoint:
     Type: String
-    Description: 'URL to retrieve original message'
+    Description: 'URL to perform a payment on a TPP service'
 
   CourtesyMessageContent:
     Type: String
@@ -215,7 +215,7 @@ Resources:
         ContainerEnvEntry16: !Sub 'PN_EMDINTEGRATION_EMDCOREBASEPATH=${EmdCoreBasePath}'
         ContainerEnvEntry17: !Sub 'PN_EMDINTEGRATION_ORIGINALMESSAGEURL=${OriginalMessageUrl}'
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'
-        ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDCOREPAYMENTENDPOINT=${EmdPaymentEndpoint}'
+        ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTENDPOINT=${EmdPaymentEndpoint}'
         ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration:MilAuthClientSecret:AWSCURRENT:'
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName

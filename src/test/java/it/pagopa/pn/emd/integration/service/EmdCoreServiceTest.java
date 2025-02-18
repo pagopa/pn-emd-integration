@@ -230,7 +230,7 @@ class EmdCoreServiceTest {
         Mono<PaymentUrlResponse> result = emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId);
 
         StepVerifier.create(result)
-                .expectNextMatches(response -> response.getPaymentUrl().equals("http://example.com/emd_endpoint/retrievalId?fiscalCode=paTaxId&noticeNumber=noticeCode"))
+                .expectNextMatches(response -> response.getPaymentUrl().equals("http://example.com/emd_endpoint?retrievalId=retrievalId&fiscalCode=paTaxId&noticeNumber=noticeCode"))
                 .verifyComplete();
     }
 
