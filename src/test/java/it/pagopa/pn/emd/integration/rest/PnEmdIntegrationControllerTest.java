@@ -1,7 +1,9 @@
 package it.pagopa.pn.emd.integration.rest;
 
+import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
@@ -26,6 +28,9 @@ class PnEmdIntegrationControllerTest {
 
     @InjectMocks
     private PnEmdIntegrationController pnEmdIntegrationController;
+
+    @Mock
+    private final PnEmdIntegrationConfigs configs = new PnEmdIntegrationConfigs();
 
     @BeforeEach
     void setUp() {
@@ -107,5 +112,25 @@ class PnEmdIntegrationControllerTest {
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException && throwable.getMessage().equals("Not Found"))
                 .verify();
+    }
+
+    @Test
+    void getPaymentUrlReturnsCorrectUrl() {
+        String retrievalId = "retrievalId";
+        String noticeCode = "noticeCode";
+        String paTaxId = "paTaxId";
+        String expectedUrl = "http://example.com/emd_endpoint/retrievalId?fiscalCode=paTaxId&noticeNumber=noticeCode";
+
+        PaymentUrlResponse paymentUrlResponse = new PaymentUrlResponse();
+        paymentUrlResponse.setPaymentUrl(expectedUrl);
+
+        when(emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId)).thenReturn(Mono.just(paymentUrlResponse));
+
+        Mono<ResponseEntity<PaymentUrlResponse>> result = pnEmdIntegrationController.getPaymentUrl(retrievalId, noticeCode, paTaxId, null);
+
+        StepVerifier.create(result)
+                .expectNextMatches(response -> response.getStatusCode().is2xxSuccessful() &&
+                        response.getBody().getPaymentUrl().equals(expectedUrl))
+                .verifyComplete();
     }
 }
