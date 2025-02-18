@@ -1,6 +1,5 @@
 package it.pagopa.pn.emd.integration.rest;
 
-import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.MessageApi;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.PaymentApi;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.api.CheckTppApi;
