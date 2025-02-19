@@ -76,12 +76,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "404":
           description: Not found (TPP not found or retrieval inactive)
           content:
@@ -118,12 +112,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Problem'
-        "403":
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Problem'
         "500":
           description: Server error
           content:
@@ -133,7 +121,7 @@ paths:
   '/emd-integration-private/payment-url':
     get:
       operationId: getPaymentUrl
-      description: 'Retrieve the payment url given payment informations'
+      description: 'Builds and returns a URL based on the IUV data of a notification to enable payment on a third party partner service'
       tags: [Payment]
       parameters:
         - $ref: '#/components/parameters/retrievalId'
@@ -148,12 +136,6 @@ paths:
                 $ref: '#/components/schemas/PaymentUrlResponse'
         "400":
           description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Problem'
-        "403":
-          description: Forbidden
           content:
             application/json:
               schema:
@@ -266,7 +248,7 @@ components:
           minLength: 8
           maxLength: 64
         recipientId:
-          description: ID of the recipient
+          description: ID of the recipient (tax code)
           type: string
           x-field-extra-annotation: "@lombok.ToString.Exclude"
           pattern: "^[ -~]{8,64}$"
@@ -288,9 +270,10 @@ components:
           description: The notification has an associated payment
           type: boolean
       example:
+        internalRecipientId: "5b334d4a-0gt7-24ac-9c7b-354e2d44w5tr"
         recipientId: "RSSMRA85T10A562S"
-        originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
         senderDescription: "Comune di Milano"
+        originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
         associatedPayment: true
         
     SendMessageResponse:
@@ -310,9 +293,9 @@ components:
       properties:
         paymentUrl:
           type: string
-          description: "URL to the payment page"
+          description: "URL to the payment page of third party partner's service"
       example:
-        paymentUrl: "https://example.com/payment/123e4567-e89b-12d3-a456-426614174000?fiscalCode=1234567890&noticeNumber=302000100000019421"
+        paymentUrl: "https://example.com/payment?retrievalId=123e4567-e89b-12d3-a456-426614174000&fiscalCode=1234567890&noticeNumber=302000100000019421"
           
     Problem:
       $ref: './remote-refs.yaml#/components/schemas/Problem'
