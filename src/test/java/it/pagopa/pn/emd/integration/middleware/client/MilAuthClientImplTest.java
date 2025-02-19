@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -44,18 +43,6 @@ class MilAuthClientImplTest {
         Mono<AccessToken> result = milAuthClient.getAccessTokens(requestDto);
 
         assertEquals(expectedToken, result.block());
-    }
-
-    @Test
-    void getAccessTokens_handlesWebClientResponseException() {
-        when(tokenApi.getAccessTokens(any(String.class), any(UUID.class), any(String.class), any(UUID.class)))
-                .thenReturn(Mono.error(new WebClientResponseException(403, "Forbidden", null, null, null)));
-
-        AccessTokenRequestDto requestDto = new AccessTokenRequestDto(clientId, clientSecret);
-        Mono<AccessToken> result = milAuthClient.getAccessTokens(requestDto);
-
-        PnEmdIntegrationException exception = assertThrows(PnEmdIntegrationException.class, result::block);
-        assertEquals(403, exception.getProblem().getStatus());
     }
 
     @Test

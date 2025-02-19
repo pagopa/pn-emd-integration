@@ -8,7 +8,6 @@ import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -33,10 +32,6 @@ public class MilAuthClientImpl implements MilAuthClient {
             )
             .doOnError(throwable -> {
                 log.logInvokationResultDownstreamFailed(CLIENT_NAME, throwable.getMessage());
-                if (throwable instanceof WebClientResponseException e) {
-                    throw new PnEmdIntegrationException(e.getMessage(), e.getRawStatusCode(), MIL_AUTH_ERROR);
-                }
-
                 throw new PnEmdIntegrationException(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), MIL_AUTH_ERROR);
             });
     }
