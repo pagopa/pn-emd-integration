@@ -1,5 +1,7 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
@@ -19,13 +21,20 @@ public class EmdClientImpl implements EmdClient{
     private final SubmitApi submitApi;
     private final PaymentApi paymentApi;
     private static final String ACCEPT_LANGUAGE = "it-IT";
+
     @Override
     public Mono<InlineResponse200> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
         log.logInvokingExternalService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
         submitApi.getApiClient().setBearerToken(accessToken);
         return submitApi.submitMessage(requestID, request)
-                .doOnError(
-                        throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage()));
+                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage()))
+                .onErrorMap(throwable -> {
+                    throw new PnEmdIntegrationException(
+                            "Error sending message to EMD",
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SEND_MESSAGE_ERROR
+                    );
+                });
     }
 
     @Override

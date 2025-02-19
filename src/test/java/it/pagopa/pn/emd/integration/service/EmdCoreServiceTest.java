@@ -86,7 +86,7 @@ class EmdCoreServiceTest {
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
         when(emdClient.submitMessage(any(SendMessageRequest.class), any(String.class), any(String.class)))
-                .thenReturn(Mono.error(new RuntimeException(Outcome.NO_CHANNELS_ENABLED.getValue())));
+                .thenReturn(Mono.error(new RuntimeException("Generic Error")));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
         // Act
@@ -94,9 +94,8 @@ class EmdCoreServiceTest {
 
         // Assert
         StepVerifier.create(result)
-                .assertNext(response ->
-                        response.getOutcome().equals(Outcome.NO_CHANNELS_ENABLED))
-                .verifyComplete();
+                .expectError(RuntimeException.class)
+                .verify();
     }
 
     @Test

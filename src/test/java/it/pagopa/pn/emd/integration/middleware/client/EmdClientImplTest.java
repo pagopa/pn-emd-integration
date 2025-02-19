@@ -1,5 +1,6 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.ApiClient;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
@@ -16,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SEND_MESSAGE_ERROR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -66,8 +68,8 @@ class EmdClientImplTest {
         Mono<InlineResponse200> result = emdClient.submitMessage(request, accessToken, requestID);
 
         StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
-                        throwable.getMessage().equals("Failed to submit message"))
+                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationException &&
+                        ((PnEmdIntegrationException) throwable).getCode().equals(PN_EMD_INTEGRATION_SEND_MESSAGE_ERROR))
                 .verify();
     }
 
