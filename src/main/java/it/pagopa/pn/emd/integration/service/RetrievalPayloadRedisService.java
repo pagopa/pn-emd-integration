@@ -24,7 +24,11 @@ public class RetrievalPayloadRedisService implements ReactiveRedisService<Retrie
                     log.warn("Error getting retrievalId: {} from cache", retrievalId, throwable);
                     return Mono.empty();
                 })
-                .doOnNext(result -> log.info("Get retrievalId: {} in cache successfully: {}", retrievalId, result));
+                .doOnNext(result -> log.info("Get retrievalId: {} in cache successfully: {}", retrievalId, result))
+                .switchIfEmpty(Mono.defer(() -> {
+                    log.info("RetrievalId: {} not found in cache", retrievalId);
+                    return Mono.empty();
+                }));
     }
 
     @Override
