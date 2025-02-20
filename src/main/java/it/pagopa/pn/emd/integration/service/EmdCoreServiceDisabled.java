@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 public class EmdCoreServiceDisabled implements EmdCoreService {
+    private static final String SERVICE_DISABLED_MESSAGE = "Service disabled";
     @Override
     public Mono<InlineResponse200> submitMessage(SendMessageRequestBody request) {
         log.info("[Service disabled] - Start submitMessage for request: {}", request);
@@ -31,7 +32,7 @@ public class EmdCoreServiceDisabled implements EmdCoreService {
         log.info("[Service disabled] - Start getTokenRetrievalPayload for retrievalId: {}", retrievalId);
         return Mono.error(new PnEmdIntegrationNotFoundException(
                 "Error getting retrieval payload",
-                "Service disabled",
+                SERVICE_DISABLED_MESSAGE,
                 PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SERVICE_DISABLED_ERROR
         ));
     }
@@ -41,7 +42,7 @@ public class EmdCoreServiceDisabled implements EmdCoreService {
         log.info("[Service disabled] - Start getEmdRetrievalPayload for retrievalId: {}", retrievalId);
         return Mono.error(new PnEmdIntegrationNotFoundException(
                 "Error getting retrieval payload",
-                "Service disabled",
+                SERVICE_DISABLED_MESSAGE,
                 PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SERVICE_DISABLED_ERROR
         ));
     }
@@ -50,7 +51,7 @@ public class EmdCoreServiceDisabled implements EmdCoreService {
     public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId) {
         log.info("[Service disabled] - Start getPaymentUrl for retrievalId: {}, noticeCode: {}, paTaxId: {}", retrievalId, noticeCode, paTaxId);
         return Mono.error(new PnEmdIntegrationException(
-                "Service disabled",
+                SERVICE_DISABLED_MESSAGE,
                 PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SERVICE_DISABLED_ERROR
         ));
     }

@@ -31,7 +31,7 @@ class EmdCoreServiceDisabledTest {
         Mono<RetrievalPayload> result = emdCoreServiceDisabled.getTokenRetrievalPayload(retrievalId);
 
         StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException)
+                .expectError(PnEmdIntegrationNotFoundException.class)
                 .verify();
     }
 
@@ -42,7 +42,7 @@ class EmdCoreServiceDisabledTest {
         Mono<RetrievalPayload> result = emdCoreServiceDisabled.getEmdRetrievalPayload(retrievalId);
 
         StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException)
+                .expectError(PnEmdIntegrationNotFoundException.class)
                 .verify();
     }
 
@@ -55,7 +55,7 @@ class EmdCoreServiceDisabledTest {
         Mono<PaymentUrlResponse> result = emdCoreServiceDisabled.getPaymentUrl(retrievalId, noticeCode, paTaxId);
 
         StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationException)
+                .expectError(PnEmdIntegrationException.class)
                 .verify();
     }
 }
