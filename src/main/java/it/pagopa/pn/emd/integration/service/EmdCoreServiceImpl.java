@@ -71,7 +71,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     public Mono<RetrievalPayload> getEmdRetrievalPayload(String retrievalId) {
         log.info("Start getEmdRetrievalPayload for retrievalId: {}", retrievalId);
         return redisService.get(retrievalId)
-                .switchIfEmpty(getAccessTokenAndRetrievePayload(retrievalId));
+                .switchIfEmpty(Mono.defer(() -> getAccessTokenAndRetrievePayload(retrievalId)));
     }
 
     public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId) {
