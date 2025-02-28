@@ -36,7 +36,7 @@ public class AccessTokenExpiringMap {
             if (expiration <= pnEmdIntegrationConfigs.getMilTokenExpirationBuffer()) {
                 return retrieveNewAccessToken();
             } else {
-                log.info("Existing Access Token Required");
+                log.info("Using cached Access Token");
                 return Mono.just(expiringMap.get(TOKEN_KEY));
             }
         } catch (NoSuchElementException e) {
@@ -47,7 +47,7 @@ public class AccessTokenExpiringMap {
 
 
     private Mono<AccessToken> retrieveNewAccessToken() {
-        log.info("New Access Token Required");
+        log.info("New Access Token requested");
         return tokenProvider.getAccessTokens()
                 .map(accessToken -> {
                     expiringMap.put(TOKEN_KEY, accessToken);
