@@ -43,7 +43,14 @@ public class EmdClientImpl implements EmdClient{
         paymentApi.getApiClient().setBearerToken(accessToken);
         return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
                 .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage()))
-                .onErrorResume(this::isNotFoundException, e -> Mono.empty());
+                .onErrorResume(this::isNotFoundException, e -> Mono.empty())
+                .onErrorMap(throwable -> {
+                    throw new PnEmdIntegrationException(
+                            "Error retrieving payload from EMD",
+                            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                            PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_GET_RETRIEVAL_PAYLOAD_ERROR
+                    );
+                });
     }
 
     private boolean isNotFoundException(Throwable e) {
