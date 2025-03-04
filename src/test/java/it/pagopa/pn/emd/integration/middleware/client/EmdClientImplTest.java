@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_GET_RETRIEVAL_PAYLOAD_ERROR;
 import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SEND_MESSAGE_ERROR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -113,8 +114,8 @@ class EmdClientImplTest {
         Mono<RetrievalResponseDTO> result = emdClient.getRetrieval(retrievalId, accessToken);
 
         StepVerifier.create(result)
-                .expectErrorMatches(throwable -> throwable instanceof RuntimeException &&
-                        throwable.getMessage().equals("Generic Error"))
+                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationException &&
+                        ((PnEmdIntegrationException) throwable).getCode().equals(PN_EMD_INTEGRATION_GET_RETRIEVAL_PAYLOAD_ERROR))
                 .verify();
     }
 }
