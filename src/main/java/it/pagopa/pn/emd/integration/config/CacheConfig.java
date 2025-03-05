@@ -3,6 +3,7 @@ package it.pagopa.pn.emd.integration.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import io.lettuce.core.ClientOptions;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,10 @@ public class CacheConfig {
     public LettuceConnectionFactory elasticacheConnectionFactory() throws URISyntaxException {
         PnEmdIntegrationConfigs.CacheConfigs redisCache = pnEmdIntegrationConfigs.getRedisCache();
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisCache.getHostName(), redisCache.getPort());
-        LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder().useSsl().build();
+        LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
+                .clientOptions(ClientOptions.builder().autoReconnect(true).build())
+                .useSsl()
+                .build();
 
         return new PnEmdIntegrationConnectionFactory(redisStandaloneConfiguration, clientConfiguration, redisCache);
     }
