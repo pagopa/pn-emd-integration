@@ -32,6 +32,7 @@ public class PnEmdIntegrationConfigs {
     public static class CacheConfigs {
         private String hostName;
         private int port;
+        private Duration commandTimeout;
         private String userId;
         private String cacheName;
         private String cacheRegion;
