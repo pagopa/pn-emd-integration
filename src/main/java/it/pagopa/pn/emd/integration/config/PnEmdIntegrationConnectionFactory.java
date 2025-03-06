@@ -26,7 +26,9 @@ public class PnEmdIntegrationConnectionFactory extends LettuceConnectionFactory 
 
     // Token refresh interval is set to 14 minutes because the token expires after 15 minutes. Reference: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth-iam.html#:~:text=The%20IAM%20authentication%20token%20is%20valid%20for%2015%20minutes.%20For%20long%2Dlived%20connections%2C%20we%20recommend%20using%20a%20Redis%20OSS%20client%20that%20supports%20a%20credentials%20provider%20interface.
     private static final Long TOKEN_REFRESH_MINUTES = 14L;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final long PING_REFRESH_DELAY = 0;
+    private static final long PING_REFRESH_HOURS = 1;
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
     private final AWSCredentialsProvider credentialsProvider = new DefaultAWSCredentialsProviderChain();
     private final IAMAuthTokenRequest iamAuthTokenRequest;
     @Getter
@@ -58,6 +60,7 @@ public class PnEmdIntegrationConnectionFactory extends LettuceConnectionFactory 
         this.iamAuthTokenRequest = new IAMAuthTokenRequest(this.userId, this.cacheName, this.region, redisMode == RedisMode.SERVERLESS);
         initializeConnectionFactory();
         scheduleTokenRefresh();
+        schedulePing();
     }
 
     /**
@@ -81,6 +84,19 @@ public class PnEmdIntegrationConnectionFactory extends LettuceConnectionFactory 
                 log.error("{} : Error while refreshing IAM token.", ALARM_LOG, e);
             }
         }, TOKEN_REFRESH_MINUTES, TOKEN_REFRESH_MINUTES, TimeUnit.MINUTES);
+    }
+
+    /**
+     * A scheduled task to ping the Redis connection.
+     */
+    private void schedulePing() {
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                getConnection().ping();
+            } catch (Exception e) {
+                log.error("{} : Error during ping.", ALARM_LOG, e);
+            }
+        }, PING_REFRESH_DELAY, PING_REFRESH_HOURS, TimeUnit.HOURS);
     }
 
     /**

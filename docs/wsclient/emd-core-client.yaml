@@ -490,6 +490,12 @@ components:
           pattern: "^[ -~]{1,140}$"
           minLength: 1
           maxLength: 140
+        notes:
+          description: Content of the message
+          type: string
+          pattern: "^[ -~]{1,}$"
+          minLength: 1
+          maxLength: 100000
         associatedPayment:
           description: Associated Payment flag
           type: boolean

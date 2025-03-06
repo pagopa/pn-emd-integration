@@ -39,6 +39,7 @@ public class CacheConfig {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisCache.getHostName(), redisCache.getPort());
         LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
                 .clientOptions(ClientOptions.builder().autoReconnect(true).build())
+                .commandTimeout(redisCache.getCommandTimeout())
                 .useSsl()
                 .build();
 
@@ -49,8 +50,11 @@ public class CacheConfig {
     public ReactiveRedisConnectionFactory localConnectionFactory() {
         PnEmdIntegrationConfigs.CacheConfigs redisCache = pnEmdIntegrationConfigs.getRedisCache();
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisCache.getHostName(), redisCache.getPort());
-
-        return new LettuceConnectionFactory(redisStandaloneConfiguration);
+        LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
+                .clientOptions(ClientOptions.builder().autoReconnect(true).build())
+                .commandTimeout(redisCache.getCommandTimeout())
+                .build();
+        return new LettuceConnectionFactory(redisStandaloneConfiguration, clientConfiguration);
     }
 
     @Bean
