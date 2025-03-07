@@ -3,26 +3,25 @@ package it.pagopa.pn.emd.integration.service;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
 
 import java.time.Duration;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class RetrievalPayloadRedisServiceTest {
-    private ReactiveRedisTemplate<String, RetrievalPayload> retrievalPayloadOps;
+    private RedisTemplate<String, RetrievalPayload> retrievalPayloadOps;
 
     private RetrievalPayloadRedisService retrievalPayloadRedisService;
 
     @BeforeEach
     public void init() {
-        retrievalPayloadOps = mock(ReactiveRedisTemplate.class);
-        when(retrievalPayloadOps.opsForValue()).thenReturn(mock(org.springframework.data.redis.core.ReactiveValueOperations.class));
+        retrievalPayloadOps = mock(RedisTemplate.class);
+        when(retrievalPayloadOps.opsForValue()).thenReturn(mock(org.springframework.data.redis.core.ValueOperations.class));
         retrievalPayloadRedisService = new RetrievalPayloadRedisService(retrievalPayloadOps);
     }
 
@@ -32,7 +31,7 @@ class RetrievalPayloadRedisServiceTest {
         RetrievalPayload expectedPayload = new RetrievalPayload();
         expectedPayload.setRetrievalId(retrievalId);
 
-        when(retrievalPayloadOps.opsForValue().get(any(String.class))).thenReturn(Mono.just(expectedPayload));
+        when(retrievalPayloadOps.opsForValue().get(any(String.class))).thenReturn(expectedPayload);
 
         Mono<RetrievalPayload> result = retrievalPayloadRedisService.get(retrievalId);
 
@@ -45,7 +44,7 @@ class RetrievalPayloadRedisServiceTest {
     void getRetrievalPayloadFromCacheNotFound() {
         String retrievalId = "retrievalId";
 
-        when(retrievalPayloadOps.opsForValue().get(any(String.class))).thenReturn(Mono.empty());
+        when(retrievalPayloadOps.opsForValue().get(any(String.class))).thenReturn(null);
 
         Mono<RetrievalPayload> result = retrievalPayloadRedisService.get(retrievalId);
 
@@ -57,7 +56,7 @@ class RetrievalPayloadRedisServiceTest {
     void getRetrievalPayloadFromCacheFails() {
         String retrievalId = "retrievalId";
 
-        when(retrievalPayloadOps.opsForValue().get(any(String.class))).thenReturn(Mono.error(new RuntimeException()));
+        when(retrievalPayloadOps.opsForValue().get(any(String.class))).thenThrow(new RuntimeException());
 
         Mono<RetrievalPayload> result = retrievalPayloadRedisService.get(retrievalId);
 
@@ -71,7 +70,9 @@ class RetrievalPayloadRedisServiceTest {
         RetrievalPayload payload = new RetrievalPayload();
         payload.setRetrievalId(retrievalId);
 
-        when(retrievalPayloadOps.opsForValue().set(any(String.class), any(RetrievalPayload.class))).thenReturn(Mono.just(true));
+        ValueOperations<String, RetrievalPayload> retrievalPayloadOpsMock = mock(ValueOperations.class);
+        when(retrievalPayloadOps.opsForValue()).thenReturn(retrievalPayloadOpsMock);
+        doNothing().when(retrievalPayloadOpsMock).set(any(String.class), any(RetrievalPayload.class));
 
         Mono<Void> result = retrievalPayloadRedisService.set(retrievalId, payload);
 
@@ -85,7 +86,9 @@ class RetrievalPayloadRedisServiceTest {
         RetrievalPayload payload = new RetrievalPayload();
         payload.setRetrievalId(retrievalId);
 
-        when(retrievalPayloadOps.opsForValue().set(any(String.class), any(RetrievalPayload.class))).thenReturn(Mono.error(new RuntimeException()));
+        ValueOperations<String, RetrievalPayload> retrievalPayloadOpsMock = mock(ValueOperations.class);
+        when(retrievalPayloadOps.opsForValue()).thenReturn(retrievalPayloadOpsMock);
+        doThrow(new RuntimeException()).when(retrievalPayloadOpsMock).set(any(String.class), any(RetrievalPayload.class));
 
         Mono<Void> result = retrievalPayloadRedisService.set(retrievalId, payload);
 
@@ -100,13 +103,17 @@ class RetrievalPayloadRedisServiceTest {
         payload.setRetrievalId(retrievalId);
         Duration ttl = Duration.ofMinutes(5);
 
-        when(retrievalPayloadOps.opsForValue().set(any(String.class), any(RetrievalPayload.class), any(Duration.class))).thenReturn(Mono.just(true));
+        ValueOperations<String, RetrievalPayload> retrievalPayloadOpsMock = mock(ValueOperations.class);
+        when(retrievalPayloadOps.opsForValue()).thenReturn(retrievalPayloadOpsMock);
+        doNothing().when(retrievalPayloadOpsMock).set(any(String.class), any(RetrievalPayload.class));
 
         Mono<Void> result = retrievalPayloadRedisService.set(retrievalId, payload, ttl);
 
         StepVerifier.create(result)
                 .verifyComplete();
     }
+
+
 
     @Test
     void setRetrievalPayloadInCacheWithTTLFails() {
@@ -115,7 +122,9 @@ class RetrievalPayloadRedisServiceTest {
         payload.setRetrievalId(retrievalId);
         Duration ttl = Duration.ofMinutes(5);
 
-        when(retrievalPayloadOps.opsForValue().set(any(String.class), any(RetrievalPayload.class), any(Duration.class))).thenReturn(Mono.error(new RuntimeException()));
+        ValueOperations<String, RetrievalPayload> retrievalPayloadOpsMock = mock(ValueOperations.class);
+        when(retrievalPayloadOps.opsForValue()).thenReturn(retrievalPayloadOpsMock);
+        doThrow(new RuntimeException()).when(retrievalPayloadOpsMock).set(any(String.class), any(RetrievalPayload.class), any(Duration.class));
 
         Mono<Void> result = retrievalPayloadRedisService.set(retrievalId, payload, ttl);
 
@@ -127,7 +136,7 @@ class RetrievalPayloadRedisServiceTest {
     void deleteRetrievalPayloadFromCacheSuccessfully() {
         String retrievalId = "retrievalId";
 
-        when(retrievalPayloadOps.opsForValue().delete(any(String.class))).thenReturn(Mono.just(true));
+        when(retrievalPayloadOps.opsForValue().getAndDelete(any(String.class))).thenReturn(new RetrievalPayload());
 
         Mono<Void> result = retrievalPayloadRedisService.delete(retrievalId);
 
@@ -139,7 +148,7 @@ class RetrievalPayloadRedisServiceTest {
     void deleteRetrievalPayloadFromCacheFails() {
         String retrievalId = "retrievalId";
 
-        when(retrievalPayloadOps.opsForValue().delete(any(String.class))).thenReturn(Mono.error(new RuntimeException()));
+        when(retrievalPayloadOps.opsForValue().getAndDelete(any(String.class))).thenThrow(new RuntimeException());
 
         Mono<Void> result = retrievalPayloadRedisService.delete(retrievalId);
 
