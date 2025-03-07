@@ -172,11 +172,6 @@ Parameters:
     Type: String
     Description: the port of the cache
 
-  CommandTimeout:
-    Type: String
-    Description: timeout for redis commands
-    Default: '5000ms'
-
   ElasticacheSecurityGroup:
     Type: String
     Description: Elasticache security group
@@ -221,7 +216,6 @@ Resources:
         ContainerEnvEntry17: !Sub 'PN_EMDINTEGRATION_ORIGINALMESSAGEURL=${OriginalMessageUrl}'
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'
         ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTENDPOINT=${EmdPaymentEndpoint}'
-        ContainerEnvEntry20: !Sub 'PN_EMDINTEGRATION_REDISCACHE_COMMANDTIMEOUT=${CommandTimeout}'
         ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration:MilAuthClientSecret:AWSCURRENT:'
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
