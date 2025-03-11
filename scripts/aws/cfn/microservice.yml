@@ -211,6 +211,11 @@ Parameters:
     Description: 'TTL for the retrieval payload entries in cache'
     Default: '10m'
 
+  ApplicativeEnvFileChecksum:
+    Type: String
+    Default: ''
+    Description: 'Applicative environment variable file checksum'
+
 Resources:
 
   # PN-TemplateBeMs microservice
@@ -254,6 +259,7 @@ Resources:
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'
         ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTENDPOINT=${EmdPaymentEndpoint}'
         ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration:MilAuthClientSecret:AWSCURRENT:'
+        ApplicativeEnvFileChecksum: !Ref ApplicativeEnvFileChecksum
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
         Subnets: !Ref VpcEgressSubnetsIds
