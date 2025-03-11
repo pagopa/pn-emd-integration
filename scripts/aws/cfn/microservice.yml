@@ -97,6 +97,36 @@ Parameters:
       - "true"
       - "false"
 
+  # Autoscaling parameters
+  AutoscalingThreshold:
+    Default: 70
+    Type: String
+
+  AutoscalingCheckPeriod:
+    Default: 60
+    Type: Number
+    Description: minimum autoscaling number of tasks
+
+  AutoscalingDataPointN:
+    Default: 1
+    Type: Number
+    Description: activate when N datapoint on M
+
+  AutoscalingDataPointM:
+    Default: 1
+    Type: Number
+    Description: activate when N datapoint on M
+
+  MinTasksNumber:
+    Default: 1
+    Type: Number
+    Description: minimum autoscaling number of tasks
+
+  MaxTasksNumber:
+    Default: 6
+    Type: Number
+    Description: maximum autoscaling number of tasks
+
   MilClientId:
     Type: String
     Description: 'Client id for the MIL service'
@@ -181,6 +211,11 @@ Parameters:
     Description: 'TTL for the retrieval payload entries in cache'
     Default: '10m'
 
+  ApplicativeEnvFileChecksum:
+    Type: String
+    Default: ''
+    Description: 'Applicative environment variable file checksum'
+
 Resources:
 
   # PN-TemplateBeMs microservice
@@ -193,6 +228,13 @@ Resources:
         CpuValue: 512
         MemoryAmount: 2GB
         HealthCheckPath: /actuator
+        AutoscalingStrategy: REST-API
+        AutoscalingThreshold: !Ref AutoscalingThreshold
+        AutoscalingCheckPeriod: !Ref AutoscalingCheckPeriod
+        MinTasksNumber: !Ref MinTasksNumber
+        MaxTasksNumber: !Ref MaxTasksNumber
+        AutoscalingDataPointN: !Ref AutoscalingDataPointN
+        AutoscalingDataPointM: !Ref AutoscalingDataPointM
         AlarmSNSTopicArn: !Ref AlarmSNSTopicArn
         EfsFilesystem: !Ref FargateEFSFileSystemID
         MountEfs: !Ref MountEfs
@@ -217,6 +259,7 @@ Resources:
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'
         ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTENDPOINT=${EmdPaymentEndpoint}'
         ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration:MilAuthClientSecret:AWSCURRENT:'
+        ApplicativeEnvFileChecksum: !Ref ApplicativeEnvFileChecksum
         MappedPaths: '/emd-integration-private/*'
         ECSClusterName: !Ref ECSClusterName
         Subnets: !Ref VpcEgressSubnetsIds
