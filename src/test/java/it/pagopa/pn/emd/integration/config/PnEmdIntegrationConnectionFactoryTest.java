@@ -6,7 +6,7 @@ package it.pagopa.pn.emd.integration.config;
     import org.mockito.Mock;
     import org.mockito.MockitoAnnotations;
     import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-    import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+    import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 
     import java.net.URISyntaxException;
 
@@ -22,7 +22,7 @@ package it.pagopa.pn.emd.integration.config;
         private RedisStandaloneConfiguration standaloneConfiguration;
 
         @Mock
-        private LettuceClientConfiguration lettuceClientConfiguration;
+        private JedisClientConfiguration jedisClientConfiguration;
 
         private PnEmdIntegrationConnectionFactory connectionFactory;
 
@@ -34,7 +34,7 @@ package it.pagopa.pn.emd.integration.config;
             when(cacheConfigs.getCacheName()).thenReturn("testCacheName");
             when(cacheConfigs.getCacheRegion()).thenReturn("testRegion");
 
-            connectionFactory = new PnEmdIntegrationConnectionFactory(standaloneConfiguration, lettuceClientConfiguration, cacheConfigs);
+            connectionFactory = new PnEmdIntegrationConnectionFactory(standaloneConfiguration, jedisClientConfiguration, cacheConfigs);
         }
 
         @Test
