@@ -451,7 +451,6 @@ components:
           pattern: "^[ -~]{24,64}$"
           minLength: 24
           maxLength: 64
-          x-field-extra-annotation: "@lombok.ToString.Exclude"
         recipientId:
           description: ID of the recipient
           type: string
