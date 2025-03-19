@@ -1,7 +1,7 @@
 version: "3"
 services:
   redis:
-    image: redis:latest
+    image: redis:latest@sha256:bd41d55aae1ecff61b2fafd0d66761223fe94a60373eb6bb781cfbb570a84079
     container_name: redis-cache
     ports:
       - "6379:6379"
