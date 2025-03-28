@@ -11,7 +11,7 @@
     "MilTokenExpirationBuffer": "1000",
     "EmdCoreBasePath": "http://pn-ex-Appli-1TF83JFIR9AF3-439926467.eu-south-1.elb.amazonaws.com:8080/emd-mock",
     "OriginalMessageUrl": "https://cittadini.dev.notifichedigitali.it",
-    "EmdPaymentEndpoint": "https://api-io.dev.cstar.pagopa.it/emd/payment/token",
+    "EmdPaymentEndpoint": "https://api-emd.dev.cstar.pagopa.it/emd/payment/token",
     "CourtesyMessageContent": "Hai ricevuto una notifica",
     "ElasticacheMode": "serverless",
     "ElasticacheUserId": "iam-user-emdintegration",
