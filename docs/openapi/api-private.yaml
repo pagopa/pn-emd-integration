@@ -250,6 +250,7 @@ components:
         recipientId:
           description: ID of the recipient (tax code)
           type: string
+          format: password
           x-field-extra-annotation: "@lombok.ToString.Exclude"
           pattern: "^[ -~]{8,64}$"
           minLength: 8
