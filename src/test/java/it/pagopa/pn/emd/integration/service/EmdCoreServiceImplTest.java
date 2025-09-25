@@ -74,6 +74,90 @@ class EmdCoreServiceImplTest {
     }
 
     @Test
+    void testSubmitMessage_courtesyAnalogMessageContent() {
+        // Arrange
+        SendMessageRequestBody requestBody = new SendMessageRequestBody();
+        requestBody.setRecipientId("recipientId");
+        requestBody.setSenderDescription("senderDescription");
+        requestBody.setAssociatedPayment(true);
+        requestBody.setOriginId("originId");
+        requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.ANALOG);
+        AccessToken accessToken = new AccessToken();
+        accessToken.setAccessToken("token");
+        InlineResponse200 response = new InlineResponse200();
+        response.setOutcome(Outcome.OK);
+
+        when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
+        when(emdClient.submitMessage(any(SendMessageRequest.class),any(String.class),any(String.class))).thenReturn(Mono.just(response));
+        when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
+        when(pnEmdIntegrationConfigs.getCourtesyAnalogMessageContent()).thenReturn("ciao, attiva piattaforma notifiche");
+
+        // Act
+        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void testSubmitMessage_courtesyAnalogMessageContent_withNullDeliveryModeValue() {
+        // Arrange
+        SendMessageRequestBody requestBody = new SendMessageRequestBody();
+        requestBody.setRecipientId("recipientId");
+        requestBody.setSenderDescription("senderDescription");
+        requestBody.setAssociatedPayment(true);
+        requestBody.setOriginId("originId");
+        requestBody.setDeliveryMode(null);
+        AccessToken accessToken = new AccessToken();
+        accessToken.setAccessToken("token");
+        InlineResponse200 response = new InlineResponse200();
+        response.setOutcome(Outcome.OK);
+
+        when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
+        when(emdClient.submitMessage(any(SendMessageRequest.class),any(String.class),any(String.class))).thenReturn(Mono.just(response));
+        when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
+        when(pnEmdIntegrationConfigs.getCourtesyAnalogMessageContent()).thenReturn("ciao, attiva piattaforma notifiche");
+
+        // Act
+        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
+    void testSubmitMessage_courtesyDigitalMessageContent() {
+        // Arrange
+        SendMessageRequestBody requestBody = new SendMessageRequestBody();
+        requestBody.setRecipientId("recipientId");
+        requestBody.setSenderDescription("senderDescription");
+        requestBody.setAssociatedPayment(true);
+        requestBody.setOriginId("originId");
+        requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
+        AccessToken accessToken = new AccessToken();
+        accessToken.setAccessToken("token");
+        InlineResponse200 response = new InlineResponse200();
+        response.setOutcome(Outcome.OK);
+
+        when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
+        when(emdClient.submitMessage(any(SendMessageRequest.class),any(String.class),any(String.class))).thenReturn(Mono.just(response));
+        when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
+        when(pnEmdIntegrationConfigs.getCourtesyDigitalMessageContent()).thenReturn("ciao, attiva piattaforma notifiche");
+
+        // Act
+        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectNext(response)
+                .verifyComplete();
+    }
+
+    @Test
     void testSubmitMessageError() {
         // Arrange
         SendMessageRequestBody requestBody = new SendMessageRequestBody();
