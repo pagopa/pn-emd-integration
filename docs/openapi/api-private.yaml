@@ -269,12 +269,19 @@ components:
         associatedPayment:
           description: The notification has an associated payment
           type: boolean
+        deliveryMode:
+          type: string
+          description: Notification delivery mode
+          enum:
+            - DIGITAL
+            - ANALOG
       example:
         internalRecipientId: "5b334d4a-0gt7-24ac-9c7b-354e2d44w5tr"
         recipientId: "RSSMRA85T10A562S"
         senderDescription: "Comune di Milano"
         originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
         associatedPayment: true
+        deliveryMode: "ANALOG"
         
     SendMessageResponse:
       type: object
