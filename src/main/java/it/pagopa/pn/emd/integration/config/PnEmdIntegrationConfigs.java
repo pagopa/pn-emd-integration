@@ -26,7 +26,8 @@ public class PnEmdIntegrationConfigs {
     private CacheConfigs redisCache;
     private Duration retrievalPayloadCacheTtl;
 
-    private String courtesyMessageContent;
+    private String courtesyAnalogMessageContent;
+    private String courtesyDigitalMessageContent;
 
     @Data
     public static class CacheConfigs {

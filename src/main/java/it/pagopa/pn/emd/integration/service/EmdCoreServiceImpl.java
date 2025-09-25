@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @ConditionalOnProperty(
@@ -50,7 +51,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
         return SendMessageRequest.builder()
                 .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
                 .recipientId(request.getRecipientId())
-                .content(pnEmdIntegrationConfigs.getCourtesyMessageContent())
+                .content(getContentFromDeliveryMode(request))
                 .triggerDateTime(Instant.now())
                 .senderDescription(request.getSenderDescription())
                 .associatedPayment(request.getAssociatedPayment())
@@ -58,6 +59,14 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                 .originId(request.getOriginId())
                 .channel(SendMessageRequest.ChannelEnum.SEND)
                 .build();
+    }
+
+    private String getContentFromDeliveryMode(SendMessageRequestBody request) {
+    //Per garantire la retrocompatibilità, se il valore di deliveryMode è null, il contenuto da generare dovrà essere quello ANALOGICO.
+        SendMessageRequestBody.DeliveryModeEnum deliveryMode = request.getDeliveryMode();
+        return (Objects.isNull(deliveryMode) || deliveryMode.equals(SendMessageRequestBody.DeliveryModeEnum.ANALOG))
+                ? pnEmdIntegrationConfigs.getCourtesyAnalogMessageContent()
+                : pnEmdIntegrationConfigs.getCourtesyDigitalMessageContent();
     }
 
     public Mono<RetrievalPayload> getTokenRetrievalPayload(String retrievalId) {
