@@ -51,11 +51,25 @@ class EmdCoreServiceDisabledTest {
         String retrievalId = "retrievalId";
         String noticeCode = "noticeCode";
         String paTaxId = "paTaxId";
+        Integer amount = 1000;
 
-        Mono<PaymentUrlResponse> result = emdCoreServiceDisabled.getPaymentUrl(retrievalId, noticeCode, paTaxId);
+        Mono<PaymentUrlResponse> result = emdCoreServiceDisabled.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount);
 
         StepVerifier.create(result)
                 .expectError(PnEmdIntegrationException.class)
                 .verify();
+    }
+
+    @Test
+    void getPaymentUrlServiceDisabledWithoutAmount() {
+        String retrievalId = "retrievalId";
+        String noticeCode = "noticeCode";
+        String paTaxId = "paTaxId";
+
+        Mono<PaymentUrlResponse> result = emdCoreServiceDisabled.getPaymentUrl(retrievalId, noticeCode, paTaxId, null);
+
+        StepVerifier.create(result)
+                    .expectError(PnEmdIntegrationException.class)
+                    .verify();
     }
 }

@@ -48,8 +48,8 @@ public class EmdCoreServiceDisabled implements EmdCoreService {
     }
 
     @Override
-    public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId) {
-        log.info("[Service disabled] - Start getPaymentUrl for retrievalId: {}, noticeCode: {}, paTaxId: {}", retrievalId, noticeCode, paTaxId);
+    public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, Integer amount) {
+        log.info("[Service disabled] - Start getPaymentUrl for retrievalId: {}, noticeCode: {}, paTaxId: {}, amount: {}", retrievalId, noticeCode, paTaxId, amount);
         return Mono.error(new PnEmdIntegrationException(
                 SERVICE_DISABLED_MESSAGE,
                 PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SERVICE_DISABLED_ERROR
