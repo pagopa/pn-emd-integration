@@ -10,6 +10,6 @@ public interface EmdCoreService {
     Mono<InlineResponse200> submitMessage(SendMessageRequestBody request);
     Mono<RetrievalPayload> getTokenRetrievalPayload(String retrievalId);
     Mono<RetrievalPayload> getEmdRetrievalPayload(String retrievalId);
-    Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId);
+    Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, Integer amount);
 
 }
