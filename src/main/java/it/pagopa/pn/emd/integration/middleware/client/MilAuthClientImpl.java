@@ -23,7 +23,7 @@ public class MilAuthClientImpl implements MilAuthClient {
 
     @Override
     public Mono<AccessToken> getAccessTokens(AccessTokenRequestDto accessTokenRequestDto) {
-        log.logInvokingExternalService(CLIENT_NAME, "getAccessTokens");
+        log.logInvokingExternalDownstreamService(CLIENT_NAME, "getAccessTokens");
         return tokenApi.getAccessTokens(
                 GRANT_TYPE,
                 UUID.fromString(accessTokenRequestDto.getClientId()),
