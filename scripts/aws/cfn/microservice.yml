@@ -39,6 +39,10 @@ Parameters:
     Type: String
     Description: 'subnets ids comma separated list. Where to deploy the microservice'
 
+  VpcCidr:
+    Type: String
+    Description: 'CIDR of the VPC where the microservice is deployed'
+
   VpcEgressSubnetsIds:
     Type: String
     Description: subnets where to install PN-CORE
@@ -268,6 +272,7 @@ Resources:
         LoadBalancerListenerArn: !Ref ApplicationLoadBalancerListenerArn
         LoadbalancerRulePriority: !Ref MicroserviceNumber
         CloudwatchLogKinesisStreamArn: !Ref LogsKinesisSourceStreamArn
+        MicroserviceVpcCidr: !Ref VpcCidr
         EcsLogGroup: !Ref EcsLogGroup
         LogAlarmStrategyV1: !Ref LogAlarmStrategy
         TaskRoleManagedPolicyArn: !Ref EmdIntegrationMicroserviceTaskManagedPolicy
