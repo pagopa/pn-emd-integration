@@ -4,8 +4,8 @@ import io.micrometer.core.instrument.util.IOUtils;
 import it.pagopa.pn.commons.conf.SharedAutoConfiguration;
 import it.pagopa.pn.emd.integration.cache.RedisMode;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
+import lombok.CustomLog;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -21,7 +21,7 @@ import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionC
 
 @Configuration
 @ConfigurationProperties( prefix = "pn.emd-integration")
-@Slf4j
+@CustomLog
 @Data
 @Import({SharedAutoConfiguration.class})
 public class PnEmdIntegrationConfigs {
