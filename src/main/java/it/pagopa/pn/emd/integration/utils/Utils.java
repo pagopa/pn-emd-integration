@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_ERROR_CODE_BADCONFIGURATION_MISSING_TEMPLATE;
+import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_ERROR_CODE_BAD_CONFIGURATION_MISSING_TEMPLATE;
 
 @CustomLog
 public class Utils {
@@ -37,7 +37,7 @@ public class Utils {
             return IOUtils.toString(in, StandardCharsets.UTF_8);
         } catch (Exception e) {
             log.error("cannot load message from resources", e);
-            throw new PnEmdIntegrationException("cannot load template ", PN_EMD_INTEGRATION_ERROR_CODE_BADCONFIGURATION_MISSING_TEMPLATE);
+            throw new PnEmdIntegrationException("cannot load template ", PN_EMD_INTEGRATION_ERROR_CODE_BAD_CONFIGURATION_MISSING_TEMPLATE);
         }
     }
 

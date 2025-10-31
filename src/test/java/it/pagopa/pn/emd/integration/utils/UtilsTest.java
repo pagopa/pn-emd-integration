@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_ERROR_CODE_BADCONFIGURATION_MISSING_TEMPLATE;
+import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_ERROR_CODE_BAD_CONFIGURATION_MISSING_TEMPLATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -28,7 +28,7 @@ class UtilsTest {
     @Test
     void fetchTemplate_TestOk() {
         PnEmdIntegrationException ex = Assertions.assertThrows(PnEmdIntegrationException.class, () -> Utils.fetchTemplate("NON_EXISTENT_TEMPLATE"));
-        assertEquals(PN_EMD_INTEGRATION_ERROR_CODE_BADCONFIGURATION_MISSING_TEMPLATE, ex.getCode());
+        assertEquals(PN_EMD_INTEGRATION_ERROR_CODE_BAD_CONFIGURATION_MISSING_TEMPLATE, ex.getCode());
     }
 
     @Test
