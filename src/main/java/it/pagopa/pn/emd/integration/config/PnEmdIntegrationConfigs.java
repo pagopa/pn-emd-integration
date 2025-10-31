@@ -1,23 +1,17 @@
 package it.pagopa.pn.emd.integration.config;
 
-import io.micrometer.core.instrument.util.IOUtils;
 import it.pagopa.pn.commons.conf.SharedAutoConfiguration;
 import it.pagopa.pn.emd.integration.cache.RedisMode;
-import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import lombok.CustomLog;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 
-import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_ERROR_CODE_BADCONFIGURATION_MISSING_TEMPLATE;
+import static it.pagopa.pn.emd.integration.utils.Utils.fetchTemplate;
 
 @Configuration
 @ConfigurationProperties( prefix = "pn.emd-integration")
@@ -62,23 +56,11 @@ public class PnEmdIntegrationConfigs {
     @PostConstruct
     public void init() {
         this.msgsTemplate = new MessagesTemplate();
-        this.msgsTemplate.contentAnalogMsg = fetchMessage("content_analog_message.md");
-        this.msgsTemplate.contentDigitalMsg = fetchMessage("content_digital_message.md");
-        this.msgsTemplate.headerAnalogMsg = fetchMessage("header_analog_message.md");
-        this.msgsTemplate.headerDigitalMsg = fetchMessage("header_digital_message.md");
-    }
-
-    private String fetchMessage(String filename) {
-        try( InputStream in = getInputStreamFromResource(filename)) {
-            return IOUtils.toString(in, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            log.error("cannot load message from resources", e);
-            throw new PnEmdIntegrationException("cannot load template ", PN_EMD_INTEGRATION_ERROR_CODE_BADCONFIGURATION_MISSING_TEMPLATE);
-        }
-    }
-
-    private InputStream getInputStreamFromResource(String filename) throws IOException {
-        return ResourceUtils.getURL("classpath:message_templates/" + filename).openStream();
+        this.msgsTemplate.contentAnalogMsg = fetchTemplate("message_templates/content_analog_message.md");
+        this.msgsTemplate.contentDigitalMsg = fetchTemplate("message_templates/content_digital_message.md");
+        this.msgsTemplate.headerAnalogMsg = fetchTemplate("message_templates/header_analog_message.md");
+        this.msgsTemplate.headerDigitalMsg = fetchTemplate("message_templates/header_digital_message.md");
+        log.info("Messages templates loaded successfully.");
     }
 
 }
