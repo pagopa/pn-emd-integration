@@ -3,6 +3,7 @@ package it.pagopa.pn.emd.integration.service;
 
 import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
@@ -16,12 +17,17 @@ import it.pagopa.pn.emd.integration.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.UUID;
 
 @ConditionalOnProperty(
@@ -33,8 +39,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class EmdCoreServiceImpl implements EmdCoreService {
-
     private final EmdClientImpl emdClient;
+    public record Message (String header, String content) {}
     private final AccessTokenExpiringMap accessTokenExpiringMap;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
     private final ReactiveRedisService<RetrievalPayload> redisService;
@@ -47,18 +53,53 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     }
 
     private SendMessageRequest sendMessageRequestMap(SendMessageRequestBody request) {
-        return SendMessageRequest.builder()
-                .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
-                .recipientId(request.getRecipientId())
-                .content(pnEmdIntegrationConfigs.getCourtesyMessageContent())
-                .triggerDateTime(Instant.now())
-                .senderDescription(request.getSenderDescription())
-                .associatedPayment(request.getAssociatedPayment())
-                .messageUrl(URI.create(pnEmdIntegrationConfigs.getOriginalMessageUrl()))
-                .originId(request.getOriginId())
-                .channel(SendMessageRequest.ChannelEnum.SEND)
-                .build();
+        boolean isDigital = request.getDeliveryMode().equals(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
+        Message newMessage = createMessages(request, pnEmdIntegrationConfigs.getMsgsTemplate(), isDigital);
+
+        SendMessageRequest.SendMessageRequestBuilder sendMessageRequest =
+                SendMessageRequest.builder()
+                                  .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
+                                  .recipientId(request.getRecipientId())
+                                  .triggerDateTime(Instant.now())
+                                  .senderDescription(request.getSenderDescription())
+                                  .associatedPayment(request.getAssociatedPayment())
+                                  .messageUrl(URI.create(pnEmdIntegrationConfigs.getOriginalMessageUrl()))
+                                  .originId(request.getOriginId())
+                                  .channel(SendMessageRequest.ChannelEnum.SEND)
+                                  .title(newMessage.header())
+                                  .content(newMessage.content());
+
+        return (!isDigital)
+                ? sendMessageRequest.analogSchedulingDate(request.getSchedulingAnalogDate().toInstant()).build()
+                : sendMessageRequest.build();
+
     }
+
+    public Message createMessages(SendMessageRequestBody request, PnEmdIntegrationConfigs.MessagesTemplate msgTemplate, boolean isDigital) {
+
+
+        if (!isDigital && request.getSchedulingAnalogDate() == null) {
+            throw new PnEmdIntegrationException(
+                    "Missing schedulingAnalogDate for analog delivery mode",
+                    "Field 'schedulingAnalogDate' must be provided when sending analog messages",
+                    PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_INVALID_REQUEST_MISSING_SCHEDULING_ANALOG_DATE,
+                    "schedulingAnalogDate"
+            );}
+
+        return new Message(
+                isDigital ? msgTemplate.getHeaderDigitalMsg() : msgTemplate.getHeaderAnalogMsg(),
+                isDigital ? msgTemplate.getContentDigitalMsg() : buildAnalogContent( msgTemplate.getContentAnalogMsg(), request.getSchedulingAnalogDate().toInstant()));
+    }
+
+    private String buildAnalogContent(String template, Instant schedulingAnalogDate) {
+
+        String formattedDateItaly = LocalDateTime
+                .ofInstant(schedulingAnalogDate, ZoneId.of("Europe/Rome"))
+                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ITALIAN));
+
+        return template.replace("{{schedulingAnalogDate}}", formattedDateItaly);
+    }
+
 
     public Mono<RetrievalPayload> getTokenRetrievalPayload(String retrievalId) {
         log.info("Start getTokenRetrievalPayload for retrievalId: {}", retrievalId);
