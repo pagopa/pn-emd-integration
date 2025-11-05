@@ -13,11 +13,10 @@ import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlRes
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
-import it.pagopa.pn.emd.integration.utils.Utils;
+import it.pagopa.pn.emd.integration.utils.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -26,8 +25,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.UUID;
 
 @ConditionalOnProperty(
@@ -55,7 +52,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     private SendMessageRequest sendMessageRequestMap(SendMessageRequestBody request) {
         boolean isDigital = request.getDeliveryMode().equals(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
         Message newMessage = createMessages(request, pnEmdIntegrationConfigs.getMsgsTemplate(), isDigital);
-
+        log.info("created newMessage with header: {} and content length: {}", newMessage.header(), newMessage.content());
         SendMessageRequest.SendMessageRequestBuilder sendMessageRequest =
                 SendMessageRequest.builder()
                                   .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
@@ -75,8 +72,9 @@ public class EmdCoreServiceImpl implements EmdCoreService {
 
     }
 
-    public Message createMessages(SendMessageRequestBody request, PnEmdIntegrationConfigs.MessagesTemplate msgTemplate, boolean isDigital) {
+    private Message createMessages(SendMessageRequestBody request, PnEmdIntegrationConfigs.MessagesTemplate msgTemplate, boolean isDigital) {
 
+        log.info("Creating messages. deliveryMode: {}", request.getDeliveryMode());
 
         if (!isDigital && request.getSchedulingAnalogDate() == null) {
             throw new PnEmdIntegrationException(
@@ -92,14 +90,14 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     }
 
     private String buildAnalogContent(String template, Instant schedulingAnalogDate) {
+    log.info("Building analog content with schedulingAnalogDate: {}", schedulingAnalogDate);
+        String localDateTimeItaly = LocalDateTime.ofInstant(schedulingAnalogDate, ZoneId.of("Europe/Rome")).format(PnEmdIntegrationCostants.PROBABLE_SCHEDULING_ANALOG_DATE_DATE_FORMATTER);
+        String[] schedulingDateWithHourItaly = localDateTimeItaly.split(" ");
 
-        String formattedDateItaly = LocalDateTime
-                .ofInstant(schedulingAnalogDate, ZoneId.of("Europe/Rome"))
-                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ITALIAN));
-
-        return template.replace("{{schedulingAnalogDate}}", formattedDateItaly);
+        return template
+                .replace(PnEmdIntegrationCostants.DATE_PLACEHOLDER, schedulingDateWithHourItaly[0])
+                .replace(PnEmdIntegrationCostants.TIME_PLACEHOLDER, schedulingDateWithHourItaly[1]);
     }
-
 
     public Mono<RetrievalPayload> getTokenRetrievalPayload(String retrievalId) {
         log.info("Start getTokenRetrievalPayload for retrievalId: {}", retrievalId);
