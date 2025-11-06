@@ -45,7 +45,7 @@ paths:
       operationId: submitMessage
       description: Submit a message
       security:
-        - bearerAuth: [ ]
+        - oAuth2: [ ]
       tags: [ submit ]
       requestBody:
         $ref: '#/components/requestBodies/SendMessage'
