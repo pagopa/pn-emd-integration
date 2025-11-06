@@ -52,7 +52,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     private SendMessageRequest sendMessageRequestMap(SendMessageRequestBody request) {
         boolean isDigital = request.getDeliveryMode().equals(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
         Message newMessage = createMessages(request, pnEmdIntegrationConfigs.getMsgsTemplate(), isDigital);
-        log.info("created newMessage with header: {} and content length: {}", newMessage.header(), newMessage.content());
+        log.debug("created new {} Message", request.getDeliveryMode());
         SendMessageRequest.SendMessageRequestBuilder sendMessageRequest =
                 SendMessageRequest.builder()
                                   .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
@@ -64,7 +64,10 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                                   .originId(request.getOriginId())
                                   .channel(SendMessageRequest.ChannelEnum.SEND)
                                   .title(newMessage.header())
-                                  .content(newMessage.content());
+                                  .content(newMessage.content())
+                                  .workflowType(isDigital
+                                          ? SendMessageRequest.WorkflowTypeEnum.DIGITAL
+                                          : SendMessageRequest.WorkflowTypeEnum.ANALOG);
 
         return (!isDigital)
                 ? sendMessageRequest.analogSchedulingDate(request.getSchedulingAnalogDate().toInstant()).build()
@@ -74,7 +77,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
 
     private Message createMessages(SendMessageRequestBody request, PnEmdIntegrationConfigs.MessagesTemplate msgTemplate, boolean isDigital) {
 
-        log.info("Creating messages. deliveryMode: {}", request.getDeliveryMode());
+        log.debug("Creating messages. deliveryMode: {}", request.getDeliveryMode());
 
         if (!isDigital && request.getSchedulingAnalogDate() == null) {
             throw new PnEmdIntegrationException(
@@ -90,7 +93,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     }
 
     private String buildAnalogContent(String template, Instant schedulingAnalogDate) {
-    log.info("Building analog content with schedulingAnalogDate: {}", schedulingAnalogDate);
+    log.debug("Building analog content with schedulingAnalogDate: {}", schedulingAnalogDate);
         String localDateTimeItaly = LocalDateTime.ofInstant(schedulingAnalogDate, ZoneId.of("Europe/Rome")).format(PnEmdIntegrationCostants.PROBABLE_SCHEDULING_ANALOG_DATE_DATE_FORMATTER);
         String[] schedulingDateWithHourItaly = localDateTimeItaly.split(" ");
 
