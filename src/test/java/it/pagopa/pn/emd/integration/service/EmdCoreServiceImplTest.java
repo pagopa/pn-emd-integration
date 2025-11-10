@@ -101,10 +101,14 @@ class EmdCoreServiceImplTest {
     @Test
     void getTokenRetrievalPayloadReturnsPayload() {
         String retrievalId = "retrievalId";
+        Boolean isPaymentEnabled = true;
+
         RetrievalPayload expectedPayload = new RetrievalPayload();
         expectedPayload.setRetrievalId(retrievalId);
+        expectedPayload.setIsPaymentEnabled(isPaymentEnabled);
         RetrievalResponseDTO responseDTO = new RetrievalResponseDTO();
         responseDTO.setRetrievalId(retrievalId);
+        responseDTO.setIsPaymentEnabled(isPaymentEnabled);
 
         mockAccessTokenExpiringMap();
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));
@@ -114,7 +118,7 @@ class EmdCoreServiceImplTest {
         Mono<RetrievalPayload> result = emdCoreServiceImpl.getTokenRetrievalPayload(retrievalId);
 
         StepVerifier.create(result)
-                .expectNextMatches(payload -> payload.getRetrievalId().equals(retrievalId))
+                .expectNextMatches(payload -> payload.getRetrievalId().equals(retrievalId) && payload.getIsPaymentEnabled().equals(true) )
                 .verifyComplete();
     }
 

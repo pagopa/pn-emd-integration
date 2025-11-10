@@ -111,6 +111,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                 .deeplink(request.getDeeplink())
                 .paymentButton(request.getPaymentButton())
                 .originId(request.getOriginId())
+                .isPaymentEnabled(request.getIsPaymentEnabled())
                 .build();
     }
 }
