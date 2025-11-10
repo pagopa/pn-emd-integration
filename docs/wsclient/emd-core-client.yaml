@@ -359,7 +359,6 @@ components:
           description: "ENG: Flag indicating whether the TPP is integrated with the payment system. - IT: Flag che indica se il TPP è integrato con il sistema di pagamento."
           example: true
 
-
     Error:
       description: Error details
       type: object
