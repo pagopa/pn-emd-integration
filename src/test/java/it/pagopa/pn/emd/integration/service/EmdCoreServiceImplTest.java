@@ -122,6 +122,7 @@ class EmdCoreServiceImplTest {
                 .verifyComplete();
     }
 
+
     @Test
     void getTokenRetrievalPayloadHandlesNotFound() {
         String retrievalId = "retrievalId";

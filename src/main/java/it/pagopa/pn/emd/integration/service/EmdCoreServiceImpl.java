@@ -104,6 +104,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                 .map(this::mapToRetrievalPayload);
     }
 
+
     private RetrievalPayload mapToRetrievalPayload(RetrievalResponseDTO request) {
         return RetrievalPayload.builder()
                 .retrievalId(request.getRetrievalId())
