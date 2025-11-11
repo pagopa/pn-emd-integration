@@ -37,7 +37,7 @@ import java.util.UUID;
 @Slf4j
 public class EmdCoreServiceImpl implements EmdCoreService {
     private final EmdClientImpl emdClient;
-    public record Message (String header, String content) {}
+    public record Message (String header, String content, String fileHeader, String fileContent) {}
     private final AccessTokenExpiringMap accessTokenExpiringMap;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
     private final ReactiveRedisService<RetrievalPayload> redisService;
@@ -51,8 +51,8 @@ public class EmdCoreServiceImpl implements EmdCoreService {
 
     private SendMessageRequest sendMessageRequestMap(SendMessageRequestBody request) {
         boolean isDigital = request.getDeliveryMode().equals(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
-        Message newMessage = createMessages(request, pnEmdIntegrationConfigs.getMsgsTemplate(), isDigital);
-        log.debug("created new {} Message", request.getDeliveryMode());
+            PnEmdIntegrationConfigs.CourtesyMessageTemplate newMessage = createMessages(request, isDigital);
+        log.info("created new Message with deliveryMode: '{}', Header File: '{}', Content File: '{}'", request.getDeliveryMode(), newMessage.getFileNameHeader(),  newMessage.getFileNameContent() );
         SendMessageRequest.SendMessageRequestBuilder sendMessageRequest =
                 SendMessageRequest.builder()
                                   .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
@@ -63,8 +63,10 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                                   .messageUrl(URI.create(pnEmdIntegrationConfigs.getOriginalMessageUrl()))
                                   .originId(request.getOriginId())
                                   .channel(SendMessageRequest.ChannelEnum.SEND)
-                                  .title(newMessage.header())
-                                  .content(newMessage.content())
+                                  .title(newMessage.getHeader())
+                                  .content(!isDigital
+                                                   ? buildAnalogContent(newMessage.getContent(), request.getSchedulingAnalogDate().toInstant())
+                                                   : newMessage.getContent())
                                   .workflowType(isDigital
                                           ? SendMessageRequest.WorkflowTypeEnum.DIGITAL
                                           : SendMessageRequest.WorkflowTypeEnum.ANALOG);
@@ -75,21 +77,27 @@ public class EmdCoreServiceImpl implements EmdCoreService {
 
     }
 
-    private Message createMessages(SendMessageRequestBody request, PnEmdIntegrationConfigs.MessagesTemplate msgTemplate, boolean isDigital) {
+    private PnEmdIntegrationConfigs.CourtesyMessageTemplate getTemplate(boolean isDigital, SendMessageRequestBody request) {
+            return isDigital
+                ? pnEmdIntegrationConfigs.getMsgsTemplates().getDigitalMsg()
+                : pnEmdIntegrationConfigs.getMsgsTemplates().getAnalogMsg();
 
-        log.debug("Creating messages. deliveryMode: {}", request.getDeliveryMode());
+    }
+
+    private PnEmdIntegrationConfigs.CourtesyMessageTemplate createMessages(SendMessageRequestBody request, boolean isDigital) {
+
 
         if (!isDigital && request.getSchedulingAnalogDate() == null) {
             throw new PnEmdIntegrationException(
                     "Missing schedulingAnalogDate for analog delivery mode",
-                    "Field 'schedulingAnalogDate' must be provided when sending analog messages",
+                    "Field 'schedulingAnalogDate' must be provided",
                     PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_INVALID_REQUEST_MISSING_SCHEDULING_ANALOG_DATE,
                     "schedulingAnalogDate"
-            );}
+            );
+        }
 
-        return new Message(
-                isDigital ? msgTemplate.getHeaderDigitalMsg() : msgTemplate.getHeaderAnalogMsg(),
-                isDigital ? msgTemplate.getContentDigitalMsg() : buildAnalogContent( msgTemplate.getContentAnalogMsg(), request.getSchedulingAnalogDate().toInstant()));
+
+        return getTemplate(isDigital, request);
     }
 
     private String buildAnalogContent(String template, Instant schedulingAnalogDate) {

@@ -33,7 +33,7 @@ public class PnEmdIntegrationConfigs {
 
     private String courtesyMessageContent;
 
-    private MessagesTemplate msgsTemplate;
+    private Templates msgsTemplates;
 
     @Data
     public static class CacheConfigs {
@@ -46,21 +46,53 @@ public class PnEmdIntegrationConfigs {
     }
 
     @Data
-    public static class MessagesTemplate {
-        private String contentAnalogMsg;
-        private String contentDigitalMsg;
-        private String headerAnalogMsg;
-        private String headerDigitalMsg;
+    public static class CourtesyMessageTemplate {
+        private String fileNameHeader;
+        private String fileNameContent;
+        private String header;
+        private String content;
+    }
+
+
+    @Data
+    public static class Templates {
+
+        private CourtesyMessageTemplate analogMsg;
+        private CourtesyMessageTemplate digitalMsg;
+
+        private String contentAnalogFile = "content_analog_message.md";
+        private String contentDigitalFile = "content_digital_message.md";
+        private String headerAnalogFile = "header_analog_message.md";
+        private String headerDigitalFile = "header_digital_message.md";
+
     }
 
     @PostConstruct
     public void init() {
-        this.msgsTemplate = new MessagesTemplate();
-        this.msgsTemplate.contentAnalogMsg = fetchTemplate("message_templates/content_analog_message.md");
-        this.msgsTemplate.contentDigitalMsg = fetchTemplate("message_templates/content_digital_message.md");
-        this.msgsTemplate.headerAnalogMsg = fetchTemplate("message_templates/header_analog_message.md");
-        this.msgsTemplate.headerDigitalMsg = fetchTemplate("message_templates/header_digital_message.md");
+        this.msgsTemplates = new Templates();
+
+        CourtesyMessageTemplate analog = new CourtesyMessageTemplate();
+        CourtesyMessageTemplate digital = new CourtesyMessageTemplate();
+
+        analog.setFileNameContent(this.msgsTemplates.getContentAnalogFile());
+        analog.setFileNameHeader(this.msgsTemplates.getHeaderAnalogFile());
+        analog.setContent(fetchTemplate("message_templates/" + analog.getFileNameContent()));
+        analog.setHeader(fetchTemplate("message_templates/" + analog.getFileNameHeader()));
+
+        digital.setFileNameContent(this.msgsTemplates.getContentDigitalFile());
+        digital.setFileNameHeader(this.msgsTemplates.getHeaderDigitalFile());
+        digital.setContent(fetchTemplate("message_templates/" + digital.getFileNameContent()));
+        digital.setHeader(fetchTemplate("message_templates/" + digital.getFileNameHeader()));
+
+
+        this.msgsTemplates.setAnalogMsg(analog);
+        this.msgsTemplates.setDigitalMsg(digital);
+
         log.info("Messages templates loaded successfully.");
+
     }
+
+
+
 
 }

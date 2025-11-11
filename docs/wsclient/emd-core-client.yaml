@@ -45,7 +45,7 @@ paths:
       operationId: submitMessage
       description: Submit a message
       security:
-        - oAuth2: [ ]
+        - bearerAuth: [ ]
       tags: [ submit ]
       requestBody:
         $ref: '#/components/requestBodies/SendMessage'
@@ -657,13 +657,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    oAuth2:
-      description: |
-        A bearer token in the format of a JWS and conforms to the specifications
-        included in RFC8725.
-      type: oauth2
-      flows:
-        clientCredentials:
-          tokenUrl: /token
-          refreshUrl: /token
-          scopes: { }

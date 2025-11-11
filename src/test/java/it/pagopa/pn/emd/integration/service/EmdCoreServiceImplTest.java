@@ -44,19 +44,30 @@ class EmdCoreServiceImplTest {
     @InjectMocks
     private EmdCoreServiceImpl emdCoreServiceImpl;
 
-    private PnEmdIntegrationConfigs.MessagesTemplate msgTemplate;
+    PnEmdIntegrationConfigs.CourtesyMessageTemplate digitalMsg = new PnEmdIntegrationConfigs.CourtesyMessageTemplate();
+    PnEmdIntegrationConfigs.CourtesyMessageTemplate analoglMsg = new PnEmdIntegrationConfigs.CourtesyMessageTemplate();
+
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        msgTemplate = new PnEmdIntegrationConfigs.MessagesTemplate();
-        msgTemplate.setHeaderDigitalMsg("Header Digital");
-        msgTemplate.setContentDigitalMsg("Contenuto digitale {{schedulingAnalogDate}}");
-        msgTemplate.setHeaderAnalogMsg("Header Analog");
-        msgTemplate.setContentAnalogMsg("Contenuto analogico {{schedulingAnalogDate}}");
-        when(pnEmdIntegrationConfigs.getMsgsTemplate()).thenReturn(msgTemplate);
+        digitalMsg.setHeader("Header Digital");
+        digitalMsg.setContent("Contenuto digitale");
+        digitalMsg.setFileNameContent("FileContentDigital.md");
+        digitalMsg.setFileNameHeader("FileHeaderDigital.md");
+        analoglMsg.setHeader("Header Analog");
+        analoglMsg.setContent("Contenuto analogico {{schedulingAnalogDate}}");
+        analoglMsg.setFileNameContent("FileContentAnalog.md");
+        analoglMsg.setFileNameHeader("FileHeaderAnalog.md");
 
+
+        PnEmdIntegrationConfigs.Templates messagesTemplates = new PnEmdIntegrationConfigs.Templates();
+        messagesTemplates.setAnalogMsg(analoglMsg);
+        messagesTemplates.setDigitalMsg(digitalMsg);
+
+        // 🧩 Mock: quando il service chiede i templates, restituisci il tuo oggetto
+        when(pnEmdIntegrationConfigs.getMsgsTemplates()).thenReturn(messagesTemplates);
     }
 
     @Test
@@ -102,7 +113,6 @@ class EmdCoreServiceImplTest {
         response.setOutcome(Outcome.OK);
 
 
-        when(pnEmdIntegrationConfigs.getMsgsTemplate()).thenReturn(msgTemplate);
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
         when(emdClient.submitMessage(any(SendMessageRequest.class),any(String.class),any(String.class))).thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
@@ -130,7 +140,6 @@ class EmdCoreServiceImplTest {
         response.setOutcome(Outcome.OK);
 
 
-        when(pnEmdIntegrationConfigs.getMsgsTemplate()).thenReturn(msgTemplate);
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
         when(emdClient.submitMessage(any(SendMessageRequest.class),any(String.class),any(String.class))).thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
