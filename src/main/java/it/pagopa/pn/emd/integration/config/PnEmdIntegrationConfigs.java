@@ -7,10 +7,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
 import javax.annotation.PostConstruct;
 import java.time.Duration;
-
+import static it.pagopa.pn.emd.integration.utils.PnEmdIntegrationCostants.MESSAGE_TEMPLATES_BASE_PATH;
 import static it.pagopa.pn.emd.integration.utils.Utils.fetchTemplate;
 
 @Configuration
@@ -47,10 +46,10 @@ public class PnEmdIntegrationConfigs {
 
     @Data
     public static class CourtesyMessageTemplate {
-        private String fileNameHeader;
-        private String fileNameContent;
         private String header;
+        private String headerFileName;
         private String content;
+        private String contentFileName;
     }
 
 
@@ -59,11 +58,6 @@ public class PnEmdIntegrationConfigs {
 
         private CourtesyMessageTemplate analogMsg;
         private CourtesyMessageTemplate digitalMsg;
-
-        private String contentAnalogFile = "content_analog_message.md";
-        private String contentDigitalFile = "content_digital_message.md";
-        private String headerAnalogFile = "header_analog_message.md";
-        private String headerDigitalFile = "header_digital_message.md";
 
     }
 
@@ -74,25 +68,24 @@ public class PnEmdIntegrationConfigs {
         CourtesyMessageTemplate analog = new CourtesyMessageTemplate();
         CourtesyMessageTemplate digital = new CourtesyMessageTemplate();
 
-        analog.setFileNameContent(this.msgsTemplates.getContentAnalogFile());
-        analog.setFileNameHeader(this.msgsTemplates.getHeaderAnalogFile());
-        analog.setContent(fetchTemplate("message_templates/" + analog.getFileNameContent()));
-        analog.setHeader(fetchTemplate("message_templates/" + analog.getFileNameHeader()));
+        //initialize analog message template
+        analog.setHeaderFileName("header_analog_message.md");
+        analog.setContentFileName("content_analog_message.md");
+        analog.setHeader(fetchTemplate(MESSAGE_TEMPLATES_BASE_PATH + analog.getHeaderFileName()));
+        analog.setContent(fetchTemplate(MESSAGE_TEMPLATES_BASE_PATH + analog.getContentFileName()));
 
-        digital.setFileNameContent(this.msgsTemplates.getContentDigitalFile());
-        digital.setFileNameHeader(this.msgsTemplates.getHeaderDigitalFile());
-        digital.setContent(fetchTemplate("message_templates/" + digital.getFileNameContent()));
-        digital.setHeader(fetchTemplate("message_templates/" + digital.getFileNameHeader()));
+        //initialize digital message template
+        digital.setHeaderFileName("header_digital_message.md");
+        digital.setContentFileName("content_digital_message.md");
+        digital.setContent(fetchTemplate(MESSAGE_TEMPLATES_BASE_PATH + digital.getContentFileName()));
+        digital.setHeader(fetchTemplate(MESSAGE_TEMPLATES_BASE_PATH + digital.getContentFileName()));
 
-
+        //assign templates to msgsTemplates
         this.msgsTemplates.setAnalogMsg(analog);
         this.msgsTemplates.setDigitalMsg(digital);
 
         log.info("Messages templates loaded successfully.");
 
     }
-
-
-
 
 }

@@ -37,7 +37,6 @@ import java.util.UUID;
 @Slf4j
 public class EmdCoreServiceImpl implements EmdCoreService {
     private final EmdClientImpl emdClient;
-    public record Message (String header, String content, String fileHeader, String fileContent) {}
     private final AccessTokenExpiringMap accessTokenExpiringMap;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
     private final ReactiveRedisService<RetrievalPayload> redisService;
@@ -51,41 +50,50 @@ public class EmdCoreServiceImpl implements EmdCoreService {
 
     private SendMessageRequest sendMessageRequestMap(SendMessageRequestBody request) {
         boolean isDigital = request.getDeliveryMode().equals(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
-            PnEmdIntegrationConfigs.CourtesyMessageTemplate newMessage = createMessages(request, isDigital);
-        log.info("created new Message with deliveryMode: '{}', Header File: '{}', Content File: '{}'", request.getDeliveryMode(), newMessage.getFileNameHeader(),  newMessage.getFileNameContent() );
-        SendMessageRequest.SendMessageRequestBuilder sendMessageRequest =
-                SendMessageRequest.builder()
-                                  .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
-                                  .recipientId(request.getRecipientId())
-                                  .triggerDateTime(Instant.now())
-                                  .senderDescription(request.getSenderDescription())
-                                  .associatedPayment(request.getAssociatedPayment())
-                                  .messageUrl(URI.create(pnEmdIntegrationConfigs.getOriginalMessageUrl()))
-                                  .originId(request.getOriginId())
-                                  .channel(SendMessageRequest.ChannelEnum.SEND)
-                                  .title(newMessage.getHeader())
-                                  .content(!isDigital
-                                                   ? buildAnalogContent(newMessage.getContent(), request.getSchedulingAnalogDate().toInstant())
-                                                   : newMessage.getContent())
-                                  .workflowType(isDigital
-                                          ? SendMessageRequest.WorkflowTypeEnum.DIGITAL
-                                          : SendMessageRequest.WorkflowTypeEnum.ANALOG);
+        PnEmdIntegrationConfigs.CourtesyMessageTemplate messageTemplate = createMessages(request, isDigital);
 
-        return (!isDigital)
-                ? sendMessageRequest.analogSchedulingDate(request.getSchedulingAnalogDate().toInstant()).build()
-                : sendMessageRequest.build();
+        log.info("created new Message with deliveryMode: '{}', Header File: '{}', Content File: '{}'",
+                request.getDeliveryMode(), messageTemplate.getHeaderFileName(), messageTemplate.getContentFileName());
 
+        // Prepara il contenuto in base al tipo di delivery
+        String messageContent = isDigital
+                ? messageTemplate.getContent()
+                : buildAnalogContent(messageTemplate.getContent(), request.getSchedulingAnalogDate().toInstant());
+
+        // Prepara il workflow type
+        SendMessageRequest.WorkflowTypeEnum workflowType = isDigital
+                ? SendMessageRequest.WorkflowTypeEnum.DIGITAL
+                : SendMessageRequest.WorkflowTypeEnum.ANALOG;
+
+        // Costruisce il builder con i campi comuni
+        SendMessageRequest.SendMessageRequestBuilder builder = SendMessageRequest.builder()
+                .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
+                .recipientId(request.getRecipientId())
+                .triggerDateTime(Instant.now())
+                .senderDescription(request.getSenderDescription())
+                .associatedPayment(request.getAssociatedPayment())
+                .messageUrl(URI.create(pnEmdIntegrationConfigs.getOriginalMessageUrl()))
+                .originId(request.getOriginId())
+                .channel(SendMessageRequest.ChannelEnum.SEND)
+                .title(messageTemplate.getHeader())
+                .content(messageContent)
+                .workflowType(workflowType);
+
+        // Aggiunge la data di scheduling solo per messaggi analogici
+        if (!isDigital) {
+            builder.analogSchedulingDate(request.getSchedulingAnalogDate().toInstant());
+        }
+
+        return builder.build();
     }
 
-    private PnEmdIntegrationConfigs.CourtesyMessageTemplate getTemplate(boolean isDigital, SendMessageRequestBody request) {
+    private PnEmdIntegrationConfigs.CourtesyMessageTemplate getTemplate(boolean isDigital) {
             return isDigital
                 ? pnEmdIntegrationConfigs.getMsgsTemplates().getDigitalMsg()
                 : pnEmdIntegrationConfigs.getMsgsTemplates().getAnalogMsg();
-
     }
 
     private PnEmdIntegrationConfigs.CourtesyMessageTemplate createMessages(SendMessageRequestBody request, boolean isDigital) {
-
 
         if (!isDigital && request.getSchedulingAnalogDate() == null) {
             throw new PnEmdIntegrationException(
@@ -96,8 +104,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
             );
         }
 
-
-        return getTemplate(isDigital, request);
+        return getTemplate(isDigital);
     }
 
     private String buildAnalogContent(String template, Instant schedulingAnalogDate) {
