@@ -54,12 +54,12 @@ class EmdCoreServiceImplTest {
 
         digitalMsg.setHeader("Header Digital");
         digitalMsg.setContent("Contenuto digitale");
-        digitalMsg.setFileNameContent("FileContentDigital.md");
-        digitalMsg.setFileNameHeader("FileHeaderDigital.md");
+        digitalMsg.setContentFileName("FileContentDigital.md");
+        digitalMsg.setHeaderFileName("FileHeaderDigital.md");
         analoglMsg.setHeader("Header Analog");
         analoglMsg.setContent("Contenuto analogico {{schedulingAnalogDate}}");
-        analoglMsg.setFileNameContent("FileContentAnalog.md");
-        analoglMsg.setFileNameHeader("FileHeaderAnalog.md");
+        analoglMsg.setContentFileName("FileContentAnalog.md");
+        analoglMsg.setHeaderFileName("FileHeaderAnalog.md");
 
 
         PnEmdIntegrationConfigs.Templates messagesTemplates = new PnEmdIntegrationConfigs.Templates();
