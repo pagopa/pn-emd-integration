@@ -127,6 +127,7 @@ paths:
         - $ref: '#/components/parameters/retrievalId'
         - $ref: '#/components/parameters/noticeCode'
         - $ref: '#/components/parameters/paTaxId'
+        - $ref: '#/components/parameters/amount'
       responses:
         "200":
           description: Ok
@@ -184,7 +185,15 @@ components:
         maxLength: 11
         minLength: 11
         pattern: '^\d+$'
-    
+    amount:
+      name: amount
+      in: query
+      required: false
+      description: amount of payment in cents
+      example: 5000
+      schema:
+        type: integer
+
   # ========================================================
   # Schemas
   # ========================================================

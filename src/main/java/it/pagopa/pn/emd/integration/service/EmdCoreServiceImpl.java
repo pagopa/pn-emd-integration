@@ -131,14 +131,18 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                 .switchIfEmpty(Mono.defer(() -> getAccessTokenAndRetrievePayload(retrievalId)));
     }
 
-    public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId) {
-        log.info("getPaymentUrl for retrievalId: {}, noticeCode: {}, paTaxId: {}", retrievalId, noticeCode, paTaxId);
+    public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, Integer amount) {
+        log.info("getPaymentUrl for retrievalId: {}, noticeCode: {}, paTaxId: {}, amount: {}", retrievalId, noticeCode, paTaxId, amount);
+        return Mono.just(new PaymentUrlResponse(createPaymentUrl(retrievalId, noticeCode, paTaxId, amount)));
+    }
+
+    private String createPaymentUrl(String retrievalId, String noticeCode, String paTaxId, Integer amount) {
         String paymentUrl = String.format("%s?retrievalId=%s&fiscalCode=%s&noticeNumber=%s",
-                                          pnEmdIntegrationConfigs.getEmdPaymentEndpoint(),
-                                          retrievalId,
-                                          paTaxId,
-                                          noticeCode);
-        return Mono.just(new PaymentUrlResponse(paymentUrl));
+                pnEmdIntegrationConfigs.getEmdPaymentEndpoint(),
+                retrievalId,
+                paTaxId,
+                noticeCode);
+        return (amount!=null)?String.format("%s&amount=%s", paymentUrl, amount):paymentUrl;
     }
 
     private Mono<RetrievalPayload> getAccessTokenAndRetrievePayload(String retrievalId) {

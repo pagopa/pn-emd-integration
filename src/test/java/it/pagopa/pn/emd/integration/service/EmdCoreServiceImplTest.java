@@ -299,15 +299,32 @@ class EmdCoreServiceImplTest {
         String retrievalId = "retrievalId";
         String noticeCode = "noticeCode";
         String paTaxId = "paTaxId";
+        Integer amount = 1000;
         String emdPaymentEndpoint = "http://example.com/emd_endpoint";
 
         when(pnEmdIntegrationConfigs.getEmdPaymentEndpoint()).thenReturn(emdPaymentEndpoint);
 
-        Mono<PaymentUrlResponse> result = emdCoreServiceImpl.getPaymentUrl(retrievalId, noticeCode, paTaxId);
+        Mono<PaymentUrlResponse> result = emdCoreServiceImpl.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount);
 
         StepVerifier.create(result)
-                .expectNextMatches(response -> response.getPaymentUrl().equals("http://example.com/emd_endpoint?retrievalId=retrievalId&fiscalCode=paTaxId&noticeNumber=noticeCode"))
+                .expectNextMatches(response -> response.getPaymentUrl().equals("http://example.com/emd_endpoint?retrievalId=retrievalId&fiscalCode=paTaxId&noticeNumber=noticeCode&amount=1000"))
                 .verifyComplete();
+    }
+
+    @Test
+    void getPaymentUrlReturnsCorrectUrlWithoutAmount() {
+        String retrievalId = "retrievalId";
+        String noticeCode = "noticeCode";
+        String paTaxId = "paTaxId";
+        String emdPaymentEndpoint = "http://example.com/emd_endpoint";
+
+        when(pnEmdIntegrationConfigs.getEmdPaymentEndpoint()).thenReturn(emdPaymentEndpoint);
+
+        Mono<PaymentUrlResponse> result = emdCoreServiceImpl.getPaymentUrl(retrievalId, noticeCode, paTaxId, null);
+
+        StepVerifier.create(result)
+                    .expectNextMatches(response -> response.getPaymentUrl().equals("http://example.com/emd_endpoint?retrievalId=retrievalId&fiscalCode=paTaxId&noticeNumber=noticeCode"))
+                    .verifyComplete();
     }
 
     private void mockAccessTokenExpiringMap() {
