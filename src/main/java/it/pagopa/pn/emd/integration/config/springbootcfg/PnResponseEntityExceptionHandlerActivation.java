@@ -12,6 +12,7 @@ import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 
 @CustomLog
 @org.springframework.web.bind.annotation.ControllerAdvice
@@ -30,11 +31,11 @@ public class PnResponseEntityExceptionHandlerActivation extends PnResponseEntity
         log.warn("ServerWebInputException caught: {}", ex.getMessage(), ex);
         Problem problem = exceptionHelper.handleException(ex);
 
-        if (ex.getReason() != null && ex.getReason().toLowerCase().contains("type mismatch")) {
+        if (ex.getReason() != null) {
 
             List<it.pagopa.pn.common.rest.error.v1.dto.ProblemError> errors = new ArrayList<>();
             errors.add(new it.pagopa.pn.common.rest.error.v1.dto.ProblemError(
-                    "PN_GENERIC_INVALIDPARAMETER_PATTERN",
+                    PnEmdIntegrationExceptionCodes.PN_EMD_GENERIC_ERROR_BAD_REQUEST,
                     ex.getMostSpecificCause().getMessage(),
                     ex.getCause().getMessage()));
             problem.setErrors(errors);
@@ -43,5 +44,4 @@ public class PnResponseEntityExceptionHandlerActivation extends PnResponseEntity
 
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem));
     }
-
 }

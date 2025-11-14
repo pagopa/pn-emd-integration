@@ -2,6 +2,8 @@ package it.pagopa.pn.emd.integration.service;
 
 import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
+import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
@@ -19,8 +21,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
 import java.time.Duration;
+import java.util.Date;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -42,19 +44,42 @@ class EmdCoreServiceImplTest {
     @InjectMocks
     private EmdCoreServiceImpl emdCoreServiceImpl;
 
+    PnEmdIntegrationConfigs.CourtesyMessageTemplate digitalMsg = new PnEmdIntegrationConfigs.CourtesyMessageTemplate();
+    PnEmdIntegrationConfigs.CourtesyMessageTemplate analoglMsg = new PnEmdIntegrationConfigs.CourtesyMessageTemplate();
+
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        digitalMsg.setHeader("Header Digital");
+        digitalMsg.setContent("Contenuto digitale");
+        digitalMsg.setContentFileName("FileContentDigital.md");
+        digitalMsg.setHeaderFileName("FileHeaderDigital.md");
+        analoglMsg.setHeader("Header Analog");
+        analoglMsg.setContent("Contenuto analogico {{schedulingAnalogDate}}");
+        analoglMsg.setContentFileName("FileContentAnalog.md");
+        analoglMsg.setHeaderFileName("FileHeaderAnalog.md");
+
+
+        PnEmdIntegrationConfigs.Templates messagesTemplates = new PnEmdIntegrationConfigs.Templates();
+        messagesTemplates.setAnalogMsg(analoglMsg);
+        messagesTemplates.setDigitalMsg(digitalMsg);
+
+        // 🧩 Mock: quando il service chiede i templates, restituisci il tuo oggetto
+        when(pnEmdIntegrationConfigs.getMsgsTemplates()).thenReturn(messagesTemplates);
     }
 
     @Test
-    void testSubmitMessage() {
+    void testSubmitMessageAnalog() {
         // Arrange
         SendMessageRequestBody requestBody = new SendMessageRequestBody();
         requestBody.setRecipientId("recipientId");
         requestBody.setSenderDescription("senderDescription");
         requestBody.setAssociatedPayment(true);
         requestBody.setOriginId("originId");
+        requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.ANALOG);
+        requestBody.setSchedulingAnalogDate( new Date());
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken("token");
         InlineResponse200 response = new InlineResponse200();
@@ -74,13 +99,69 @@ class EmdCoreServiceImplTest {
     }
 
     @Test
-    void testSubmitMessageError() {
+    void testSubmitMessageDigitalWithoutSchedulingDate() {
         // Arrange
         SendMessageRequestBody requestBody = new SendMessageRequestBody();
         requestBody.setRecipientId("recipientId");
         requestBody.setSenderDescription("senderDescription");
         requestBody.setAssociatedPayment(true);
         requestBody.setOriginId("originId");
+        requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
+        AccessToken accessToken = new AccessToken();
+        accessToken.setAccessToken("token");
+        InlineResponse200 response = new InlineResponse200();
+        response.setOutcome(Outcome.OK);
+
+
+        when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
+        when(emdClient.submitMessage(any(SendMessageRequest.class),any(String.class),any(String.class))).thenReturn(Mono.just(response));
+        when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
+
+        // Act
+        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
+
+        // Assert
+        StepVerifier.create(result)
+                    .expectNext(response)
+                    .verifyComplete();
+    }
+    @Test
+    void testSubmitMessageDigitalWithSchedulingDate() {
+        SendMessageRequestBody requestBody = new SendMessageRequestBody();
+        requestBody.setRecipientId("recipientId");
+        requestBody.setSenderDescription("senderDescription");
+        requestBody.setAssociatedPayment(true);
+        requestBody.setOriginId("originId");
+        requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
+        requestBody.setSchedulingAnalogDate( new Date());
+        AccessToken accessToken = new AccessToken();
+        accessToken.setAccessToken("token");
+        InlineResponse200 response = new InlineResponse200();
+        response.setOutcome(Outcome.OK);
+
+
+        when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
+        when(emdClient.submitMessage(any(SendMessageRequest.class),any(String.class),any(String.class))).thenReturn(Mono.just(response));
+        when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
+
+        // Act
+        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
+
+        // Assert
+        StepVerifier.create(result)
+                    .expectNext(response)
+                    .verifyComplete();
+    }
+
+    @Test
+    void testFailedToSubmitMessageErrorAnalogWithoutSchedulingAnalogDate() {
+        // Arrange
+        SendMessageRequestBody requestBody = new SendMessageRequestBody();
+        requestBody.setRecipientId("recipientId");
+        requestBody.setSenderDescription("senderDescription");
+        requestBody.setAssociatedPayment(true);
+        requestBody.setOriginId("originId");
+        requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.ANALOG);
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken("token");
 
@@ -89,13 +170,9 @@ class EmdCoreServiceImplTest {
                 .thenReturn(Mono.error(new RuntimeException("Generic Error")));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
-        // Act
-        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
-
-        // Assert
-        StepVerifier.create(result)
-                .expectError(RuntimeException.class)
-                .verify();
+        assertThrows(PnEmdIntegrationException.class,
+                     () -> emdCoreServiceImpl.submitMessage(requestBody)
+                    );
     }
 
     @Test

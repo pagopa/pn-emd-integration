@@ -252,6 +252,7 @@ components:
         - senderDescription
         - originId
         - associatedPayment
+        - deliveryMode
       properties:
         internalRecipientId:
           description: ID of the recipient for internal use
@@ -281,12 +282,24 @@ components:
         associatedPayment:
           description: The notification has an associated payment
           type: boolean
+        deliveryMode:
+          description: Notification delivery mode
+          type: string
+          enum:
+            - ANALOG
+            - DIGITAL
+        schedulingAnalogDate:
+          description: Scheduled date for analog delivery
+          type: string
+          format: date-time
       example:
         internalRecipientId: "5b334d4a-0gt7-24ac-9c7b-354e2d44w5tr"
         recipientId: "RSSMRA85T10A562S"
         senderDescription: "Comune di Milano"
         originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
         associatedPayment: true
+        deliveryMode: "ANALOG"
+        schedulingAnalogDate: "2025-02-15T10:00:00Z"
         
     SendMessageResponse:
       type: object
