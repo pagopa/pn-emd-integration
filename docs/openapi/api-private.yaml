@@ -239,7 +239,10 @@ components:
           minLength: 24
           maxLength: 36
           example: "XRUZ-GZAJ-ZUEJ-202407-W-1"
-          
+        isPaymentEnabled:
+          type: boolean
+          description: "ENG: Flag indicating whether the TPP is integrated with the payment system. - IT: Flag che indica se il TPP è integrato con il sistema di pagamento."
+
     SendMessageRequestBody:
       type: object
       description: "Retrieval Response information"

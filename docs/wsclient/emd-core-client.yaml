@@ -10,25 +10,11 @@ info:
 
 servers:
   - description: Development Test
-    url: https://api-io.dev.cstar.pagopa.it/emd
+    url: https://api-emd.dev.cstar.pagopa.it/emd
     x-internal: true
   - description: User Acceptance Test
-    url: https://api-io.uat.cstar.pagopa.it/emd
+    url: https://api-emd.uat.cstar.pagopa.it/emd
     x-internal: true
-  - description: Environment endpoint
-    url: https://{apiBaseUrl}/emd/citizen
-    variables:
-      apiBaseUrl:
-        description: |
-          API base url per ambiente:
-          - DEV: api-emd.dev.cstar.pagopa.it
-          - UAT: api-emd.uat.cstar.pagopa.it  
-          - PROD: api-emd.cstar.pagopa.it
-        default: api-emd.dev.cstar.pagopa.it
-        enum:
-          - api-emd.dev.cstar.pagopa.it
-          - api-emd.uat.cstar.pagopa.it
-          - api-emd.cstar.pagopa.it
 
 tags:
   - name: submit
@@ -354,7 +340,7 @@ components:
           minLength: 10
           maxLength: 128
           example: "https://example.com/deeplink/123e4567-e89b-12d3-a456-426614174000?userId=1234567890&session=abcdef"
-        paymentButton:
+        pspDenomination:
           type: string
           description: "Etichetta del pulsante di pagamento (ad es. il nome del provider di pagamento)."
           pattern: "^[a-zA-Z0-9 ]{1,15}$"
@@ -368,6 +354,10 @@ components:
           minLength: 24
           maxLength: 36
           example: "XRUZ-GZAJ-ZUEJ-202407-W-1"
+        isPaymentEnabled:
+          type: boolean
+          description: "ENG: Flag indicating whether the TPP is integrated with the payment system. - IT: Flag che indica se il TPP è integrato con il sistema di pagamento."
+          example: true
 
     Error:
       description: Error details
