@@ -166,7 +166,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                 .retrievalId(request.getRetrievalId())
                 .tppId(request.getTppId())
                 .deeplink(request.getDeeplink())
-                .paymentButton(request.getPspDenomination())
+                .pspDenomination(request.getPspDenomination())
                 .originId(request.getOriginId())
                 .isPaymentEnabled(request.getIsPaymentEnabled())
                 .build();
