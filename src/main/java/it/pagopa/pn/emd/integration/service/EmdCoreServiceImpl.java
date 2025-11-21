@@ -16,6 +16,7 @@ import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
 import it.pagopa.pn.emd.integration.utils.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -166,9 +167,12 @@ public class EmdCoreServiceImpl implements EmdCoreService {
                 .retrievalId(request.getRetrievalId())
                 .tppId(request.getTppId())
                 .deeplink(request.getDeeplink())
-                .pspDenomination(request.getPspDenomination())
+                .pspDenomination(StringUtils.isNotBlank(request.getPspDenomination())?request.getPspDenomination():request.getPaymentButton())
                 .originId(request.getOriginId())
-                .isPaymentEnabled(request.getIsPaymentEnabled())
+                .isPaymentEnabled(request.getIsPaymentEnabled() != null ?request.getIsPaymentEnabled():false)
                 .build();
     }
+
+
+
 }

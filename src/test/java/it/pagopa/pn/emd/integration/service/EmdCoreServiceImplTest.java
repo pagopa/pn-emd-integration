@@ -3,7 +3,6 @@ package it.pagopa.pn.emd.integration.service;
 import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
@@ -21,9 +20,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.lang.reflect.Method;
 import java.time.Duration;
 import java.util.Date;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,13 @@ class EmdCoreServiceImplTest {
 
     @Mock
     private EmdClientImpl emdClient;
+
+    private final EmdCoreServiceImpl service = new EmdCoreServiceImpl(
+            emdClient,
+            null,
+            null,
+            null
+    );
 
     @Mock
     private AccessTokenExpiringMap accessTokenExpiringMap;
@@ -336,4 +345,51 @@ class EmdCoreServiceImplTest {
         accessToken.setAccessToken("token");
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
     }
+
+
+    @Test
+    void testMapToRetrievalPayload_pspDenominationNotNull() throws Exception {
+        Method method = EmdCoreServiceImpl.class.getDeclaredMethod("mapToRetrievalPayload", RetrievalResponseDTO.class);
+        method.setAccessible(true);
+
+        RetrievalResponseDTO dto = new RetrievalResponseDTO();
+        dto.setPspDenomination("Banca1");
+        dto.setPaymentButton(null);
+        dto.setIsPaymentEnabled(true);
+
+        RetrievalPayload result = (RetrievalPayload) method.invoke(service, dto);
+        assertEquals("Banca1", result.getPspDenomination());
+        assertTrue(result.getIsPaymentEnabled());
+    }
+
+    @Test
+    void testMapToRetrievalPayload_pspDenominationPaymentButtonNull() throws Exception {
+        Method method = EmdCoreServiceImpl.class.getDeclaredMethod("mapToRetrievalPayload", RetrievalResponseDTO.class);
+        method.setAccessible(true);
+
+        RetrievalResponseDTO dto = new RetrievalResponseDTO();
+        dto.setPspDenomination(null);
+        dto.setPaymentButton("Banca1");
+        dto.setIsPaymentEnabled(null);
+
+        RetrievalPayload result = (RetrievalPayload) method.invoke(service, dto);
+        assertEquals("Banca1", result.getPspDenomination());
+        assertFalse(result.getIsPaymentEnabled());
+    }
+
+    @Test
+    void testMapToRetrievalPayload_isPaymentEnabledNull() throws Exception {
+        Method method = EmdCoreServiceImpl.class.getDeclaredMethod("mapToRetrievalPayload", RetrievalResponseDTO.class);
+        method.setAccessible(true);
+
+        RetrievalResponseDTO dto = new RetrievalResponseDTO();
+        dto.setPspDenomination(null);
+        dto.setPaymentButton("Banca1");
+        dto.setIsPaymentEnabled(null);
+
+        RetrievalPayload result = (RetrievalPayload) method.invoke(service, dto);
+        assertEquals("Banca1", result.getPspDenomination());
+        assertFalse(result.getIsPaymentEnabled());
+    }
+
 }

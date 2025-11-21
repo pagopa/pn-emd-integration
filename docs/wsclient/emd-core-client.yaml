@@ -340,6 +340,13 @@ components:
           minLength: 10
           maxLength: 128
           example: "https://example.com/deeplink/123e4567-e89b-12d3-a456-426614174000?userId=1234567890&session=abcdef"
+        paymentButton:
+          type: string
+          description: "Etichetta del pulsante di pagamento (ad es. il nome del provider di pagamento)."
+          pattern: "^[a-zA-Z0-9 ]{1,15}$"
+          minLength: 1
+          maxLength: 15
+          example: "Banca1"
         pspDenomination:
           type: string
           description: "Etichetta del pulsante di pagamento (ad es. il nome del provider di pagamento)."
