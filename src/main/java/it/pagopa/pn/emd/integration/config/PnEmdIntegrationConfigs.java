@@ -34,6 +34,8 @@ public class PnEmdIntegrationConfigs {
 
     private Templates msgsTemplates;
 
+    private Boolean enabledApiV2;
+
     @Data
     public static class CacheConfigs {
         private String hostName;
