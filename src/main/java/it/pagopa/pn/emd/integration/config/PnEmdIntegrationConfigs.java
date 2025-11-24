@@ -34,7 +34,7 @@ public class PnEmdIntegrationConfigs {
 
     private Templates msgsTemplates;
 
-    private Boolean enabledApiV2;
+    private Boolean enableApiV2;
 
     @Data
     public static class CacheConfigs {
