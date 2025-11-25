@@ -18,6 +18,7 @@
     "ElasticacheCacheName": "pn-redis-serverless",
     "ElasticacheCacheRegion": "eu-south-1",
     "ElasticachePort": "6379",
-    "RetrievalPayloadCacheTtl": "15m"
+    "RetrievalPayloadCacheTtl": "15m",
+    "EnableApiV2": "false"
   }
 }
