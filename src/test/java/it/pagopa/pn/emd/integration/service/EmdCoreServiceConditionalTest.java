@@ -20,27 +20,67 @@ class EmdCoreServiceConditionalTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withInitializer(new ConditionEvaluationReportLoggingListener())
-            .withUserConfiguration(TestConfig.class)
-            .withUserConfiguration(EmdCoreServiceImpl.class, EmdCoreServiceDisabled.class);
+            .withUserConfiguration(TestConfig.class);
 
     @Test
-    void emdCoreServiceImplIsChosen() {
+    void emdMessageServiceImplIsChosen() {
         contextRunner
-                .withPropertyValues("pn.emd-integration.enabled=true")
+                .withUserConfiguration(EmdMessageServiceImpl.class, EmdMessageServiceDisabled.class)
+                .withPropertyValues("pn.emd-integration.message.enabled=true")
                 .run(context -> assertAll(
-                        () -> assertThat(context).hasSingleBean(EmdCoreServiceImpl.class),
-                        () -> assertThat(context).doesNotHaveBean(EmdCoreServiceDisabled.class)));
+                        () -> assertThat(context).hasSingleBean(EmdMessageServiceImpl.class),
+                        () -> assertThat(context).doesNotHaveBean(EmdMessageServiceDisabled.class)));
     }
 
     @Test
-    void emdCoreServiceDisabledIsChosen() {
+    void emdMessageServiceDisabledIsChosen() {
         contextRunner
-                .withPropertyValues("pn.emd-integration.enabled=false")
+                .withUserConfiguration(EmdMessageServiceImpl.class, EmdMessageServiceDisabled.class)
+                .withPropertyValues("pn.emd-integration.message.enabled=false")
                 .run(context -> assertAll(
-                        () -> assertThat(context).hasSingleBean(EmdCoreServiceDisabled.class),
-                        () -> assertThat(context).doesNotHaveBean(EmdCoreServiceImpl.class)));
+                        () -> assertThat(context).hasSingleBean(EmdMessageServiceDisabled.class),
+                        () -> assertThat(context).doesNotHaveBean(EmdMessageServiceImpl.class)));
     }
 
+    @Test
+    void emdRetrievalServiceImplIsChosen() {
+        contextRunner
+                .withUserConfiguration(EmdRetrievalServiceImpl.class, EmdRetrievalServiceDisabled.class)
+                .withPropertyValues("pn.emd-integration.retrieval.enabled=true")
+                .run(context -> assertAll(
+                        () -> assertThat(context).hasSingleBean(EmdRetrievalServiceImpl.class),
+                        () -> assertThat(context).doesNotHaveBean(EmdRetrievalServiceDisabled.class)));
+    }
+
+    @Test
+    void emdRetrievalServiceDisabledIsChosen() {
+        contextRunner
+                .withUserConfiguration(EmdRetrievalServiceImpl.class, EmdRetrievalServiceDisabled.class)
+                .withPropertyValues("pn.emd-integration.retrieval.enabled=false")
+                .run(context -> assertAll(
+                        () -> assertThat(context).hasSingleBean(EmdRetrievalServiceDisabled.class),
+                        () -> assertThat(context).doesNotHaveBean(EmdRetrievalServiceImpl.class)));
+    }
+
+    @Test
+    void emdPaymentServiceImplIsChosen() {
+        contextRunner
+                .withUserConfiguration(EmdPaymentServiceImpl.class, EmdPaymentServiceDisabled.class)
+                .withPropertyValues("pn.emd-integration.payment.enabled=true")
+                .run(context -> assertAll(
+                        () -> assertThat(context).hasSingleBean(EmdPaymentServiceImpl.class),
+                        () -> assertThat(context).doesNotHaveBean(EmdPaymentServiceDisabled.class)));
+    }
+
+    @Test
+    void emdPaymentServiceDisabledIsChosen() {
+        contextRunner
+                .withUserConfiguration(EmdPaymentServiceImpl.class, EmdPaymentServiceDisabled.class)
+                .withPropertyValues("pn.emd-integration.payment.enabled=false")
+                .run(context -> assertAll(
+                        () -> assertThat(context).hasSingleBean(EmdPaymentServiceDisabled.class),
+                        () -> assertThat(context).doesNotHaveBean(EmdPaymentServiceImpl.class)));
+    }
 
     @Configuration
     protected static class TestConfig {
