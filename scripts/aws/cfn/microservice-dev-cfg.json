@@ -19,6 +19,6 @@
     "ElasticacheCacheRegion": "eu-south-1",
     "ElasticachePort": "6379",
     "RetrievalPayloadCacheTtl": "15m",
-    "EnableApiV2": "true"
+    "EnableApiV2": "false"
   }
 }
