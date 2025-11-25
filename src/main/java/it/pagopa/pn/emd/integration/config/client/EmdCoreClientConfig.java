@@ -2,9 +2,9 @@ package it.pagopa.pn.emd.integration.config.client;
 
 import it.pagopa.pn.commons.pnclients.CommonBaseClient;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.ApiClient;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.ApiClient;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.api.SubmitApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
