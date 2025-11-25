@@ -11,4 +11,5 @@ public class PnEmdIntegrationCostants {
     public static final String DATE_PLACEHOLDER = "{{schedulingAnalogDate}}";
     public static final String TIME_PLACEHOLDER = "{{schedulingAnalogTime}}";
     public static final String MESSAGE_TEMPLATES_BASE_PATH = "message_templates/";
+    public static final String SERVICE_DISABLED_MESSAGE = "Service disabled";
 }

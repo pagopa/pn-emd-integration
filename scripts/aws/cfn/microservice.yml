@@ -178,6 +178,10 @@ Parameters:
     Type: String
     Description: elasticache endpoint
 
+  EnableApiV2:
+    Type: Boolean
+    Description: 'Feature flag to enable/disable API v2'
+
   ElasticacheMode:
     Type: String
     Description: elasticache mode
@@ -258,6 +262,7 @@ Resources:
         ContainerEnvEntry17: !Sub 'PN_EMDINTEGRATION_ORIGINALMESSAGEURL=${OriginalMessageUrl}'
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'
         ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTENDPOINT=${EmdPaymentEndpoint}'
+        ContainerEnvEntry20: !Sub 'PN_EMDINTEGRATION_ENABLEAPIV2=${EnableApiV2}'
         ContainerSecret1: !Sub 'PN_EMDINTEGRATION_MILCLIENTSECRET=arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:pn-emd-integration:MilAuthClientSecret:AWSCURRENT:'
         ApplicativeEnvFileChecksum: !Ref ApplicativeEnvFileChecksum
         MappedPaths: '/emd-integration-private/*'
