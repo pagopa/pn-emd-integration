@@ -1,13 +1,13 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.ApiClient;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.api.PaymentApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.api.SubmitApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.Outcome;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.RetrievalResponseDTO;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.ApiClient;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

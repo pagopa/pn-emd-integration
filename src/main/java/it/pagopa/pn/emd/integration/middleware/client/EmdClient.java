@@ -1,9 +1,9 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.commons.log.PnLogger;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.RetrievalResponseDTO;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.InlineResponse200;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
 import reactor.core.publisher.Mono;
 
 public interface EmdClient {

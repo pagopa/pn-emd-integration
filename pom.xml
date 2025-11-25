@@ -238,8 +238,8 @@
 							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
 							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/client</templateDirectory>
 							<configOptions>
-								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.v2.api</apiPackage>
-								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model</modelPackage>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.api</apiPackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.model</modelPackage>
 								<annotationLibrary>none</annotationLibrary>
 								<dateLibrary>java8</dateLibrary>
 								<documentationProvider>source</documentationProvider>

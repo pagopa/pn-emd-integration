@@ -1,7 +1,7 @@
 package it.pagopa.pn.emd.integration.mapper;
 
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v2.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 
 public class SubmitMessageResponseMapper {
     private SubmitMessageResponseMapper() {}
