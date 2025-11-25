@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import static it.pagopa.pn.emd.integration.utils.PnEmdIntegrationCostants.SERVICE_DISABLED_MESSAGE;
+
 @ConditionalOnProperty(
         name = "pn.emd-integration.retrieval.enabled",
         havingValue = "false"
@@ -15,7 +17,6 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 public class EmdRetrievalServiceDisabled implements EmdRetrievalService {
-    private static final String SERVICE_DISABLED_MESSAGE = "Retrieval Service disabled";
 
     @Override
     public Mono<RetrievalPayload> getTokenRetrievalPayload(String retrievalId) {
