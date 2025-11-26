@@ -4,11 +4,11 @@ import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
-import it.pagopa.pn.emd.integration.middleware.client.EmdClientV1;
+import it.pagopa.pn.emd.integration.middleware.client.EmdClientImplV1;
 import it.pagopa.pn.emd.integration.utils.UtilityV1;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.SendMessageRequest;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,13 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-class EmdMessageServiceImplTest {
+public class EmdMessageServiceImplTestV1 {
 
     @Mock
     private EmdClientImpl emdClient;
 
     @Mock
-    private EmdClientV1 emdClientV1;
+    private EmdClientImplV1 emdClientV1;
 
     @Mock
     private UtilityV1 utilityV1;
@@ -44,6 +44,7 @@ class EmdMessageServiceImplTest {
 
     @InjectMocks
     private EmdMessageServiceImpl emdMessageService;
+
 
     PnEmdIntegrationConfigs.CourtesyMessageTemplate digitalMsg = new PnEmdIntegrationConfigs.CourtesyMessageTemplate();
     PnEmdIntegrationConfigs.CourtesyMessageTemplate analogMsg = new PnEmdIntegrationConfigs.CourtesyMessageTemplate();
@@ -65,7 +66,7 @@ class EmdMessageServiceImplTest {
         messagesTemplates.setAnalogMsg(analogMsg);
         messagesTemplates.setDigitalMsg(digitalMsg);
 
-        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(false);
         when(pnEmdIntegrationConfigs.getMsgsTemplates()).thenReturn(messagesTemplates);
     }
 
@@ -84,15 +85,15 @@ class EmdMessageServiceImplTest {
         response.setOutcome(Outcome.OK);
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
-        when(emdClient.submitMessage(any(SendMessageRequest.class), any(String.class), any(String.class)))
+        when(emdClientV1.submitMessage(any(it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.SendMessageRequest.class), any(String.class), any(String.class)))
                 .thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
         Mono<InlineResponse200> result = emdMessageService.submitMessage(requestBody);
 
         StepVerifier.create(result)
-                .expectNext(response)
-                .verifyComplete();
+                    .expectNext(response)
+                    .verifyComplete();
     }
 
     @Test
@@ -109,15 +110,15 @@ class EmdMessageServiceImplTest {
         response.setOutcome(Outcome.OK);
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
-        when(emdClient.submitMessage(any(SendMessageRequest.class), any(String.class), any(String.class)))
+        when(emdClientV1.submitMessage(any(it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.SendMessageRequest.class), any(String.class), any(String.class)))
                 .thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
         Mono<InlineResponse200> result = emdMessageService.submitMessage(requestBody);
 
         StepVerifier.create(result)
-                .expectNext(response)
-                .verifyComplete();
+                    .expectNext(response)
+                    .verifyComplete();
     }
 
     @Test
@@ -135,15 +136,15 @@ class EmdMessageServiceImplTest {
         response.setOutcome(Outcome.OK);
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
-        when(emdClient.submitMessage(any(SendMessageRequest.class), any(String.class), any(String.class)))
+        when(emdClientV1.submitMessage(any(it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.SendMessageRequest.class), any(String.class), any(String.class)))
                 .thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
         Mono<InlineResponse200> result = emdMessageService.submitMessage(requestBody);
 
         StepVerifier.create(result)
-                .expectNext(response)
-                .verifyComplete();
+                    .expectNext(response)
+                    .verifyComplete();
     }
 
     @Test
@@ -158,11 +159,12 @@ class EmdMessageServiceImplTest {
         accessToken.setAccessToken("token");
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
-        when(emdClient.submitMessage(any(SendMessageRequest.class), any(String.class), any(String.class)))
+        when(emdClientV1.submitMessage(any(SendMessageRequest.class), any(String.class), any(String.class)))
                 .thenReturn(Mono.error(new RuntimeException("Generic Error")));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
         assertThrows(PnEmdIntegrationException.class,
-                () -> emdMessageService.submitMessage(requestBody).block());
+                     () -> emdMessageService.submitMessage(requestBody).block());
     }
+
 }
