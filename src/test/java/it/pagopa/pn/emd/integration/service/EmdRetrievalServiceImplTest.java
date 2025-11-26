@@ -4,6 +4,7 @@ import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
+import it.pagopa.pn.emd.integration.middleware.client.EmdClientImplV1;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
@@ -55,6 +56,7 @@ class EmdRetrievalServiceImplTest {
         responseDTO.setIsPaymentEnabled(isPaymentEnabled);
 
         mockAccessTokenExpiringMap();
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));
         when(pnEmdIntegrationConfigs.getRetrievalPayloadCacheTtl()).thenReturn(Duration.ofMinutes(5));
         when(redisService.set(any(String.class), any(RetrievalPayload.class), any(Duration.class))).thenReturn(Mono.empty());
@@ -71,6 +73,7 @@ class EmdRetrievalServiceImplTest {
         String retrievalId = "retrievalId";
 
         mockAccessTokenExpiringMap();
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(emdClient.getRetrieval(any(String.class), any(String.class)))
                 .thenReturn(Mono.empty());
 
@@ -86,6 +89,7 @@ class EmdRetrievalServiceImplTest {
         String retrievalId = "retrievalId";
 
         mockAccessTokenExpiringMap();
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(emdClient.getRetrieval(any(String.class), any(String.class)))
                 .thenReturn(Mono.error(new RuntimeException("Generic Error")));
 
@@ -104,6 +108,7 @@ class EmdRetrievalServiceImplTest {
         expectedPayload.setRetrievalId(retrievalId);
 
         mockAccessTokenExpiringMap();
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(redisService.get(retrievalId)).thenReturn(Mono.just(expectedPayload));
 
         Mono<RetrievalPayload> result = emdRetrievalService.getEmdRetrievalPayload(retrievalId);
@@ -122,6 +127,7 @@ class EmdRetrievalServiceImplTest {
         expectedPayload.setRetrievalId(retrievalId);
 
         mockAccessTokenExpiringMap();
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(redisService.get(retrievalId)).thenReturn(Mono.empty());
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));
 
@@ -136,6 +142,7 @@ class EmdRetrievalServiceImplTest {
     void getEmdRetrievalPayloadHandlesNotFound() {
         String retrievalId = "retrievalId";
 
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(redisService.get(retrievalId)).thenReturn(Mono.empty());
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.empty());
 
@@ -152,6 +159,7 @@ class EmdRetrievalServiceImplTest {
         String retrievalId = "retrievalId";
 
         mockAccessTokenExpiringMap();
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(redisService.get(retrievalId)).thenReturn(Mono.empty());
         when(emdClient.getRetrieval(any(String.class), any(String.class)))
                 .thenReturn(Mono.error(new RuntimeException("Generic Error")));
@@ -167,6 +175,7 @@ class EmdRetrievalServiceImplTest {
     private void mockAccessTokenExpiringMap() {
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken("token");
+        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
     }
 }

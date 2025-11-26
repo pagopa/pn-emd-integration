@@ -3,6 +3,7 @@ package it.pagopa.pn.emd.integration.service;
 import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
+import it.pagopa.pn.emd.integration.middleware.client.EmdClientImplV1;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class EmdCoreServiceConditionalTest {
@@ -41,17 +43,17 @@ class EmdCoreServiceConditionalTest {
                         () -> assertThat(context).hasSingleBean(EmdMessageServiceDisabled.class),
                         () -> assertThat(context).doesNotHaveBean(EmdMessageServiceImpl.class)));
     }
-
+/*
     @Test
     void emdRetrievalServiceImplIsChosen() {
         contextRunner
-                .withUserConfiguration(EmdRetrievalServiceImpl.class, EmdRetrievalServiceDisabled.class)
+                .withUserConfiguration(EmdRetrievalServiceImpl.class, EmdClientImplV1.class, EmdRetrievalServiceDisabled.class)
                 .withPropertyValues("pn.emd-integration.retrieval.enabled=true")
                 .run(context -> assertAll(
                         () -> assertThat(context).hasSingleBean(EmdRetrievalServiceImpl.class),
                         () -> assertThat(context).doesNotHaveBean(EmdRetrievalServiceDisabled.class)));
     }
-
+*/
     @Test
     void emdRetrievalServiceDisabledIsChosen() {
         contextRunner

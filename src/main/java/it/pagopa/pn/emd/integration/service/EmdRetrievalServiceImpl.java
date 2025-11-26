@@ -5,7 +5,7 @@ import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
-import it.pagopa.pn.emd.integration.service.ReactiveRedisService;
+import it.pagopa.pn.emd.integration.middleware.client.EmdClientImplV1;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +26,7 @@ import java.time.Duration;
 @Slf4j
 public class EmdRetrievalServiceImpl implements EmdRetrievalService {
     private final EmdClientImpl emdClient;
+    private final EmdClientImplV1 emdClientV1;
     private final AccessTokenExpiringMap accessTokenExpiringMap;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
     private final ReactiveRedisService<RetrievalPayload> redisService;
@@ -48,18 +49,45 @@ public class EmdRetrievalServiceImpl implements EmdRetrievalService {
 
     private Mono<RetrievalPayload> getAccessTokenAndRetrievePayload(String retrievalId) {
         log.info("Retrieving payload for retrievalId: {}", retrievalId);
-        return accessTokenExpiringMap.getAccessToken()
-                .flatMap(token -> emdClient.getRetrieval(retrievalId, token.getAccessToken()))
-                .switchIfEmpty(
-                        Mono.error(
-                                new PnEmdIntegrationNotFoundException(
-                                        "Error getting retrieval payload",
-                                        "Retrieval payload not found or expired",
-                                        PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_RETRIEVAL_PAYLOAD_MISSING_OR_EXPIRED
-                                )
-                        )
-                )
-                .map(this::mapToRetrievalPayload);
+        if(Boolean.TRUE.equals(pnEmdIntegrationConfigs.getEnableApiV2())){
+            return accessTokenExpiringMap.getAccessToken()
+                                         .flatMap(token -> emdClient.getRetrieval(retrievalId, token.getAccessToken()))
+                                         .switchIfEmpty(
+                                                 Mono.error(
+                                                         new PnEmdIntegrationNotFoundException(
+                                                                 "Error getting retrieval payload",
+                                                                 "Retrieval payload not found or expired",
+                                                                 PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_RETRIEVAL_PAYLOAD_MISSING_OR_EXPIRED
+                                                         )
+                                                           )
+                                                       )
+                                         .map(this::mapToRetrievalPayload);
+        }
+        else{
+            return accessTokenExpiringMap.getAccessToken()
+                                         .flatMap(token -> emdClientV1.getRetrieval(retrievalId, token.getAccessToken()))
+                                         .switchIfEmpty(
+                                                 Mono.error(
+                                                         new PnEmdIntegrationNotFoundException(
+                                                                 "Error getting retrieval payload",
+                                                                 "Retrieval payload not found or expired",
+                                                                 PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_RETRIEVAL_PAYLOAD_MISSING_OR_EXPIRED
+                                                         )
+                                                           )
+                                                       )
+                                         .map((java.util.function.Function<? super it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.RetrievalResponseDTO, ? extends RetrievalPayload>) this::mapToRetrievalPayload);
+        }
+    }
+
+    private RetrievalPayload mapToRetrievalPayload(it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.RetrievalResponseDTO request) {
+        return RetrievalPayload.builder()
+                               .retrievalId(request.getRetrievalId())
+                               .tppId(request.getTppId())
+                               .deeplink(request.getDeeplink())
+                               .pspDenomination(request.getPaymentButton())
+                               .originId(request.getOriginId())
+                               .isPaymentEnabled(false)
+                               .build();
     }
 
     private RetrievalPayload mapToRetrievalPayload(RetrievalResponseDTO request) {
@@ -72,4 +100,5 @@ public class EmdRetrievalServiceImpl implements EmdRetrievalService {
                 .isPaymentEnabled(request.getIsPaymentEnabled())
                 .build();
     }
+
 }
