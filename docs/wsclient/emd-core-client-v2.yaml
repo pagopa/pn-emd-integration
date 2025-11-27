@@ -347,6 +347,13 @@ components:
           minLength: 1
           maxLength: 15
           example: "Banca1"
+        paymentButton:
+          type: string
+          description: "Etichetta del pulsante di pagamento (ad es. il nome del provider di pagamento)."
+          pattern: "^[a-zA-Z0-9 ]{1,15}$"
+          minLength: 1
+          maxLength: 15
+          example: "Banca1"
         originId:
           type: string
           description: "ID of the original message"
