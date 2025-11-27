@@ -179,7 +179,7 @@ Parameters:
     Description: elasticache endpoint
 
   EnableApiV2:
-    Type: Boolean
+    Type: String
     Description: 'Feature flag to enable/disable API v2'
 
   ElasticacheMode:
