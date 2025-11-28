@@ -6,7 +6,6 @@ import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.PaymentApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.SubmitApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.SendMessageRequest;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
@@ -38,22 +37,6 @@ public class EmdClientImplV1 implements EmdClientV1 {
                                     PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SEND_MESSAGE_ERROR
                             );
                         });
-    }
-
-    @Override
-    public Mono<RetrievalResponseDTO> getRetrieval(String retrievalId, String accessToken) {
-        log.logInvokingExternalService(CLIENT_NAME, GET_RETRIEVAL_METHOD);
-        paymentApi.getApiClient().setBearerToken(accessToken);
-        return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
-                         .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage()))
-                         .onErrorResume(this::isNotFoundException, e -> Mono.empty())
-                         .onErrorMap(throwable -> {
-                             throw new PnEmdIntegrationException(
-                                     "Error retrieving payload from EMD",
-                                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                     PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_GET_RETRIEVAL_PAYLOAD_ERROR
-                             );
-                         });
     }
 
     private boolean isNotFoundException(Throwable e) {
