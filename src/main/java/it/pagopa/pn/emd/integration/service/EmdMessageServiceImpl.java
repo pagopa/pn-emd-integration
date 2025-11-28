@@ -5,7 +5,9 @@ import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
+import it.pagopa.pn.emd.integration.middleware.client.EmdClientImplV1;
 import it.pagopa.pn.emd.integration.utils.PnEmdIntegrationCostants;
+import it.pagopa.pn.emd.integration.utils.UtilityV1;
 import it.pagopa.pn.emd.integration.utils.Utils;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
@@ -32,15 +34,35 @@ import java.util.UUID;
 @Slf4j
 public class EmdMessageServiceImpl implements EmdMessageService {
     private final EmdClientImpl emdClient;
+    private final EmdClientImplV1 emdClientV1;
     private final AccessTokenExpiringMap accessTokenExpiringMap;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
 
     @Override
     public Mono<InlineResponse200> submitMessage(SendMessageRequestBody request) {
         log.info("Start submitMessage for request: {}", request);
-        SendMessageRequest input = sendMessageRequestMap(request);
-        return accessTokenExpiringMap.getAccessToken()
-                .flatMap(token -> emdClient.submitMessage(input, token.getAccessToken(), UUID.randomUUID().toString()));
+
+        boolean isEnabledApiV2 = pnEmdIntegrationConfigs.getEnableApiV2();
+        SendMessageRequest inputV2;
+        it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.SendMessageRequest inputV1;
+
+        if (isEnabledApiV2) {
+            inputV1 = null;
+            inputV2 = sendMessageRequestMap(request);
+        } else {
+            inputV2 = null;
+            inputV1 = UtilityV1.sendMessageRequestMapV1(request, pnEmdIntegrationConfigs);
+        }
+
+        return accessTokenExpiringMap.getAccessToken().flatMap(token -> {
+            String reqId = UUID.randomUUID().toString();
+
+            if (isEnabledApiV2) {
+                return emdClient.submitMessage(inputV2, token.getAccessToken(), reqId);
+            } else {
+                return emdClientV1.submitMessage(inputV1, token.getAccessToken(), reqId);
+            }
+        });
     }
 
     private SendMessageRequest sendMessageRequestMap(SendMessageRequestBody request) {
