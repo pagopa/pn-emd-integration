@@ -23,17 +23,14 @@ public class UtilityV1 {
             PnEmdIntegrationConfigs pnEmdIntegrationConfigs) {
 
         boolean isDigital = request.getDeliveryMode().equals(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
+
         PnEmdIntegrationConfigs.CourtesyMessageTemplate messageTemplate =
                 createMessages(request, isDigital, pnEmdIntegrationConfigs);
-
-        String messageContent = isDigital ? messageTemplate.getContent() :
-                buildAnalogContent(messageTemplate.getContent(), request.getSchedulingAnalogDate().toInstant());
 
         return SendMessageRequest.builder()
                                  .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
                                  .recipientId(request.getRecipientId())
                                  .content(messageTemplate.getHeader())
-                                 .notes(messageContent)
                                  .triggerDateTime(Instant.now())
                                  .senderDescription(request.getSenderDescription())
                                  .associatedPayment(request.getAssociatedPayment())
@@ -58,16 +55,6 @@ public class UtilityV1 {
         }
 
         return getTemplate(isDigital, pnEmdIntegrationConfigs);
-    }
-
-    private static String buildAnalogContent(String template, Instant schedulingAnalogDate) {
-        log.debug("Building analog content with schedulingAnalogDate: {}", schedulingAnalogDate);
-        String localDateTimeItaly = LocalDateTime.ofInstant(schedulingAnalogDate, ZoneId.of("Europe/Rome"))
-                                                 .format(PnEmdIntegrationCostants.PROBABLE_SCHEDULING_ANALOG_DATE_DATE_FORMATTER);
-
-        String[] schedulingDateWithHourItaly = localDateTimeItaly.split(" ");
-        return template.replace(PnEmdIntegrationCostants.DATE_PLACEHOLDER, schedulingDateWithHourItaly[0])
-                       .replace(PnEmdIntegrationCostants.TIME_PLACEHOLDER, schedulingDateWithHourItaly[1]);
     }
 
     private static PnEmdIntegrationConfigs.CourtesyMessageTemplate getTemplate(
