@@ -4,7 +4,6 @@ import it.pagopa.pn.commons.conf.SharedAutoConfiguration;
 import it.pagopa.pn.emd.integration.cache.RedisMode;
 import lombok.CustomLog;
 import lombok.Data;
-import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
