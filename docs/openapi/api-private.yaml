@@ -127,6 +127,7 @@ paths:
         - $ref: '#/components/parameters/retrievalId'
         - $ref: '#/components/parameters/noticeCode'
         - $ref: '#/components/parameters/paTaxId'
+        - $ref: '#/components/parameters/amount'
       responses:
         "200":
           description: Ok
@@ -184,7 +185,15 @@ components:
         maxLength: 11
         minLength: 11
         pattern: '^\d+$'
-    
+    amount:
+      name: amount
+      in: query
+      required: false
+      description: amount of payment in cents
+      example: 5000
+      schema:
+        type: integer
+
   # ========================================================
   # Schemas
   # ========================================================
@@ -216,7 +225,7 @@ components:
           minLength: 10
           maxLength: 128
           example: "https://example.com/deeplink/123e4567-e89b-12d3-a456-426614174000?userId=1234567890&session=abcdef"
-        paymentButton:
+        pspDenomination:
           type: string
           description: "Payment button label (e.g., the name of the payment provider)."
           pattern: "^[a-zA-Z0-9 ]{1,15}$"
@@ -230,7 +239,10 @@ components:
           minLength: 24
           maxLength: 36
           example: "XRUZ-GZAJ-ZUEJ-202407-W-1"
-          
+        isPaymentEnabled:
+          type: boolean
+          description: "ENG: Flag indicating whether the TPP is integrated with the payment system. - IT: Flag che indica se il TPP è integrato con il sistema di pagamento."
+
     SendMessageRequestBody:
       type: object
       description: "Retrieval Response information"
@@ -240,6 +252,7 @@ components:
         - senderDescription
         - originId
         - associatedPayment
+        - deliveryMode
       properties:
         internalRecipientId:
           description: ID of the recipient for internal use
@@ -269,12 +282,24 @@ components:
         associatedPayment:
           description: The notification has an associated payment
           type: boolean
+        deliveryMode:
+          description: Notification delivery mode
+          type: string
+          enum:
+            - ANALOG
+            - DIGITAL
+        schedulingAnalogDate:
+          description: Scheduled date for analog delivery
+          type: string
+          format: date-time
       example:
         internalRecipientId: "5b334d4a-0gt7-24ac-9c7b-354e2d44w5tr"
         recipientId: "RSSMRA85T10A562S"
         senderDescription: "Comune di Milano"
         originId: "VEAJ-PTPD-NZDQ-202501-Y-1"
         associatedPayment: true
+        deliveryMode: "ANALOG"
+        schedulingAnalogDate: "2025-02-15T10:00:00Z"
         
     SendMessageResponse:
       type: object

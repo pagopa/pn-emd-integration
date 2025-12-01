@@ -196,12 +196,40 @@
 					</execution>
 					<execution>
 						<phase>generate-resources</phase>
-						<id>generate-emd-core-client</id>
+						<id>generate-emd-core-client-v1</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client.yaml</inputSpec>
+							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client-v1.yaml</inputSpec>
+							<generatorName>java</generatorName>
+							<library>webclient</library>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
+							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
+							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/client</templateDirectory>
+							<configOptions>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api</apiPackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model</modelPackage>
+								<annotationLibrary>none</annotationLibrary>
+								<dateLibrary>java8</dateLibrary>
+								<documentationProvider>source</documentationProvider>
+								<openApiNullable>false</openApiNullable>
+								<useAbstractionForFiles>true</useAbstractionForFiles>
+								<useBeanValidation>false</useBeanValidation>
+								<additionalModelTypeAnnotations>@lombok.Builder(toBuilder = true); @lombok.AllArgsConstructor;</additionalModelTypeAnnotations>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>generate-resources</phase>
+						<id>generate-emd-core-client-v2</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client-v2.yaml</inputSpec>
 							<generatorName>java</generatorName>
 							<library>webclient</library>
 							<generateApiTests>false</generateApiTests>

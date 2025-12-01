@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 @Slf4j
 public class EmdCoreClientConfig extends CommonBaseClient {
+
     private final WebClient.Builder builder;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
 
@@ -30,6 +31,20 @@ public class EmdCoreClientConfig extends CommonBaseClient {
         var apiClient = new ApiClient(initWebClient(this.builder));
         apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreBasePath());
         return new SubmitApi(apiClient);
+    }
+
+    @Bean
+    it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.PaymentApi paymentApiV1() {
+        var apiClient = new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.ApiClient(initWebClient(this.builder));
+        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreBasePath());
+        return new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.PaymentApi(apiClient);
+    }
+
+    @Bean
+    it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.SubmitApi submitApiV1() {
+        var apiClient = new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.ApiClient(initWebClient(this.builder));
+        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreBasePath());
+        return new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.SubmitApi(apiClient);
     }
 
 }

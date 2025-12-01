@@ -606,9 +606,9 @@ components:
             properties:
               outcome:
                 $ref: '#/components/schemas/Outcome'
-#          schema:
-#            type: string
-#            example: "Message accepted"
+  #          schema:
+  #            type: string
+  #            example: "Message accepted"
 
   # ============================================================================
   # Security schemes.
