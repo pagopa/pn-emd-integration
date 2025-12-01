@@ -42,6 +42,7 @@ public class EmdClientImpl implements EmdClient{
         log.logInvokingExternalDownstreamService(CLIENT_NAME, GET_RETRIEVAL_METHOD);
         paymentApi.getApiClient().setBearerToken(accessToken);
         return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
+                .doOnNext(response -> log.debug("Retrieved payload from EMD: {}", response))
                 .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage()))
                 .onErrorResume(this::isNotFoundException, e -> Mono.empty())
                 .onErrorMap(throwable -> {

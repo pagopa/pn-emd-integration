@@ -26,6 +26,7 @@ public class UtilityV1 {
 
         PnEmdIntegrationConfigs.CourtesyMessageTemplate messageTemplate =
                 createMessages(request, isDigital, pnEmdIntegrationConfigs);
+        log.info("created new Message with deliveryMode: '{}', Header File: '{}'", request.getDeliveryMode(), messageTemplate.getHeaderFileName());
 
         return SendMessageRequest.builder()
                                  .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
