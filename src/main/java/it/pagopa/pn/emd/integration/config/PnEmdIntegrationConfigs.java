@@ -80,7 +80,7 @@ public class PnEmdIntegrationConfigs {
         digital.setHeaderFileName("header_digital_message.md");
         digital.setContentFileName("content_digital_message.md");
         digital.setContent(fetchTemplate(MESSAGE_TEMPLATES_BASE_PATH + digital.getContentFileName()));
-        digital.setHeader(fetchTemplate(MESSAGE_TEMPLATES_BASE_PATH + digital.getContentFileName()));
+        digital.setHeader(fetchTemplate(MESSAGE_TEMPLATES_BASE_PATH + digital.getHeaderFileName()));
 
         //assign templates to msgsTemplates
         this.msgsTemplates.setAnalogMsg(analog);
