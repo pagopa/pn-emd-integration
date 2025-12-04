@@ -3,7 +3,7 @@ package it.pagopa.pn.emd.integration.middleware.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.PaymentApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.SubmitApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model.SendMessageRequest;
@@ -24,11 +24,11 @@ public class EmdClientImplV1 implements EmdClientV1 {
     private static final String ACCEPT_LANGUAGE = "it-IT";
     private final ObjectMapper objectMapper;
     @Override
-    public Mono<InlineResponse200> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
+    public Mono<SubmitMessage200Response> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
         log.logInvokingExternalService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
         submitApi.getApiClient().setBearerToken(accessToken);
         return submitApi.submitMessage(requestID, request)
-                        .map( responseV1 -> objectMapper.convertValue(responseV1, InlineResponse200.class))
+                        .map( responseV1 -> objectMapper.convertValue(responseV1, SubmitMessage200Response.class))
                         .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage()))
                         .onErrorMap(throwable -> {
                             throw new PnEmdIntegrationException(

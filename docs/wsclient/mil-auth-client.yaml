@@ -95,7 +95,7 @@ components:
       description: Client secret (63 ^ 36 ≃ 6e64)
       type: string
       pattern: "^[0-9a-zA-Z-]{36}$"
-      x-field-extra-annotation: "@lombok.ToString.Exclude"
+      format: password # NO EXTERNAL
       minLength: 36
       maxLength: 36
       example: "c7a1b24b058347792ebdbaa-Az7fn37dh-q9"
@@ -148,7 +148,7 @@ components:
     Token:
       description: Token
       type: string
-      x-field-extra-annotation: "@lombok.ToString.Exclude"
+      format: password # NO EXTERNAL
       pattern: "^[a-zA-Z0-9_-]{1,1024}\\.[a-zA-Z0-9_-]{1,1024}\\.[a-zA-Z0-9_-]{1,1024}$"
       minLength: 5
       maxLength: 3074

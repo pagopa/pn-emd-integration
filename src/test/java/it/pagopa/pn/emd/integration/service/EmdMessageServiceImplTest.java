@@ -6,7 +6,7 @@ import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientV1;
 import it.pagopa.pn.emd.integration.utils.UtilityV1;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
@@ -80,7 +80,7 @@ class EmdMessageServiceImplTest {
         requestBody.setSchedulingAnalogDate(new Date());
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken("token");
-        InlineResponse200 response = new InlineResponse200();
+        SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
@@ -88,7 +88,7 @@ class EmdMessageServiceImplTest {
                 .thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
-        Mono<InlineResponse200> result = emdMessageService.submitMessage(requestBody);
+        Mono<SubmitMessage200Response> result = emdMessageService.submitMessage(requestBody);
 
         StepVerifier.create(result)
                 .expectNext(response)
@@ -105,7 +105,7 @@ class EmdMessageServiceImplTest {
         requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken("token");
-        InlineResponse200 response = new InlineResponse200();
+        SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
@@ -113,7 +113,7 @@ class EmdMessageServiceImplTest {
                 .thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
-        Mono<InlineResponse200> result = emdMessageService.submitMessage(requestBody);
+        Mono<SubmitMessage200Response> result = emdMessageService.submitMessage(requestBody);
 
         StepVerifier.create(result)
                 .expectNext(response)
@@ -131,7 +131,7 @@ class EmdMessageServiceImplTest {
         requestBody.setSchedulingAnalogDate(new Date());
         AccessToken accessToken = new AccessToken();
         accessToken.setAccessToken("token");
-        InlineResponse200 response = new InlineResponse200();
+        SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
@@ -139,7 +139,7 @@ class EmdMessageServiceImplTest {
                 .thenReturn(Mono.just(response));
         when(pnEmdIntegrationConfigs.getOriginalMessageUrl()).thenReturn("http://example.com");
 
-        Mono<InlineResponse200> result = emdMessageService.submitMessage(requestBody);
+        Mono<SubmitMessage200Response> result = emdMessageService.submitMessage(requestBody);
 
         StepVerifier.create(result)
                 .expectNext(response)
