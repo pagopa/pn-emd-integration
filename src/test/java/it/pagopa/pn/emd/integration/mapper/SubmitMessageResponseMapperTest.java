@@ -11,10 +11,10 @@ class SubmitMessageResponseMapperTest {
 
     @Test
     void testToSendMessageResponse() {
-        SubmitMessage200Response SubmitMessage200Response = new SubmitMessage200Response();
-        SubmitMessage200Response.setOutcome(Outcome.OK);
+        SubmitMessage200Response submitMessage200Response = new SubmitMessage200Response();
+        submitMessage200Response.setOutcome(Outcome.OK);
 
-        SendMessageResponse sendMessageResponse = SubmitMessageResponseMapper.toSendMessageResponse(SubmitMessage200Response);
+        SendMessageResponse sendMessageResponse = SubmitMessageResponseMapper.toSendMessageResponse(submitMessage200Response);
 
         assertEquals(SendMessageResponse.OutcomeEnum.OK, sendMessageResponse.getOutcome());
     }
