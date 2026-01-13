@@ -187,12 +187,7 @@ class EmdRetrievalServiceImplTest {
         RetrievalResponseDTO responseDTO = new RetrievalResponseDTO();
         responseDTO.setRetrievalId(retrievalId);
         responseDTO.setIsPaymentEnabled(isPaymentEnabled);
-        if(Objects.equals(input, "setPaymentButton")){
-            responseDTO.setPaymentButton(pspDenomination);
-        }
-        else if(Objects.equals(input, "setPspDenomination")){
             responseDTO.setPspDenomination(pspDenomination);
-        }
 
         mockAccessTokenExpiringMap();
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));
@@ -216,7 +211,7 @@ class EmdRetrievalServiceImplTest {
         expectedPayload.setPspDenomination(pspDenomination);
         RetrievalResponseDTO responseDTO = new RetrievalResponseDTO();
         responseDTO.setRetrievalId(retrievalId);
-        responseDTO.setPaymentButton(pspDenomination);
+        responseDTO.setPspDenomination(pspDenomination);
 
         mockAccessTokenExpiringMap();
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));

@@ -30,8 +30,6 @@ public class PnEmdIntegrationConfigs {
     private CacheConfigs redisCache;
     private Duration retrievalPayloadCacheTtl;
 
-    private String courtesyMessageContent;
-
     private Templates msgsTemplates;
 
     @Data
