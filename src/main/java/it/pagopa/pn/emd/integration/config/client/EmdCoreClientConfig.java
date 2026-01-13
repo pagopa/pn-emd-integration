@@ -33,18 +33,4 @@ public class EmdCoreClientConfig extends CommonBaseClient {
         return new SubmitApi(apiClient);
     }
 
-    @Bean
-    it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.PaymentApi paymentApiV1() {
-        var apiClient = new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.ApiClient(initWebClient(this.builder));
-        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreBasePath());
-        return new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.PaymentApi(apiClient);
-    }
-
-    @Bean
-    it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.SubmitApi submitApiV1() {
-        var apiClient = new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.ApiClient(initWebClient(this.builder));
-        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreBasePath());
-        return new it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api.SubmitApi(apiClient);
-    }
-
 }

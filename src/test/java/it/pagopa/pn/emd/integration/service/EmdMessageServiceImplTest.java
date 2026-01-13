@@ -4,8 +4,6 @@ import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
-import it.pagopa.pn.emd.integration.middleware.client.EmdClientV1;
-import it.pagopa.pn.emd.integration.utils.UtilityV1;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
@@ -29,12 +27,6 @@ class EmdMessageServiceImplTest {
 
     @Mock
     private EmdClientImpl emdClient;
-
-    @Mock
-    private EmdClientV1 emdClientV1;
-
-    @Mock
-    private UtilityV1 utilityV1;
 
     @Mock
     private AccessTokenExpiringMap accessTokenExpiringMap;
@@ -65,7 +57,6 @@ class EmdMessageServiceImplTest {
         messagesTemplates.setAnalogMsg(analogMsg);
         messagesTemplates.setDigitalMsg(digitalMsg);
 
-        when(pnEmdIntegrationConfigs.getEnableApiV2()).thenReturn(true);
         when(pnEmdIntegrationConfigs.getMsgsTemplates()).thenReturn(messagesTemplates);
     }
 
