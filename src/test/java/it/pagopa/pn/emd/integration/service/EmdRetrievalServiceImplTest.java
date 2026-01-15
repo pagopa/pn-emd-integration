@@ -9,8 +9,6 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.Acce
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -172,9 +170,8 @@ class EmdRetrievalServiceImplTest {
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"setPaymentButton", "setPspDenomination"})
-    void getTokenRetrievalPayloadReturnsPayload_pspDenominationNotNull(String input) {
+    @Test
+    void getTokenRetrievalPayloadReturnsPayload_pspDenominationNotNull() {
         String retrievalId = "retrievalId";
         Boolean isPaymentEnabled = true;
         String pspDenomination = "Banca1";
