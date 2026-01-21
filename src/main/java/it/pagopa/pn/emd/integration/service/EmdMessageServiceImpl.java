@@ -60,17 +60,17 @@ public class EmdMessageServiceImpl implements EmdMessageService {
                 : SendMessageRequest.WorkflowTypeEnum.ANALOG;
 
         SendMessageRequest.SendMessageRequestBuilder builder = SendMessageRequest.builder()
-                                                                                 .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
-                                                                                 .recipientId(request.getRecipientId())
-                                                                                 .triggerDateTime(Instant.now())
-                                                                                 .senderDescription(request.getSenderDescription())
-                                                                                 .associatedPayment(request.getAssociatedPayment())
-                                                                                 .messageUrl(URI.create(pnEmdIntegrationConfigs.getOriginalMessageUrl()))
-                                                                                 .originId(request.getOriginId())
-                                                                                 .channel(SendMessageRequest.ChannelEnum.SEND)
-                                                                                 .title(messageTemplate.getHeader())
-                                                                                 .content(messageContent)
-                                                                                 .workflowType(workflowType);
+                .messageId(request.getOriginId() + "_" + Utils.removePrefix(request.getInternalRecipientId()))
+                .recipientId(request.getRecipientId())
+                .triggerDateTime(Instant.now())
+                .senderDescription(request.getSenderDescription())
+                .associatedPayment(request.getAssociatedPayment())
+                .messageUrl(URI.create(pnEmdIntegrationConfigs.getOriginalMessageUrl()))
+                .originId(request.getOriginId())
+                .channel(SendMessageRequest.ChannelEnum.SEND)
+                .title(messageTemplate.getHeader())
+                .content(messageContent)
+                .workflowType(workflowType);
 
         if (!isDigital) {
             builder.analogSchedulingDate(request.getSchedulingAnalogDate().toInstant());
