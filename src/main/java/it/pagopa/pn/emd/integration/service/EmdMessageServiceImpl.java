@@ -49,7 +49,7 @@ public class EmdMessageServiceImpl implements EmdMessageService {
         PnEmdIntegrationConfigs.CourtesyMessageTemplate messageTemplate = createMessages(request, isDigital);
 
         log.info("created new Message with deliveryMode: '{}', Header File: '{}', Content File: '{}'",
-                 request.getDeliveryMode(), messageTemplate.getHeaderFileName(), messageTemplate.getContentFileName());
+                request.getDeliveryMode(), messageTemplate.getHeaderFileName(), messageTemplate.getContentFileName());
 
         String messageContent = isDigital
                 ? messageTemplate.getContent()
