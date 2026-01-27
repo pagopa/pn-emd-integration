@@ -30,11 +30,7 @@ public class PnEmdIntegrationConfigs {
     private CacheConfigs redisCache;
     private Duration retrievalPayloadCacheTtl;
 
-    private String courtesyMessageContent;
-
     private Templates msgsTemplates;
-
-    private Boolean enableApiV2;
 
     @Data
     public static class CacheConfigs {
