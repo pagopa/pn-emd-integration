@@ -9,8 +9,6 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.Acce
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -18,7 +16,6 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
-import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -173,9 +170,8 @@ class EmdRetrievalServiceImplTest {
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"setPaymentButton", "setPspDenomination"})
-    void getTokenRetrievalPayloadReturnsPayload_pspDenominationNotNull(String input) {
+    @Test
+    void getTokenRetrievalPayloadReturnsPayload_pspDenominationNotNull() {
         String retrievalId = "retrievalId";
         Boolean isPaymentEnabled = true;
         String pspDenomination = "Banca1";
@@ -187,12 +183,7 @@ class EmdRetrievalServiceImplTest {
         RetrievalResponseDTO responseDTO = new RetrievalResponseDTO();
         responseDTO.setRetrievalId(retrievalId);
         responseDTO.setIsPaymentEnabled(isPaymentEnabled);
-        if(Objects.equals(input, "setPaymentButton")){
-            responseDTO.setPaymentButton(pspDenomination);
-        }
-        else if(Objects.equals(input, "setPspDenomination")){
             responseDTO.setPspDenomination(pspDenomination);
-        }
 
         mockAccessTokenExpiringMap();
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));
@@ -216,7 +207,7 @@ class EmdRetrievalServiceImplTest {
         expectedPayload.setPspDenomination(pspDenomination);
         RetrievalResponseDTO responseDTO = new RetrievalResponseDTO();
         responseDTO.setRetrievalId(retrievalId);
-        responseDTO.setPaymentButton(pspDenomination);
+        responseDTO.setPspDenomination(pspDenomination);
 
         mockAccessTokenExpiringMap();
         when(emdClient.getRetrieval(any(String.class), any(String.class))).thenReturn(Mono.just(responseDTO));

@@ -347,13 +347,6 @@ components:
           minLength: 1
           maxLength: 15
           example: "Banca1"
-        paymentButton:
-          type: string
-          description: "Etichetta del pulsante di pagamento (ad es. il nome del provider di pagamento)."
-          pattern: "^[a-zA-Z0-9 ]{1,15}$"
-          minLength: 1
-          maxLength: 15
-          example: "Banca1"
         originId:
           type: string
           description: "ID of the original message"
@@ -478,9 +471,9 @@ components:
         senderDescription:
           description: Description of the subject who originated the message
           type: string
-          pattern: "^[ -~]{1,50}$"
+          pattern: "^[ -~]{1,88}$"
           minLength: 1
-          maxLength: 50
+          maxLength: 88
         messageUrl:
           description: URL to retrieve the original message
           type: string

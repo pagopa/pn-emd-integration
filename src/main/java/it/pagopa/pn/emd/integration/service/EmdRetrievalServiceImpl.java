@@ -5,12 +5,10 @@ import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
-import it.pagopa.pn.emd.integration.service.ReactiveRedisService;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -68,7 +66,7 @@ public class EmdRetrievalServiceImpl implements EmdRetrievalService {
                 .retrievalId(request.getRetrievalId())
                 .tppId(request.getTppId())
                 .deeplink(request.getDeeplink())
-                .pspDenomination(StringUtils.isNotBlank(request.getPspDenomination())?request.getPspDenomination():request.getPaymentButton())
+                .pspDenomination(request.getPspDenomination())
                 .originId(request.getOriginId())
                 .isPaymentEnabled(request.getIsPaymentEnabled() != null && request.getIsPaymentEnabled())
                 .build();
