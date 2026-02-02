@@ -196,12 +196,12 @@
 					</execution>
 					<execution>
 						<phase>generate-resources</phase>
-						<id>generate-emd-core-client-v2</id>
+						<id>generate-emd-core-client</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client-v2.yaml</inputSpec>
+							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client.yaml</inputSpec>
 							<generatorName>java</generatorName>
 							<library>webclient</library>
 							<generateApiTests>false</generateApiTests>
