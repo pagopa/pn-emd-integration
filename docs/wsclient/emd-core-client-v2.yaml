@@ -462,6 +462,7 @@ components:
           minLength: 8
           maxLength: 64
           x-field-extra-annotation: "@lombok.ToString.Exclude"
+          format: password
         triggerDateTime:
           description: When (date and time) the subject who originated the message requested to send it
           type: string

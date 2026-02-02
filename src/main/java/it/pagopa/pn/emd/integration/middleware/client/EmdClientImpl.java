@@ -6,7 +6,7 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ public class EmdClientImpl implements EmdClient{
     private static final String ACCEPT_LANGUAGE = "it-IT";
 
     @Override
-    public Mono<InlineResponse200> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
+    public Mono<SubmitMessage200Response> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
         log.logInvokingExternalDownstreamService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
         submitApi.getApiClient().setBearerToken(accessToken);
         return submitApi.submitMessage(requestID, request)

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>it.pagopa.pn</groupId>
 		<artifactId>pn-parent</artifactId>
-		<version>2.1.1</version>
+		<version>2.1.2-SPRINGBOOT3</version>
 		<relativePath />
 	</parent>
 	<artifactId>pn-emd-integration</artifactId>
@@ -17,29 +17,17 @@
 		<url>${git.url}</url>
 	  <tag>HEAD</tag>
   </scm>
-	<properties>
-		<java.version>11</java.version>
-		<awspring.version>3.3.0</awspring.version>
-	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>io.awspring.cloud</groupId>
-				<artifactId>spring-cloud-aws-dependencies</artifactId>
-				<version>${awspring.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 
 		<dependency>
 			<groupId>it.pagopa.pn</groupId>
 			<artifactId>pn-commons</artifactId>
-			<version>2.10.0</version>
+			<version>2.15.0-SPRINGBOOT3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.awspring.cloud</groupId>
+			<artifactId>spring-cloud-aws-starter-sqs</artifactId>
 		</dependency>
 
 		<dependency>
@@ -97,24 +85,7 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.2</version>
-				<executions>
-					<execution>
-						<id>unpack-dependencies</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>unpack-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeArtifactIds>pn-commons</includeArtifactIds>
-							<outputDirectory>${project.build.directory}/dependency-resources</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -132,8 +103,8 @@
 			<plugin>
 				<groupId>org.openapitools</groupId>
 				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>5.4.0</version>
-				<executions>					
+				<version>7.12.0</version>
+				<executions>
 					<execution>
 						<id>generate-emd-private-server</id>
 						<goals>
@@ -147,8 +118,9 @@
 							<generateApiDocumentation>false</generateApiDocumentation>
 							<generateApiTests>false</generateApiTests>
 							<generateModelTests>false</generateModelTests>
-							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/server</templateDirectory>
 							<configOptions>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useJakartaEe>true</useJakartaEe>
 								<dateLibrary>java11</dateLibrary>
 								<delegatePattern>true</delegatePattern>
 								<interfaceOnly>true</interfaceOnly>
@@ -180,8 +152,9 @@
 							<generateModelTests>false</generateModelTests>
 							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
 							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
-							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/client</templateDirectory>
 							<configOptions>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useJakartaEe>true</useJakartaEe>
 								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.milauth.api</apiPackage>
 								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.milauth.model</modelPackage>
 								<annotationLibrary>none</annotationLibrary>
@@ -191,6 +164,35 @@
 								<useAbstractionForFiles>true</useAbstractionForFiles>
 								<useBeanValidation>false</useBeanValidation>
 								<additionalModelTypeAnnotations>@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY)</additionalModelTypeAnnotations>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>generate-resources</phase>
+						<id>generate-emd-core-client-v1</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client-v1.yaml</inputSpec>
+							<generatorName>java</generatorName>
+							<library>webclient</library>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
+							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
+							<configOptions>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useJakartaEe>true</useJakartaEe>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.v1.api</apiPackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.v1.model</modelPackage>
+								<annotationLibrary>none</annotationLibrary>
+								<dateLibrary>java8</dateLibrary>
+								<documentationProvider>source</documentationProvider>
+								<openApiNullable>false</openApiNullable>
+								<useAbstractionForFiles>true</useAbstractionForFiles>
+								<useBeanValidation>false</useBeanValidation>
+								<additionalModelTypeAnnotations>@lombok.Builder(toBuilder = true); @lombok.AllArgsConstructor;</additionalModelTypeAnnotations>
 							</configOptions>
 						</configuration>
 					</execution>
@@ -208,8 +210,9 @@
 							<generateModelTests>false</generateModelTests>
 							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
 							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
-							<templateDirectory>${project.build.directory}/dependency-resources/scripts/openapi/templates/5.4.0/client</templateDirectory>
 							<configOptions>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useJakartaEe>true</useJakartaEe>
 								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.api</apiPackage>
 								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.model</modelPackage>
 								<annotationLibrary>none</annotationLibrary>
