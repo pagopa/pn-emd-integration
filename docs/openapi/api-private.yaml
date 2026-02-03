@@ -264,21 +264,12 @@ components:
           description: ID of the recipient (tax code)
           type: string
           x-field-extra-annotation: "@lombok.ToString.Exclude"
-          pattern: "^[ -~]{8,64}$"
-          minLength: 8
-          maxLength: 64
         senderDescription:
           description: Description of the subject who originated the message
           type: string
-          pattern: "^[ -~]{1,88}$"
-          minLength: 1
-          maxLength: 88
         originId:
           description: ID of the original message
           type: string
-          pattern: "^[ -~]{24,36}$"
-          minLength: 24
-          maxLength: 36
         associatedPayment:
           description: The notification has an associated payment
           type: boolean
