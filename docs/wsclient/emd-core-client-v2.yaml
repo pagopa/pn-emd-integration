@@ -459,15 +459,13 @@ components:
         messageId:
           description: Unique ID of the message
           type: string
-          pattern: "^[ -~]{24,64}$"
-          minLength: 24
-          maxLength: 64
+          minLength: 1
+          maxLength: 100
         recipientId:
           description: ID of the recipient
           type: string
-          pattern: "^[ -~]{8,64}$"
-          minLength: 8
-          maxLength: 64
+          minLength: 1
+          maxLength: 100
           x-field-extra-annotation: "@lombok.ToString.Exclude"
         triggerDateTime:
           description: When (date and time) the subject who originated the message requested to send it
@@ -475,30 +473,26 @@ components:
           format: date-time
           example: "2024-06-21T12:34:56.000Z"
         senderDescription:
-          description: Description of the subject who originated the message
+          description: Description of the subject who originated the message "Supports UTF-8."
           type: string
-          pattern: "^[ -~]{1,88}$"
           minLength: 1
-          maxLength: 88
+          maxLength: 250
         messageUrl:
           description: URL to retrieve the original message
           type: string
           format: uri
-          pattern: "^[ -~]{1,2048}$"
           minLength: 1
           maxLength: 2048
         originId:
           description: ID of the original message
           type: string
-          pattern: "^[ -~]{24,36}$"
-          minLength: 24
-          maxLength: 36
-        title:
-          description: Header of the message
-          type: string
-          pattern: "^[ -~]{1,140}$"
           minLength: 1
-          maxLength: 140
+          maxLength: 100
+        title:
+          description: Header of the message "Supports UTF-8."
+          type: string
+          minLength: 1
+          maxLength: 250
         content:
           description: |
             Message content in Markdown format, dynamic based on workflowType (ANALOG/DIGITAL).
@@ -506,7 +500,6 @@ components:
             - ANALOG: includes deadline for accessing notification to avoid postal delivery
             - DIGITAL: standard message without deadline, includes legal delivery information
           type: string
-          pattern: "[\\s\\S]{1,100000}$"
           minLength: 1
           maxLength: 100000
         associatedPayment:
