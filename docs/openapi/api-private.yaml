@@ -257,9 +257,6 @@ components:
         internalRecipientId:
           description: ID of the recipient for internal use
           type: string
-          pattern: "^[ -~]{8,64}$"
-          minLength: 8
-          maxLength: 64
         recipientId:
           description: ID of the recipient (tax code)
           type: string
