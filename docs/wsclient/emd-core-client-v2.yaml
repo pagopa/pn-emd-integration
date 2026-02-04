@@ -473,7 +473,7 @@ components:
           format: date-time
           example: "2024-06-21T12:34:56.000Z"
         senderDescription:
-          description: Description of the subject who originated the message "Supports UTF-8."
+          description: Description of the subject who originated the message. Supports UTF-8.
           type: string
           minLength: 1
           maxLength: 250
@@ -489,7 +489,7 @@ components:
           minLength: 1
           maxLength: 100
         title:
-          description: Header of the message "Supports UTF-8."
+          description: Header of the message. Supports UTF-8.
           type: string
           minLength: 1
           maxLength: 250
