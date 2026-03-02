@@ -33,10 +33,12 @@ public class PnEmdIntegrationController implements MessageApi, PaymentApi, Check
     }
 
     @Override
-    public Mono<ResponseEntity<PaymentUrlResponse>> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, final ServerWebExchange exchange) {
-        return emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId)
+    public Mono<ResponseEntity<PaymentUrlResponse>> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, Integer amount, final ServerWebExchange exchange) {
+        return emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount)
                 .map(ResponseEntity.ok()::body);
     }
+
+
 
     @Override
     public Mono<ResponseEntity<RetrievalPayload>> emdCheckTPP(String retrievalId, final ServerWebExchange exchange) {

@@ -119,18 +119,39 @@ class PnEmdIntegrationControllerTest {
         String retrievalId = "retrievalId";
         String noticeCode = "noticeCode";
         String paTaxId = "paTaxId";
-        String expectedUrl = "http://example.com/emd_endpoint/retrievalId?fiscalCode=paTaxId&noticeNumber=noticeCode";
+        Integer amount = 1000;
+        String expectedUrl = "http://example.com/emd_endpoint/retrievalId?fiscalCode=paTaxId&noticeNumber=noticeCode&amount=1000";
 
         PaymentUrlResponse paymentUrlResponse = new PaymentUrlResponse();
         paymentUrlResponse.setPaymentUrl(expectedUrl);
 
-        when(emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId)).thenReturn(Mono.just(paymentUrlResponse));
+        when(emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount)).thenReturn(Mono.just(paymentUrlResponse));
 
-        Mono<ResponseEntity<PaymentUrlResponse>> result = pnEmdIntegrationController.getPaymentUrl(retrievalId, noticeCode, paTaxId, null);
+        Mono<ResponseEntity<PaymentUrlResponse>> result = pnEmdIntegrationController.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount, null);
 
         StepVerifier.create(result)
                 .expectNextMatches(response -> response.getStatusCode().is2xxSuccessful() &&
                         response.getBody().getPaymentUrl().equals(expectedUrl))
                 .verifyComplete();
+    }
+
+    @Test
+    void getPaymentUrlReturnsCorrectUrWithoutAmount() {
+        String retrievalId = "retrievalId";
+        String noticeCode = "noticeCode";
+        String paTaxId = "paTaxId";
+        String expectedUrl = "http://example.com/emd_endpoint/retrievalId?fiscalCode=paTaxId&noticeNumber=noticeCode&amount=amount";
+
+        PaymentUrlResponse paymentUrlResponse = new PaymentUrlResponse();
+        paymentUrlResponse.setPaymentUrl(expectedUrl);
+
+        when(emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId, null)).thenReturn(Mono.just(paymentUrlResponse));
+
+        Mono<ResponseEntity<PaymentUrlResponse>> result = pnEmdIntegrationController.getPaymentUrl(retrievalId, noticeCode, paTaxId, null , null);
+
+        StepVerifier.create(result)
+                    .expectNextMatches(response -> response.getStatusCode().is2xxSuccessful() &&
+                                                   response.getBody().getPaymentUrl().equals(expectedUrl))
+                    .verifyComplete();
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 @Slf4j
 public class EmdCoreClientConfig extends CommonBaseClient {
+
     private final WebClient.Builder builder;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
 
