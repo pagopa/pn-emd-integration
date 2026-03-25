@@ -31,7 +31,7 @@ public class MilAuthClientImpl implements MilAuthClient {
                 UUID.randomUUID()
             )
             .doOnError(throwable -> {
-                log.logInvokationResultDownstreamFailed(CLIENT_NAME, throwable.getMessage());
+                log.logInvokationResultDownstreamFailed(CLIENT_NAME, throwable.getMessage(), throwable);
                 throw new PnEmdIntegrationException(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), MIL_AUTH_ERROR);
             });
     }
