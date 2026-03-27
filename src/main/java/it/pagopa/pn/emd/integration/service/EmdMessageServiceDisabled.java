@@ -18,6 +18,6 @@ public class EmdMessageServiceDisabled implements EmdMessageService {
     @Override
     public Mono<SubmitMessage200Response> submitMessage(SendMessageRequestBody request) {
         log.info("[Message Service disabled] - Start submitMessage for request: {}", request);
-        return Mono.just(new SubmitMessage200Response(Outcome.NO_CHANNELS_ENABLED));
+        return Mono.just(new SubmitMessage200Response().outcome(Outcome.NO_CHANNELS_ENABLED));
     }
 }
