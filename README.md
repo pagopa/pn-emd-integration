@@ -91,10 +91,21 @@ Microservizio che si integra con le API esposte dai servizi EMD (Electronic Mess
 - **Client EMD Core**: `docs/wsclient/emd-core-client.yaml` — client generato per EMD Core
 - **Client MIL Auth**: `docs/wsclient/mil-auth-client.yaml` — client generato per token OAuth2
 
-### Sequenze e Casi d'Uso
-- `docs/sequences/InvioMessaggioCortesia.md` — Flusso di invio messaggi
-- `docs/sequences/AccessoAlDettaglioDellaNotifica.md` — Accesso ai dettagli
-- `docs/sequences/PagamentoTramiteAppBanca.md` — Flusso pagamenti
+### Flussi e Sequenze
+
+| Endpoint | Metodo | Flusso | Descrizione |
+|----------|--------|--------|------------|
+| `/emd-integration-private/send-message` | POST | [`InvioMessaggioCortesia.md`](docs/sequences/InvioMessaggioCortesia.md) | Invio messaggio di cortesia (digitale/analogico) verso EMD Core |
+| `/emd-integration-private/payment-url` | GET | [`PagamentoTramiteAppBanca.md`](docs/sequences/PagamentoTramiteAppBanca.md) | Generazione URL di pagamento per integrazione bancaria |
+| `/emd-integration-private/emd/check-tpp` | GET | [`AccessoAlDettaglioDellaNotifica.md`](docs/sequences/AccessoAlDettaglioDellaNotifica.md) section 1B | Verifica TPP chiamando EMD Core (payload fresco, non cachato) |
+| `/emd-integration-private/token/check-tpp` | GET | [`AccessoAlDettaglioDellaNotifica.md`](docs/sequences/AccessoAlDettaglioDellaNotifica.md) section 1B | Verifica TPP recuperando payload cachato in Redis (veloce) |
+
+**Nota sui due check-tpp:**
+- **`emdCheckTPP`** chiama EMD Core ad ogni richiesta (fresco, sempre aggiornato)
+- **`tokenCheckTPP`** restituisce il payload già cachato in Redis (cache-aside pattern, TTL 10m) — usato dal BFF per performance
+
+### Diagrammi Architetturali
+- `docs/sequences/messaggiCortesia.excalidraw.png` — Diagramma Excalidraw dell'architettura messaggi
 
 ## Configurazione
 
