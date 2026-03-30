@@ -148,13 +148,13 @@ Parameters:
     Type: String
     Description: 'Token expiration buffer for the MIL service (expressed in milliseconds)'
 
-  EmdMessageCoreBasePath:
+  EmdCoreMessageBasePath:
     Type: String
-    Description: 'Base path for the EMD Message Core service'
+    Description: 'Base path for the EMD Core Message service'
 
-  EmdPaymentCoreBasePath:
+  EmdCorePaymentBasePath:
     Type: String
-    Description: 'Base path for the EMD Payment Core service'
+    Description: 'Base path for the EMD Core Payment service'
 
   OriginalMessageUrl:
     Type: String
@@ -267,8 +267,8 @@ Resources:
         ContainerEnvEntry13: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHEREGION=${ElasticacheCacheRegion}'
         ContainerEnvEntry14: !Sub 'PN_EMDINTEGRATION_REDISCACHE_MODE=${ElasticacheMode}'
         ContainerEnvEntry15: !Sub 'PN_EMDINTEGRATION_RETRIEVALPAYLOADCACHETTL=${RetrievalPayloadCacheTtl}'
-        ContainerEnvEntry20: !Sub 'PN_EMDINTEGRATION_EMDMESSAGECOREBASEPATH=${EmdMessageCoreBasePath}'
-        ContainerEnvEntry21: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTCOREBASEPATH=${EmdPaymentCoreBasePath}'
+        ContainerEnvEntry20: !Sub 'PN_EMDINTEGRATION_EMDCOREMESSAGEBASEPATH=${EmdCoreMessageBasePath}'
+        ContainerEnvEntry21: !Sub 'PN_EMDINTEGRATION_EMDCOREPAYMENTBASEPATH=${EmdCorePaymentBasePath}'
         ContainerEnvEntry17: !Sub 'PN_EMDINTEGRATION_ORIGINALMESSAGEURL=${OriginalMessageUrl}'
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'
         ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTENDPOINT=${EmdPaymentEndpoint}'
