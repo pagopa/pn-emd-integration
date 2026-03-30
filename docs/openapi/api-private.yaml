@@ -261,6 +261,7 @@ components:
           description: ID of the recipient (tax code)
           type: string
           x-field-extra-annotation: "@lombok.ToString.Exclude"
+          format: password
         senderDescription:
           description: Description of the subject who originated the message
           type: string

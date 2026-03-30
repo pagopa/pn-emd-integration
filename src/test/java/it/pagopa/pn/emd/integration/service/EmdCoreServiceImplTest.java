@@ -2,7 +2,7 @@ package it.pagopa.pn.emd.integration.service;
 
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
@@ -42,12 +42,12 @@ class EmdCoreServiceImplTest {
     void testSubmitMessageDelegatesToMessageService() {
         SendMessageRequestBody requestBody = new SendMessageRequestBody();
         requestBody.setRecipientId("recipientId");
-        InlineResponse200 response = new InlineResponse200();
+        SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
 
         when(emdMessageService.submitMessage(any(SendMessageRequestBody.class))).thenReturn(Mono.just(response));
 
-        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
+        Mono<SubmitMessage200Response> result = emdCoreServiceImpl.submitMessage(requestBody);
 
         StepVerifier.create(result)
                 .expectNext(response)
@@ -64,7 +64,7 @@ class EmdCoreServiceImplTest {
         when(emdMessageService.submitMessage(any(SendMessageRequestBody.class)))
                 .thenReturn(Mono.error(exception));
 
-        Mono<InlineResponse200> result = emdCoreServiceImpl.submitMessage(requestBody);
+        Mono<SubmitMessage200Response> result = emdCoreServiceImpl.submitMessage(requestBody);
 
         StepVerifier.create(result)
                 .expectError(PnEmdIntegrationException.class)
