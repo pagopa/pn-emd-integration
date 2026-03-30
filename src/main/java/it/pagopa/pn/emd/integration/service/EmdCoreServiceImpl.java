@@ -1,7 +1,7 @@
 package it.pagopa.pn.emd.integration.service;
 
 
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
@@ -19,7 +19,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     private final EmdPaymentService emdPaymentService;
 
     @Override
-    public Mono<InlineResponse200> submitMessage(SendMessageRequestBody request) {
+    public Mono<SubmitMessage200Response> submitMessage(SendMessageRequestBody request) {
         log.debug("EmdCoreService delegating submitMessage to EmdMessageService");
         return emdMessageService.submitMessage(request);
     }

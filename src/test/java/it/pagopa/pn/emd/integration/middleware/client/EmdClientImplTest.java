@@ -7,7 +7,7 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -45,12 +45,12 @@ class EmdClientImplTest {
         SendMessageRequest request = new SendMessageRequest();
         String accessToken = "token";
         String requestID = "requestID";
-        InlineResponse200 response = new InlineResponse200();
+        SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
 
         when(submitApi.submitMessage(any(String.class), any(SendMessageRequest.class))).thenReturn(Mono.just(response));
 
-        Mono<InlineResponse200> result = emdClient.submitMessage(request, accessToken, requestID);
+        Mono<SubmitMessage200Response> result = emdClient.submitMessage(request, accessToken, requestID);
 
         StepVerifier.create(result)
                 .expectNext(response)
@@ -66,7 +66,7 @@ class EmdClientImplTest {
         when(submitApi.submitMessage(any(String.class), any(SendMessageRequest.class)))
                 .thenReturn(Mono.error(new RuntimeException("Failed to submit message")));
 
-        Mono<InlineResponse200> result = emdClient.submitMessage(request, accessToken, requestID);
+        Mono<SubmitMessage200Response> result = emdClient.submitMessage(request, accessToken, requestID);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationException &&

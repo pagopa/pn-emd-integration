@@ -6,7 +6,7 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,11 +23,11 @@ public class EmdClientImpl implements EmdClient{
     private static final String ACCEPT_LANGUAGE = "it-IT";
 
     @Override
-    public Mono<InlineResponse200> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
+    public Mono<SubmitMessage200Response> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
         log.logInvokingExternalDownstreamService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
         submitApi.getApiClient().setBearerToken(accessToken);
         return submitApi.submitMessage(requestID, request)
-                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage()))
+                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage(), throwable))
                 .onErrorMap(throwable -> {
                     throw new PnEmdIntegrationException(
                             "Error sending message to EMD",
@@ -43,7 +43,7 @@ public class EmdClientImpl implements EmdClient{
         paymentApi.getApiClient().setBearerToken(accessToken);
         return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
                 .doOnNext(response -> log.debug("Retrieved payload from EMD: {}", response))
-                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage()))
+                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage(), throwable))
                 .onErrorResume(this::isNotFoundException, e -> Mono.empty())
                 .onErrorMap(throwable -> {
                     throw new PnEmdIntegrationException(

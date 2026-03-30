@@ -96,6 +96,7 @@ components:
       type: string
       pattern: "^[0-9a-zA-Z-]{36}$"
       x-field-extra-annotation: "@lombok.ToString.Exclude"
+      format: password
       minLength: 36
       maxLength: 36
       example: "c7a1b24b058347792ebdbaa-Az7fn37dh-q9"
@@ -149,6 +150,7 @@ components:
       description: Token
       type: string
       x-field-extra-annotation: "@lombok.ToString.Exclude"
+      format: password
       pattern: "^[a-zA-Z0-9_-]{1,1024}\\.[a-zA-Z0-9_-]{1,1024}\\.[a-zA-Z0-9_-]{1,1024}$"
       minLength: 5
       maxLength: 3074

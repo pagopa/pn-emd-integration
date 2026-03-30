@@ -30,9 +30,9 @@ public class MilAuthClientImpl implements MilAuthClient {
                 accessTokenRequestDto.getClientSecret(),
                 UUID.randomUUID()
             )
-            .doOnError(throwable -> {
-                log.logInvokationResultDownstreamFailed(CLIENT_NAME, throwable.getMessage());
-                throw new PnEmdIntegrationException(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), MIL_AUTH_ERROR);
+            .onErrorResume(throwable -> {
+                log.logInvokationResultDownstreamFailed(CLIENT_NAME, throwable.getMessage(), throwable);
+                return Mono.error(new PnEmdIntegrationException(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), MIL_AUTH_ERROR));
             });
     }
 }
