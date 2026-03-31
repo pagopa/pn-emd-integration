@@ -22,14 +22,14 @@ public class EmdCoreClientConfig extends CommonBaseClient {
     @Bean
     PaymentApi paymentApi() {
         var apiClient = new ApiClient(initWebClient(this.builder));
-        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreBasePath());
+        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCorePaymentBasePath());
         return new PaymentApi(apiClient);
     }
 
     @Bean
     SubmitApi submitApi() {
         var apiClient = new ApiClient(initWebClient(this.builder));
-        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreBasePath());
+        apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreMessageBasePath());
         return new SubmitApi(apiClient);
     }
 
