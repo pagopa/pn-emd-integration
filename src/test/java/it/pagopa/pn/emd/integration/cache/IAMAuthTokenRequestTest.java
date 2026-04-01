@@ -1,45 +1,35 @@
 package it.pagopa.pn.emd.integration.cache;
 
-import com.amazonaws.auth.AWSCredentials;
-import org.apache.http.client.utils.URIBuilder;
 import org.junit.jupiter.api.Test;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
 
-import java.net.URISyntaxException;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IAMAuthTokenRequestTest {
 
     @Test
-    void toSignedRequestUri_returnsCorrectUri() throws URISyntaxException {
-        AWSCredentials credentials = mock(AWSCredentials.class);
-        when(credentials.getAWSAccessKeyId()).thenReturn("accessKey");
-        when(credentials.getAWSSecretKey()).thenReturn("secretKey");
+    void toSignedRequestUri_returnsCorrectUri() {
+        AwsCredentials credentials = AwsBasicCredentials.create("accessKey", "secretKey");
         IAMAuthTokenRequest request = new IAMAuthTokenRequest("userId", "cacheName", "region", false);
 
         String signedUri = request.toSignedRequestUri(credentials);
 
-        URIBuilder expectedUri = new URIBuilder("http://cacheName/")
-                .addParameter("Action", "connect")
-                .addParameter("User", "userId");
-        assertTrue(signedUri.contains(expectedUri.build().toString().replace("http://", "")));
+        assertTrue(signedUri.contains("cacheName/"));
+        assertTrue(signedUri.contains("Action=connect"));
+        assertTrue(signedUri.contains("User=userId"));
     }
 
     @Test
-    void toSignedRequestUri_includesServerlessParameter() throws URISyntaxException {
-        AWSCredentials credentials = mock(AWSCredentials.class);
-        when(credentials.getAWSAccessKeyId()).thenReturn("accessKey");
-        when(credentials.getAWSSecretKey()).thenReturn("secretKey");
+    void toSignedRequestUri_includesServerlessParameter() {
+        AwsCredentials credentials = AwsBasicCredentials.create("accessKey", "secretKey");
         IAMAuthTokenRequest request = new IAMAuthTokenRequest("userId", "cacheName", "region", true);
 
         String signedUri = request.toSignedRequestUri(credentials);
 
-        URIBuilder expectedUri = new URIBuilder("http://cacheName/")
-                .addParameter("Action", "connect")
-                .addParameter("User", "userId")
-                .addParameter("ResourceType", "ServerlessCache");
-        assertTrue(signedUri.contains(expectedUri.build().toString().replace("http://", "")));
+        assertTrue(signedUri.contains("cacheName/"));
+        assertTrue(signedUri.contains("Action=connect"));
+        assertTrue(signedUri.contains("User=userId"));
+        assertTrue(signedUri.contains("ResourceType=ServerlessCache"));
     }
 }
