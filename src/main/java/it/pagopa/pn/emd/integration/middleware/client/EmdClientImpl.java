@@ -2,11 +2,11 @@ package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.api.SubmitApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.model.RetrievalResponseDTO;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 @CustomLog
-public class EmdClientImpl implements EmdClient{
+public class EmdClientImpl implements EmdClient {
     private final SubmitApi submitApi;
     private final PaymentApi paymentApi;
     private static final String ACCEPT_LANGUAGE = "it-IT";

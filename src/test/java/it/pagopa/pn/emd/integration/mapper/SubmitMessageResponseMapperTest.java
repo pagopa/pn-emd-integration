@@ -1,8 +1,8 @@
 package it.pagopa.pn.emd.integration.mapper;
 
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
