@@ -145,13 +145,16 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/docs/wsclient/mil-auth-client.yaml</inputSpec>
+							<inputSpec>https://raw.githubusercontent.com/pagopa/mil-auth/195c7d3b5a30dba3107dc3ac5a116df01bdeda19/src/main/resources/META-INF/openapi.yaml</inputSpec>
 							<generatorName>java</generatorName>
 							<library>webclient</library>
 							<generateApiTests>false</generateApiTests>
 							<generateModelTests>false</generateModelTests>
 							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
 							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
+							<globalProperties>
+								<apis>Token</apis>
+							</globalProperties>
 							<configOptions>
 								<useSpringBoot3>true</useSpringBoot3>
 								<useJakartaEe>true</useJakartaEe>
