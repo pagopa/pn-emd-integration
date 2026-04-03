@@ -25,7 +25,7 @@ public class EmdClientImpl implements EmdClient {
     @Override
     public Mono<SubmitMessage200Response> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
         log.logInvokingExternalDownstreamService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
-        submitApi.getApiClient().setBearerToken(accessToken);
+        submitApi.getApiClient().setAccessToken(accessToken);
         return submitApi.submitMessage(requestID, request)
                 .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage(), throwable))
                 .onErrorMap(throwable -> {
@@ -40,7 +40,7 @@ public class EmdClientImpl implements EmdClient {
     @Override
     public Mono<RetrievalResponseDTO> getRetrieval(String retrievalId, String accessToken) {
         log.logInvokingExternalDownstreamService(CLIENT_NAME, GET_RETRIEVAL_METHOD);
-        paymentApi.getApiClient().setBearerToken(accessToken);
+        paymentApi.getApiClient().setAccessToken(accessToken);
         return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
                 .doOnNext(response -> log.debug("Retrieved payload from EMD: {}", response))
                 .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage(), throwable))
