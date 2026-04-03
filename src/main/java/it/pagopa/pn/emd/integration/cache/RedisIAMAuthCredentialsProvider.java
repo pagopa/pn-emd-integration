@@ -18,8 +18,8 @@ public class RedisIAMAuthCredentialsProvider {
     private final IAMAuthTokenRequest iamAuthTokenRequest;
     private final AwsCredentialsProvider awsCredentialsProvider;
 
-    private volatile String cachedToken;
-    private volatile Instant tokenExpiry = Instant.EPOCH;
+    private String cachedToken;
+    private Instant tokenExpiry = Instant.EPOCH;
 
     public RedisIAMAuthCredentialsProvider(String userId,
                                            IAMAuthTokenRequest iamAuthTokenRequest,

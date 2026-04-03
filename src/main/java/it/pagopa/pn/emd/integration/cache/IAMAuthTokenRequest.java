@@ -1,6 +1,5 @@
 package it.pagopa.pn.emd.integration.cache;
 
-import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.signer.Aws4Signer;
 import software.amazon.awssdk.auth.signer.params.Aws4PresignerParams;
@@ -15,7 +14,6 @@ import java.time.temporal.ChronoUnit;
 /**
  * A class to generate an IAM auth token. This implementation is based on the AWS User Guide: <a href="https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth-iam.html">...</a>
  */
-@Slf4j
 public class IAMAuthTokenRequest {
     private static final SdkHttpMethod REQUEST_METHOD = SdkHttpMethod.GET;
     private static final String REQUEST_PROTOCOL = "http://";
