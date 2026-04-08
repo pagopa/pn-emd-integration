@@ -172,12 +172,12 @@
 					</execution>
 					<execution>
 						<phase>generate-resources</phase>
-						<id>generate-emd-core-client</id>
+						<id>generate-emd-message-client</id>
 						<goals>
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>${project.basedir}/docs/wsclient/emd-core-client.yaml</inputSpec>
+							<inputSpec>https://raw.githubusercontent.com/pagopa/cstar-securehub-infra-api-spec/7e9abf56ad21205f55b089774b7eaeac9aceeda4/src/mdc/api/emd_message_core/openapi.emd.int.message.yml</inputSpec>
 							<generatorName>java</generatorName>
 							<library>webclient</library>
 							<generateApiTests>false</generateApiTests>
@@ -187,8 +187,37 @@
 							<configOptions>
 								<useSpringBoot3>true</useSpringBoot3>
 								<useJakartaEe>true</useJakartaEe>
-								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.api</apiPackage>
-								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdcoreclient.model</modelPackage>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdmessage.api</apiPackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdmessage.model</modelPackage>
+								<annotationLibrary>none</annotationLibrary>
+								<dateLibrary>java8</dateLibrary>
+								<documentationProvider>source</documentationProvider>
+								<openApiNullable>false</openApiNullable>
+								<useAbstractionForFiles>true</useAbstractionForFiles>
+								<useBeanValidation>false</useBeanValidation>
+								<additionalModelTypeAnnotations>@lombok.Builder(toBuilder = true); @lombok.AllArgsConstructor;</additionalModelTypeAnnotations>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>generate-resources</phase>
+						<id>generate-emd-payment-client</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>https://raw.githubusercontent.com/pagopa/cstar-securehub-infra-api-spec/7e9abf56ad21205f55b089774b7eaeac9aceeda4/src/mdc/api/emd_payment_core/openapi.emd.ext.payment.yml</inputSpec>
+							<generatorName>java</generatorName>
+							<library>webclient</library>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
+							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
+							<configOptions>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useJakartaEe>true</useJakartaEe>
+								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdpayment.api</apiPackage>
+								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.emdpayment.model</modelPackage>
 								<annotationLibrary>none</annotationLibrary>
 								<dateLibrary>java8</dateLibrary>
 								<documentationProvider>source</documentationProvider>

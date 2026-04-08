@@ -1,7 +1,7 @@
 package it.pagopa.pn.emd.integration.service;
 
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SubmitMessage200Response;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
