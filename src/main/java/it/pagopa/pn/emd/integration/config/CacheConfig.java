@@ -3,29 +3,27 @@ package it.pagopa.pn.emd.integration.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import it.pagopa.pn.emd.integration.cache.IamRedisCredentialsProviderFactory;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPoolConfig;
-
-import java.net.URISyntaxException;
-
-import static it.pagopa.pn.emd.integration.cache.RedisMode.SERVERLESS;
-
 
 @Configuration
 @EnableCaching
@@ -37,48 +35,43 @@ public class CacheConfig {
     @Bean
     @Primary
     @Profile("!local")
-    public JedisConnectionFactory elasticacheConnectionFactory() throws URISyntaxException {
+    public LettuceConnectionFactory elasticacheConnectionFactory() {
         PnEmdIntegrationConfigs.CacheConfigs redisCache = pnEmdIntegrationConfigs.getRedisCache();
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisCache.getHostName(), redisCache.getPort());
-        JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration = JedisClientConfiguration.builder();
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisCache.getHostName(), redisCache.getPort());
 
-        if (redisCache.getMode() == SERVERLESS) {
-            jedisClientConfiguration.useSsl();
-        } else {
-            GenericObjectPoolConfig<Jedis> poolConfig = new JedisPoolConfig();
-            poolConfig.setMaxIdle(30);
-            poolConfig.setMinIdle(10);
-            jedisClientConfiguration.usePooling().poolConfig(poolConfig);
-        }
+        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+                .redisCredentialsProviderFactory(new IamRedisCredentialsProviderFactory(redisCache))
+                .useSsl()
+                .build();
 
-        return new PnEmdIntegrationConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration.build(), redisCache);
-    }
-
-    @Profile("local")
-    public JedisConnectionFactory localConnectionFactory() {
-        PnEmdIntegrationConfigs.CacheConfigs redisCache = pnEmdIntegrationConfigs.getRedisCache();
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(redisCache.getHostName(), redisCache.getPort());
-        JedisClientConfiguration jedisClientConfiguration = JedisClientConfiguration.builder().build();
-        return new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration);
+        return new LettuceConnectionFactory(redisConfig, clientConfig);
     }
 
     @Bean
-    public RedisTemplate<String, RetrievalPayload> retrievalPayloadRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, RetrievalPayload> redisTemplate = new RedisTemplate<>();
+    @Profile("local")
+    public LettuceConnectionFactory localConnectionFactory() {
+        PnEmdIntegrationConfigs.CacheConfigs redisCache = pnEmdIntegrationConfigs.getRedisCache();
+        RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(redisCache.getHostName(), redisCache.getPort());
+        return new LettuceConnectionFactory(redisConfig, LettuceClientConfiguration.defaultConfiguration());
+    }
+
+    @Bean
+    public ReactiveRedisTemplate<String, RetrievalPayload> reactiveRetrievalPayloadRedisTemplate(ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
                 ObjectMapper.DefaultTyping.NON_FINAL,
                 JsonTypeInfo.As.PROPERTY);
 
-        Jackson2JsonRedisSerializer<RetrievalPayload> serializer = new Jackson2JsonRedisSerializer<>(RetrievalPayload.class);
-        serializer.setObjectMapper(objectMapper);
+        Jackson2JsonRedisSerializer<RetrievalPayload> serializer = new Jackson2JsonRedisSerializer<>(objectMapper, RetrievalPayload.class);
+        RedisSerializationContext<String, RetrievalPayload> context =
+                RedisSerializationContext.<String, RetrievalPayload>newSerializationContext(RedisSerializer.string())
+                        .key(RedisSerializer.string())
+                        .value(serializer)
+                        .hashKey(RedisSerializer.string())
+                        .hashValue(serializer)
+                        .build();
 
-        redisTemplate.setConnectionFactory(redisConnectionFactory);
-        redisTemplate.setKeySerializer(RedisSerializer.string());
-        redisTemplate.setValueSerializer(serializer);
-        redisTemplate.setHashKeySerializer(RedisSerializer.string());
-        redisTemplate.setHashValueSerializer(serializer);
-        redisTemplate.afterPropertiesSet();
-        return redisTemplate;
+        return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory, context);
     }
+
 }
