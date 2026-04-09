@@ -1,17 +1,18 @@
 package it.pagopa.pn.emd.integration.cache;
 
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
+import lombok.CustomLog;
 import org.springframework.data.redis.connection.RedisConfiguration;
 import org.springframework.data.redis.connection.lettuce.RedisCredentialsProviderFactory;
 import io.lettuce.core.RedisCredentialsProvider;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 
 /**
  * Factory that creates an IAM-authenticated {@link RedisCredentialsProvider} for Lettuce,
  * using configuration from {@link PnEmdIntegrationConfigs.CacheConfigs}.
  */
+@CustomLog
 public class IamRedisCredentialsProviderFactory implements RedisCredentialsProviderFactory {
 
     private final PnEmdIntegrationConfigs.CacheConfigs cacheConfigs;
@@ -34,7 +35,10 @@ public class IamRedisCredentialsProviderFactory implements RedisCredentialsProvi
                 iamRequest,
                 DefaultCredentialsProvider.create()
         );
-        return () -> Mono.fromSupplier(provider::getRedisCredentials)
-                .subscribeOn(Schedulers.boundedElastic());
+
+        log.info("Pre-warming IAM credentials for ElastiCache...");
+        provider.getRedisCredentials();
+        log.info("IAM credentials pre-warmed successfully.");
+        return () -> Mono.fromSupplier(provider::getRedisCredentials);
     }
 }
