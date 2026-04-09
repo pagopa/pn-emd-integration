@@ -5,6 +5,7 @@ import org.springframework.data.redis.connection.RedisConfiguration;
 import org.springframework.data.redis.connection.lettuce.RedisCredentialsProviderFactory;
 import io.lettuce.core.RedisCredentialsProvider;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 
 /**
@@ -33,6 +34,7 @@ public class IamRedisCredentialsProviderFactory implements RedisCredentialsProvi
                 iamRequest,
                 DefaultCredentialsProvider.create()
         );
-        return () -> Mono.fromSupplier(provider::getRedisCredentials);
+        return () -> Mono.fromSupplier(provider::getRedisCredentials)
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }
