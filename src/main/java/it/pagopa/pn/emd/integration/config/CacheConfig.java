@@ -7,7 +7,6 @@ import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayl
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -28,7 +27,6 @@ import static it.pagopa.pn.emd.integration.cache.RedisMode.SERVERLESS;
 
 
 @Configuration
-@EnableCaching
 @Slf4j
 @RequiredArgsConstructor
 public class CacheConfig {
