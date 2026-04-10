@@ -2,9 +2,9 @@ package it.pagopa.pn.emd.integration.config.springbootcfg;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import it.pagopa.pn.common.rest.error.v1.dto.Problem;
-import it.pagopa.pn.common.rest.error.v1.dto.ProblemError;
-import it.pagopa.pn.commons.exceptions.ExceptionHelper;
+import it.pagopa.pn.emd.integration.exceptions.ExceptionHelper;
+import it.pagopa.pn.emd.integration.exceptions.dto.Problem;
+import it.pagopa.pn.emd.integration.exceptions.dto.ProblemError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

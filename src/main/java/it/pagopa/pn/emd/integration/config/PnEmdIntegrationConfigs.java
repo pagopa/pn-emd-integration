@@ -1,12 +1,10 @@
 package it.pagopa.pn.emd.integration.config;
 
-import it.pagopa.pn.commons.conf.SharedAutoConfiguration;
 import it.pagopa.pn.emd.integration.cache.RedisMode;
-import lombok.CustomLog;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import jakarta.annotation.PostConstruct;
 import java.time.Duration;
 import static it.pagopa.pn.emd.integration.utils.PnEmdIntegrationCostants.MESSAGE_TEMPLATES_BASE_PATH;
@@ -14,9 +12,8 @@ import static it.pagopa.pn.emd.integration.utils.Utils.fetchTemplate;
 
 @Configuration
 @ConfigurationProperties( prefix = "pn.emd-integration")
-@CustomLog
+@Slf4j
 @Data
-@Import({SharedAutoConfiguration.class})
 public class PnEmdIntegrationConfigs {
     private String milClientSecret;
     private String milClientId;

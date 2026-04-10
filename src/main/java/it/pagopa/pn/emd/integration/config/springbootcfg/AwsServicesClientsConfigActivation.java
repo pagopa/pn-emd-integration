@@ -1,6 +1,6 @@
 package it.pagopa.pn.emd.integration.config.springbootcfg;
 
-import it.pagopa.pn.commons.configs.aws.AwsConfigs;
+import it.pagopa.pn.emd.integration.config.aws.AwsConfigs;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

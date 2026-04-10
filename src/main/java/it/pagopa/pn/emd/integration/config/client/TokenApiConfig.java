@@ -1,7 +1,7 @@
 package it.pagopa.pn.emd.integration.config.client;
 
-import it.pagopa.pn.commons.pnclients.CommonBaseClient;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
+import it.pagopa.pn.emd.integration.pnclients.CommonBaseClient;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.ApiClient;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.api.TokenApi;
 import lombok.RequiredArgsConstructor;

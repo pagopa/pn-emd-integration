@@ -7,8 +7,8 @@ import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.S
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.api.PaymentApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.model.RetrievalResponseDTO;
-import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-@CustomLog
+@Slf4j
 public class EmdClientImpl implements EmdClient {
     private final SubmitApi submitApi;
     private final PaymentApi paymentApi;
@@ -24,10 +24,10 @@ public class EmdClientImpl implements EmdClient {
 
     @Override
     public Mono<SubmitMessage200Response> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
-        log.logInvokingExternalDownstreamService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
+        log.info("Invoking {} - {}", CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
         submitApi.getApiClient().setAccessToken(accessToken);
         return submitApi.submitMessage(requestID, request)
-                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage(), throwable))
+                .doOnError(throwable -> log.error("Invocation failed for {} - {}: {}", CLIENT_NAME, SUBMIT_MESSAGE_METHOD, throwable.getMessage(), throwable))
                 .onErrorMap(throwable -> {
                     throw new PnEmdIntegrationException(
                             "Error sending message to EMD",
@@ -39,11 +39,11 @@ public class EmdClientImpl implements EmdClient {
 
     @Override
     public Mono<RetrievalResponseDTO> getRetrieval(String retrievalId, String accessToken) {
-        log.logInvokingExternalDownstreamService(CLIENT_NAME, GET_RETRIEVAL_METHOD);
+        log.info("Invoking {} - {}", CLIENT_NAME, GET_RETRIEVAL_METHOD);
         paymentApi.getApiClient().setAccessToken(accessToken);
         return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
                 .doOnNext(response -> log.debug("Retrieved payload from EMD: {}", response))
-                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage(), throwable))
+                .doOnError(throwable -> log.error("Invocation failed for {} - {}: {}", CLIENT_NAME, GET_RETRIEVAL_METHOD, throwable.getMessage(), throwable))
                 .onErrorResume(this::isNotFoundException, e -> Mono.empty())
                 .onErrorMap(throwable -> {
                     throw new PnEmdIntegrationException(

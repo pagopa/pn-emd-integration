@@ -16,14 +16,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static it.pagopa.pn.commons.log.PnLogger.ALARM_LOG;
-
 /**
  * A custom connection factory extending the JedisConnectionFactory. This connection factory implements an IAM based authentication for Redis and a scheduled IAM token refresh.
  */
 @Slf4j
 public class PnEmdIntegrationConnectionFactory extends JedisConnectionFactory {
 
+    private static final String ALARM_LOG = "ALARM";
     // Token refresh interval is set to 14 minutes because the token expires after 15 minutes. Reference: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth-iam.html#:~:text=The%20IAM%20authentication%20token%20is%20valid%20for%2015%20minutes.%20For%20long%2Dlived%20connections%2C%20we%20recommend%20using%20a%20Redis%20OSS%20client%20that%20supports%20a%20credentials%20provider%20interface.
     private static final Long TOKEN_REFRESH_MINUTES = 14L;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);

@@ -5,8 +5,8 @@ import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.api.TokenApi;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.ClientCredentialsGrantType;
-import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -17,13 +17,13 @@ import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionC
 
 @Component
 @RequiredArgsConstructor
-@CustomLog
+@Slf4j
 public class MilAuthClientImpl implements MilAuthClient {
     private final TokenApi tokenApi;
 
     @Override
     public Mono<AccessToken> getAccessTokens(AccessTokenRequestDto accessTokenRequestDto) {
-        log.logInvokingExternalDownstreamService(CLIENT_NAME, "getAccessTokens");
+        log.info("Invoking {} - getAccessTokens", CLIENT_NAME);
         return tokenApi.getAccessTokens(
                 UUID.randomUUID(),                                         // RequestId
                 null,                                                      // Version
@@ -43,7 +43,7 @@ public class MilAuthClientImpl implements MilAuthClient {
                 accessTokenRequestDto.getClientSecret()                    // client_secret
             )
             .onErrorResume(throwable -> {
-                log.logInvokationResultDownstreamFailed(CLIENT_NAME, throwable.getMessage(), throwable);
+                log.error("Invocation failed for {} - getAccessTokens: {}", CLIENT_NAME, throwable.getMessage(), throwable);
                 return Mono.error(new PnEmdIntegrationException(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value(), MIL_AUTH_ERROR));
             });
     }

@@ -1,8 +1,7 @@
 package it.pagopa.pn.emd.integration.config.springbootcfg;
 
-
-import it.pagopa.pn.commons.exceptions.ExceptionHelper;
-import it.pagopa.pn.commons.exceptions.PnErrorWebExceptionHandler;
+import it.pagopa.pn.emd.integration.exceptions.ExceptionHelper;
+import it.pagopa.pn.emd.integration.exceptions.PnErrorWebExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;

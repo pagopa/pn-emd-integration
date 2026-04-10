@@ -1,7 +1,6 @@
 package it.pagopa.pn.emd.integration.exceptions;
 
-import it.pagopa.pn.commons.exceptions.PnRuntimeException;
-import it.pagopa.pn.commons.exceptions.dto.ProblemError;
+import it.pagopa.pn.emd.integration.exceptions.dto.ProblemError;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import java.util.List;

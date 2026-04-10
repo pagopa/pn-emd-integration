@@ -2,7 +2,7 @@ package it.pagopa.pn.emd.integration.utils;
 
 import io.micrometer.core.instrument.util.IOUtils;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
-import lombok.CustomLog;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.ResourceUtils;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_ERROR_CODE_BAD_CONFIGURATION_MISSING_TEMPLATE;
 
-@CustomLog
+@Slf4j
 public class Utils {
     private Utils() {}
     public static String removePrefix(String input) {

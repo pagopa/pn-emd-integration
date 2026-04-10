@@ -1,6 +1,5 @@
 package it.pagopa.pn.emd.integration.exceptions;
 
-import it.pagopa.pn.commons.exceptions.PnRuntimeException;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

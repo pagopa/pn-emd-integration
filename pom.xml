@@ -19,10 +19,50 @@
   </scm>
 	<dependencies>
 
+		<!-- Spring Boot Starters -->
 		<dependency>
-			<groupId>it.pagopa.pn</groupId>
-			<artifactId>pn-commons</artifactId>
-			<version>2.19.0-SPRINGBOOT3</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!-- AWS SDK v2 - CloudWatch only -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>cloudwatch</artifactId>
+		</dependency>
+
+		<!-- AWS SDK v1 - for IAM Redis auth -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-core</artifactId>
+			<version>1.12.780</version>
+		</dependency>
+
+		<!-- Jackson -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+
+		<!-- Commons -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<dependency>
@@ -31,18 +71,36 @@
 			<version>1.6.15</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
 		</dependency>
 
+		<!-- Redis -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+		</dependency>
+
+		<!-- ExpiringMap for token cache -->
+		<dependency>
+			<groupId>net.jodah</groupId>
+			<artifactId>expiringmap</artifactId>
+			<version>0.5.11</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Test -->
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-test</artifactId>
@@ -53,27 +111,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>net.jodah</groupId>
-			<artifactId>expiringmap</artifactId>
-			<version>0.5.11</version>
-			<scope>compile</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-core</artifactId>
-			<version>1.12.780</version>
 		</dependency>
 
 	</dependencies>
@@ -130,7 +167,11 @@
 								<modelPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.dto</modelPackage>
 								<apiPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.api</apiPackage>
 								<configPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.config</configPackage>
-							</configOptions>				
+							</configOptions>
+							<importMappings>
+								<importMapping>Problem=it.pagopa.pn.emd.integration.exceptions.dto.Problem</importMapping>
+								<importMapping>ProblemError=it.pagopa.pn.emd.integration.exceptions.dto.ProblemError</importMapping>
+							</importMappings>
 						</configuration>
 					</execution>
 					<execution>
@@ -224,7 +265,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>			 		 
+			</plugin>
 		</plugins>
 	</build>
 </project>

@@ -2,11 +2,11 @@ package it.pagopa.pn.emd.integration.config.springbootcfg;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import it.pagopa.pn.common.rest.error.v1.dto.Problem;
-import it.pagopa.pn.common.rest.error.v1.dto.ProblemError;
-import it.pagopa.pn.commons.exceptions.ExceptionHelper;
-import it.pagopa.pn.commons.exceptions.PnResponseEntityExceptionHandler;
-import lombok.CustomLog;
+import it.pagopa.pn.emd.integration.exceptions.ExceptionHelper;
+import it.pagopa.pn.emd.integration.exceptions.PnResponseEntityExceptionHandler;
+import it.pagopa.pn.emd.integration.exceptions.dto.Problem;
+import it.pagopa.pn.emd.integration.exceptions.dto.ProblemError;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_INVALID_FORMAT;
 
-@CustomLog
+@Slf4j
 @org.springframework.web.bind.annotation.ControllerAdvice
 @Import(ExceptionHelper.class)
 public class PnResponseEntityExceptionHandlerActivation extends PnResponseEntityExceptionHandler {
