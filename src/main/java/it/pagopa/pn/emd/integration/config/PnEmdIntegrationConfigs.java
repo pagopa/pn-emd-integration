@@ -1,12 +1,10 @@
 package it.pagopa.pn.emd.integration.config;
 
-import it.pagopa.pn.emd.integration.cache.RedisMode;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import jakarta.annotation.PostConstruct;
-import java.time.Duration;
 import static it.pagopa.pn.emd.integration.utils.PnEmdIntegrationCostants.MESSAGE_TEMPLATES_BASE_PATH;
 import static it.pagopa.pn.emd.integration.utils.Utils.fetchTemplate;
 
@@ -25,20 +23,7 @@ public class PnEmdIntegrationConfigs {
     // Token expiration buffer in milliseconds
     private long milTokenExpirationBuffer;
 
-    private CacheConfigs redisCache;
-    private Duration retrievalPayloadCacheTtl;
-
     private Templates msgsTemplates;
-
-    @Data
-    public static class CacheConfigs {
-        private String hostName;
-        private int port;
-        private String userId;
-        private String cacheName;
-        private String cacheRegion;
-        private RedisMode mode;
-    }
 
     @Data
     public static class CourtesyMessageTemplate {

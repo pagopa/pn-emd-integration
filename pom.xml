@@ -46,13 +46,6 @@
 			<artifactId>cloudwatch</artifactId>
 		</dependency>
 
-		<!-- AWS SDK v1 - for IAM Redis auth -->
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-core</artifactId>
-			<version>1.12.780</version>
-		</dependency>
-
 		<!-- Jackson -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
@@ -80,16 +73,6 @@
 		<dependency>
 			<groupId>net.logstash.logback</groupId>
 			<artifactId>logstash-logback-encoder</artifactId>
-		</dependency>
-
-		<!-- Redis -->
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
 		</dependency>
 
 		<!-- ExpiringMap for token cache -->
