@@ -3,6 +3,7 @@ package it.pagopa.pn.emd.integration.service;
 import it.pagopa.pn.emd.integration.cache.AccessTokenExpiringMap;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
+import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
@@ -98,5 +99,9 @@ class EmdCoreServiceConditionalTest {
             return Mockito.mock(PnEmdIntegrationConfigs.class);
         }
 
+        @Bean
+        public ReactiveRedisService<RetrievalPayload> redisServiceDependency() {
+            return Mockito.mock(ReactiveRedisService.class);
+        }
     }
 }
