@@ -7,6 +7,9 @@ import org.springframework.data.redis.connection.ReactiveRedisConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
+import java.time.Duration;
 
 @Slf4j
 @Component("redisHealthIndicator")
@@ -22,7 +25,9 @@ public class RedisTimedHealthIndicator extends AbstractReactiveHealthIndicator {
     @Override
     protected Mono<Health> doHealthCheck(Health.Builder builder) {
         return Mono.fromCallable(connectionFactory::getReactiveConnection)
-                .flatMap(connection -> pingWithTiming(builder, connection));
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(connection -> pingWithTiming(builder, connection))
+                .publishOn(Schedulers.parallel());
     }
 
     private Mono<Health> pingWithTiming(Health.Builder builder, ReactiveRedisConnection connection) {
