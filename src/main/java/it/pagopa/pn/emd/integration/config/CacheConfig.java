@@ -30,27 +30,6 @@ import reactor.core.publisher.Mono;
 public class CacheConfig {
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
 
-    @PostConstruct
-    public void warmUpRedisConnection(ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
-        if (reactiveRedisConnectionFactory == null) return;
-        log.info("[REDIS-WARMUP] Pre-establishing Redis connection (DNS + TLS + HELLO)...");
-        long start = System.currentTimeMillis();
-        try {
-            String response = reactiveRedisConnectionFactory.getReactiveConnection()
-                    .ping()
-                    .onErrorResume(ex -> {
-                        log.warn("[REDIS-WARMUP] Warm-up failed (non-fatal): {}", ex.getMessage());
-                        return Mono.empty();
-                    })
-                    .block();
-            if (response != null) {
-                log.info("[REDIS-WARMUP] Redis connection ready in {} ms", System.currentTimeMillis() - start);
-            }
-        } catch (Exception ex) {
-            log.warn("[REDIS-WARMUP] Warm-up exception (non-fatal): {}", ex.getMessage());
-        }
-    }
-
     @Bean
     @Primary
     @Profile("!local")
@@ -75,7 +54,7 @@ public class CacheConfig {
     }
 
     @Bean
-    public ReactiveRedisTemplate<String, RetrievalPayload> reactiveRetrievalPayloadRedisTemplate(ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
+    public ReactiveRedisTemplate<String, RetrievalPayload> reactiveRetrievalPayloadRedisTemplate(ReactiveRedisConnectionFactory elasticacheConnectionFactory) {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
                 ObjectMapper.DefaultTyping.NON_FINAL,
@@ -90,7 +69,7 @@ public class CacheConfig {
                         .hashValue(serializer)
                         .build();
 
-        return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory, context);
+        return new ReactiveRedisTemplate<>(elasticacheConnectionFactory, context);
     }
 
 }
