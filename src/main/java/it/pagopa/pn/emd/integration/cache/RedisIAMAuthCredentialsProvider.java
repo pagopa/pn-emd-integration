@@ -27,6 +27,7 @@ public class RedisIAMAuthCredentialsProvider {
         this.userId = userId;
         this.iamAuthTokenRequest = iamAuthTokenRequest;
         this.awsCredentialsProvider = awsCredentialsProvider;
+        getRedisCredentials(); // Pre-generate token on initialization
     }
 
     /**
