@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import it.pagopa.pn.emd.integration.cache.IamRedisCredentialsProviderFactory;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.EnableCaching;
@@ -20,6 +21,7 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableCaching
@@ -27,6 +29,27 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 @RequiredArgsConstructor
 public class CacheConfig {
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
+
+    @PostConstruct
+    public void warmUpRedisConnection(ReactiveRedisConnectionFactory reactiveRedisConnectionFactory) {
+        if (reactiveRedisConnectionFactory == null) return;
+        log.info("[REDIS-WARMUP] Pre-establishing Redis connection (DNS + TLS + HELLO)...");
+        long start = System.currentTimeMillis();
+        try {
+            String response = reactiveRedisConnectionFactory.getReactiveConnection()
+                    .ping()
+                    .onErrorResume(ex -> {
+                        log.warn("[REDIS-WARMUP] Warm-up failed (non-fatal): {}", ex.getMessage());
+                        return Mono.empty();
+                    })
+                    .block();
+            if (response != null) {
+                log.info("[REDIS-WARMUP] Redis connection ready in {} ms", System.currentTimeMillis() - start);
+            }
+        } catch (Exception ex) {
+            log.warn("[REDIS-WARMUP] Warm-up exception (non-fatal): {}", ex.getMessage());
+        }
+    }
 
     @Bean
     @Primary
