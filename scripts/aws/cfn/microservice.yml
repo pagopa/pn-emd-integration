@@ -106,6 +106,29 @@ Parameters:
       - "true"
       - "false"
 
+  # Instance parameters
+  # 256 (.25 vCPU) - Available memory values: 0.5GB, 1GB, 2GB
+  # 512 (.5 vCPU) - Available memory values: 1GB, 2GB, 3GB, 4GB
+  # 1024 (1 vCPU) - Available memory values: 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
+  # 2048 (2 vCPU) - Available memory values: Between 4GB and 16GB in 1GB increments
+  # 4096 (4 vCPU) - Available memory values: Between 8GB and 30GB in 1GB increments
+  CpuValue:
+    Type: Number
+    Default: 1024
+    Description: Fargate virtual CPU quantity 1024 equals one vCPU
+
+  # 0.5GB, 1GB, 2GB - Available cpu values: 256 (.25 vCPU)
+  # 1GB, 2GB, 3GB, 4GB - Available cpu values: 512 (.5 vCPU)
+  # 2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB - Available cpu values: 1024 (1 vCPU)
+  # Between 4GB and 16GB in 1GB increments - Available cpu values: 2048 (2 vCPU)
+  # Between 8GB and 30GB in 1GB increments - Available cpu values: 4096 (4 vCPU)
+  MemoryAmount:
+    Type: String
+    Default: 2GB
+    Description: memory amount reserved to the task pod.
+    AllowedValues: [2GB, 4GB, 6GB, 8GB]
+
+
   # Autoscaling parameters
   AutoscalingThreshold:
     Default: 70
@@ -148,9 +171,13 @@ Parameters:
     Type: String
     Description: 'Token expiration buffer for the MIL service (expressed in milliseconds)'
 
-  EmdCoreBasePath:
+  EmdCoreMessageBasePath:
     Type: String
-    Description: 'Base path for the EMD Core service'
+    Description: 'Base path for the EMD Core Message service'
+
+  EmdCorePaymentBasePath:
+    Type: String
+    Description: 'Base path for the EMD Core Payment service'
 
   OriginalMessageUrl:
     Type: String
@@ -234,8 +261,8 @@ Resources:
       TemplateURL: !Sub "${TemplateBucketBaseUrl}/fragments/ecs-service.yaml"
       Parameters:
         MicroServiceUniqueName: !Sub '${ProjectName}-emd-integration'
-        CpuValue: 512
-        MemoryAmount: 2GB
+        CpuValue: !Ref CpuValue
+        MemoryAmount: !Ref MemoryAmount
         HealthCheckPath: /actuator/health
         AutoscalingStrategy: REST-API
         AutoscalingThreshold: !Ref AutoscalingThreshold
@@ -263,7 +290,8 @@ Resources:
         ContainerEnvEntry13: !Sub 'PN_EMDINTEGRATION_REDISCACHE_CACHEREGION=${ElasticacheCacheRegion}'
         ContainerEnvEntry14: !Sub 'PN_EMDINTEGRATION_REDISCACHE_MODE=${ElasticacheMode}'
         ContainerEnvEntry15: !Sub 'PN_EMDINTEGRATION_RETRIEVALPAYLOADCACHETTL=${RetrievalPayloadCacheTtl}'
-        ContainerEnvEntry16: !Sub 'PN_EMDINTEGRATION_EMDCOREBASEPATH=${EmdCoreBasePath}'
+        ContainerEnvEntry20: !Sub 'PN_EMDINTEGRATION_EMDCOREMESSAGEBASEPATH=${EmdCoreMessageBasePath}'
+        ContainerEnvEntry21: !Sub 'PN_EMDINTEGRATION_EMDCOREPAYMENTBASEPATH=${EmdCorePaymentBasePath}'
         ContainerEnvEntry17: !Sub 'PN_EMDINTEGRATION_ORIGINALMESSAGEURL=${OriginalMessageUrl}'
         ContainerEnvEntry18: !Sub 'PN_EMDINTEGRATION_COURTESYMESSAGECONTENT=${CourtesyMessageContent}'
         ContainerEnvEntry19: !Sub 'PN_EMDINTEGRATION_EMDPAYMENTENDPOINT=${EmdPaymentEndpoint}'
