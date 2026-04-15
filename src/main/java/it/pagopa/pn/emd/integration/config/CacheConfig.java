@@ -5,10 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import it.pagopa.pn.emd.integration.cache.IamRedisCredentialsProviderFactory;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -21,10 +19,8 @@ import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
-import reactor.core.publisher.Mono;
 
 @Configuration
-@EnableCaching
 @Slf4j
 @RequiredArgsConstructor
 public class CacheConfig {
