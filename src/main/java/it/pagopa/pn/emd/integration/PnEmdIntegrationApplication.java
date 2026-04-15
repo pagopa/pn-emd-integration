@@ -3,13 +3,8 @@ package it.pagopa.pn.emd.integration;
 import it.pagopa.pn.commons.configs.listeners.TaskIdApplicationListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication(exclude = {
-        RedisRepositoriesAutoConfiguration.class
-})
 @EnableScheduling
 public class PnEmdIntegrationApplication {
     public static void main(String[] args) {
