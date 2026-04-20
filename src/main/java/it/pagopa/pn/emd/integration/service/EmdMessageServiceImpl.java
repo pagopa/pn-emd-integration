@@ -7,8 +7,8 @@ import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
 import it.pagopa.pn.emd.integration.utils.PnEmdIntegrationCostants;
 import it.pagopa.pn.emd.integration.utils.Utils;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class EmdMessageServiceImpl implements EmdMessageService {
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
 
     @Override
-    public Mono<InlineResponse200> submitMessage(SendMessageRequestBody request) {
+    public Mono<SubmitMessage200Response> submitMessage(SendMessageRequestBody request) {
         log.info("Start submitMessage for request: {}", request);
         return accessTokenExpiringMap.getAccessToken().flatMap(token -> {
             String reqId = UUID.randomUUID().toString();

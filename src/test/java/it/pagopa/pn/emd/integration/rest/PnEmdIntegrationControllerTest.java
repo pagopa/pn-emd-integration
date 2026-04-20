@@ -3,12 +3,12 @@ package it.pagopa.pn.emd.integration.rest;
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emd.integration.service.EmdCoreService;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.PaymentUrlResponse;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageResponse;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -49,7 +49,7 @@ class PnEmdIntegrationControllerTest {
         sendMessageResponse.setOutcome(SendMessageResponse.OutcomeEnum.OK);
 
         when(emdCoreService.submitMessage(any(SendMessageRequestBody.class)))
-                .thenReturn(Mono.just(new InlineResponse200().outcome(Outcome.OK)));
+                .thenReturn(Mono.just(new SubmitMessage200Response().outcome(Outcome.OK)));
 
         Mono<ResponseEntity<SendMessageResponse>> response = pnEmdIntegrationController.sendMessage(Mono.just(requestBody), null);
 

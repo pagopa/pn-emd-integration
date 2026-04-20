@@ -2,11 +2,11 @@ package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.api.SubmitApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.model.RetrievalResponseDTO;
 import lombok.CustomLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,17 +17,17 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 @CustomLog
-public class EmdClientImpl implements EmdClient{
+public class EmdClientImpl implements EmdClient {
     private final SubmitApi submitApi;
     private final PaymentApi paymentApi;
     private static final String ACCEPT_LANGUAGE = "it-IT";
 
     @Override
-    public Mono<InlineResponse200> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
+    public Mono<SubmitMessage200Response> submitMessage(SendMessageRequest request, String accessToken, String requestID) {
         log.logInvokingExternalDownstreamService(CLIENT_NAME, SUBMIT_MESSAGE_METHOD);
-        submitApi.getApiClient().setBearerToken(accessToken);
+        submitApi.getApiClient().setAccessToken(accessToken);
         return submitApi.submitMessage(requestID, request)
-                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage()))
+                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(SUBMIT_MESSAGE_METHOD, throwable.getMessage(), throwable))
                 .onErrorMap(throwable -> {
                     throw new PnEmdIntegrationException(
                             "Error sending message to EMD",
@@ -40,10 +40,10 @@ public class EmdClientImpl implements EmdClient{
     @Override
     public Mono<RetrievalResponseDTO> getRetrieval(String retrievalId, String accessToken) {
         log.logInvokingExternalDownstreamService(CLIENT_NAME, GET_RETRIEVAL_METHOD);
-        paymentApi.getApiClient().setBearerToken(accessToken);
+        paymentApi.getApiClient().setAccessToken(accessToken);
         return paymentApi.getRetrieval(ACCEPT_LANGUAGE, retrievalId)
                 .doOnNext(response -> log.debug("Retrieved payload from EMD: {}", response))
-                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage()))
+                .doOnError(throwable -> log.logInvokationResultDownstreamFailed(GET_RETRIEVAL_METHOD, throwable.getMessage(), throwable))
                 .onErrorResume(this::isNotFoundException, e -> Mono.empty())
                 .onErrorMap(throwable -> {
                     throw new PnEmdIntegrationException(

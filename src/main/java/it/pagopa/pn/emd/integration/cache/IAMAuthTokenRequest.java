@@ -1,31 +1,21 @@
 package it.pagopa.pn.emd.integration.cache;
 
-import com.amazonaws.DefaultRequest;
-import com.amazonaws.Request;
-import com.amazonaws.SignableRequest;
-import com.amazonaws.auth.AWS4Signer;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.http.HttpMethodName;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.joda.time.DateTime;
-import org.joda.time.Duration;
+import software.amazon.awssdk.auth.credentials.AwsCredentials;
+import software.amazon.awssdk.auth.signer.Aws4Signer;
+import software.amazon.awssdk.auth.signer.params.Aws4PresignerParams;
+import software.amazon.awssdk.http.SdkHttpFullRequest;
+import software.amazon.awssdk.http.SdkHttpMethod;
+import software.amazon.awssdk.regions.Region;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 /**
  * A class to generate an IAM auth token. This implementation is based on the AWS User Guide: <a href="https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/auth-iam.html">...</a>
  */
-@Slf4j
 public class IAMAuthTokenRequest {
-    private static final HttpMethodName REQUEST_METHOD = HttpMethodName.GET;
+    private static final SdkHttpMethod REQUEST_METHOD = SdkHttpMethod.GET;
     private static final String REQUEST_PROTOCOL = "http://";
     private static final String PARAM_ACTION = "Action";
     private static final String PARAM_USER = "User";
@@ -60,48 +50,26 @@ public class IAMAuthTokenRequest {
      *
      * @param credentials the credentials
      * @return the string
-     * @throws URISyntaxException the uri syntax exception
      */
-    public String toSignedRequestUri(AWSCredentials credentials) throws URISyntaxException {
-        Request<Void> request = getSignableRequest();
-        sign(request, credentials);
-        return new URIBuilder(request.getEndpoint())
-                .addParameters(toNamedValuePair(request.getParameters()))
-                .build()
-                .toString()
-                .replace(REQUEST_PROTOCOL, "");
-    }
+    public String toSignedRequestUri(AwsCredentials credentials) {
+        SdkHttpFullRequest.Builder requestBuilder = SdkHttpFullRequest.builder()
+                .method(REQUEST_METHOD)
+                .uri(URI.create(REQUEST_PROTOCOL + cacheName + "/"))
+                .putRawQueryParameter(PARAM_ACTION, ACTION_NAME)
+                .putRawQueryParameter(PARAM_USER, userId);
 
-    private <T> Request<T> getSignableRequest() {
-        Request<T> request  = new DefaultRequest<>(SERVICE_NAME);
-        request.setHttpMethod(REQUEST_METHOD);
-        request.setEndpoint(getRequestUri());
-        request.addParameters(PARAM_ACTION, Collections.singletonList(ACTION_NAME));
-        request.addParameters(PARAM_USER, Collections.singletonList(userId));
         if (isServerless) {
-            request.addParameters(PARAM_RESOURCE_TYPE, Collections.singletonList(RESOURCE_TYPE_SERVERLESS_CACHE));
+            requestBuilder.putRawQueryParameter(PARAM_RESOURCE_TYPE, RESOURCE_TYPE_SERVERLESS_CACHE);
         }
-        return request;
-    }
 
-    private URI getRequestUri() {
-        return URI.create(String.format("%s%s/", REQUEST_PROTOCOL, cacheName));
-    }
+        Aws4PresignerParams presignerParams = Aws4PresignerParams.builder()
+                .awsCredentials(credentials)
+                .signingRegion(Region.of(region))
+                .signingName(SERVICE_NAME)
+                .expirationTime(Instant.now().plus(TOKEN_EXPIRY_SECONDS, ChronoUnit.SECONDS))
+                .build();
 
-    private <T> void sign(SignableRequest<T> request, AWSCredentials credentials) {
-        AWS4Signer signer = new AWS4Signer();
-        signer.setRegionName(region);
-        signer.setServiceName(SERVICE_NAME);
-
-        DateTime dateTime = DateTime.now();
-        dateTime = dateTime.plus(Duration.standardSeconds(TOKEN_EXPIRY_SECONDS));
-
-        signer.presignRequest(request, credentials, dateTime.toDate());
-    }
-
-    private static List<NameValuePair> toNamedValuePair(Map<String, List<String>> in) {
-        return in.entrySet().stream()
-                .map(e -> new BasicNameValuePair(e.getKey(), e.getValue().get(0)))
-                .collect(Collectors.toList());
+        SdkHttpFullRequest signedRequest = Aws4Signer.create().presign(requestBuilder.build(), presignerParams);
+        return signedRequest.getUri().toString().replace(REQUEST_PROTOCOL, "");
     }
 }

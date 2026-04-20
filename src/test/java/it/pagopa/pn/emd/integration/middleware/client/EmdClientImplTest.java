@@ -1,13 +1,12 @@
 package it.pagopa.pn.emd.integration.middleware.client;
 
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationException;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.ApiClient;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.PaymentApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.api.SubmitApi;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.Outcome;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.RetrievalResponseDTO;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.SendMessageRequest;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdcoreclient.model.InlineResponse200;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.api.SubmitApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.Outcome;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SendMessageRequest;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.api.PaymentApi;
+import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.model.RetrievalResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,6 +19,7 @@ import reactor.test.StepVerifier;
 import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_GET_RETRIEVAL_PAYLOAD_ERROR;
 import static it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationExceptionCodes.PN_EMD_INTEGRATION_SEND_MESSAGE_ERROR;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EmdClientImplTest {
@@ -36,8 +36,8 @@ class EmdClientImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        when(submitApi.getApiClient()).thenReturn(new ApiClient());
-        when(paymentApi.getApiClient()).thenReturn(new ApiClient());
+        when(submitApi.getApiClient()).thenReturn(mock(it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.ApiClient.class));
+        when(paymentApi.getApiClient()).thenReturn(mock(it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.ApiClient.class));
     }
 
     @Test
@@ -45,12 +45,12 @@ class EmdClientImplTest {
         SendMessageRequest request = new SendMessageRequest();
         String accessToken = "token";
         String requestID = "requestID";
-        InlineResponse200 response = new InlineResponse200();
+        SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
 
         when(submitApi.submitMessage(any(String.class), any(SendMessageRequest.class))).thenReturn(Mono.just(response));
 
-        Mono<InlineResponse200> result = emdClient.submitMessage(request, accessToken, requestID);
+        Mono<SubmitMessage200Response> result = emdClient.submitMessage(request, accessToken, requestID);
 
         StepVerifier.create(result)
                 .expectNext(response)
@@ -66,7 +66,7 @@ class EmdClientImplTest {
         when(submitApi.submitMessage(any(String.class), any(SendMessageRequest.class)))
                 .thenReturn(Mono.error(new RuntimeException("Failed to submit message")));
 
-        Mono<InlineResponse200> result = emdClient.submitMessage(request, accessToken, requestID);
+        Mono<SubmitMessage200Response> result = emdClient.submitMessage(request, accessToken, requestID);
 
         StepVerifier.create(result)
                 .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationException &&
