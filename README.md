@@ -1,177 +1,135 @@
 # pn-emd-integration
 
-## Indice del README
-- [Descrizione](#descrizione)
-- [Tecnologie Utilizzate](#tecnologie-utilizzate)
-- [Architettura](#architettura)
-- [API & Documentazione](#api--documentazione)
-- [Configurazione](#configurazione)
-- [Esecuzione](#esecuzione)
+Microservizio reattivo Spring Boot (WebFlux) che fa da adattatore fra i servizi della piattaforma PagoPA Piattaforma Notifiche (`pn-*`) e le API della piattaforma EMD (Electronic Message Distribution).
 
-## Descrizione
+Riceve le richieste dagli altri microservizi `pn-*` (principalmente `pn-delivery-push` e `pn-bff`) e le inoltra a EMD Core autenticandosi tramite token OAuth2 emessi da MIL Auth. Gestisce tre aree: invio di messaggi di cortesia (digitali e analogici) verso EMD, recupero e caching in Redis del `retrieval_payload` associato alla verifica di un TPP (Third Party Provider), generazione degli URL di pagamento per l'integrazione con le app bancarie.
 
-Microservizio che si integra con le API esposte dai servizi EMD (Electronic Message Distribution) per fornire la capacità di inviare messaggi via canali terzi (digitali e analogici). Il servizio funge da adattatore tra il sistema PagoPA e la piattaforma EMD, gestendo:
+Per le versioni delle dipendenze vedi `pom.xml`.
 
-- **Invio messaggi**: sottomissione di messaggi multicanale (digitale/analogico) verso EMD
-- **Recupero payload**: gestione e caching dei dati di recupero per i TPP (Third Party Provider)
-- **Integrazione pagamenti**: generazione di URL di pagamento per i servizi di pagamento
-- **Autenticazione IAM**: gestione di token per l'accesso alle API downstream
-
-## Tecnologie Utilizzate
-
-### Stack Principale
-- **Java 11** + **Spring Boot 2.x** (parent: `pn-parent:2.1.1`)
-- **Spring WebFlux** (reactive)
-- **Project Reactor** (Mono/Flux)
-- **OpenAPI 3.0.3** (code generation con `openapi-generator-maven-plugin`)
-
-### Storage e Infrastruttura
-- **Redis** (cache, ElastiCache in prod con autenticazione IAM)
-- **AWS SDK v1** (per IAM auth con ElastiCache)
-- **Jedis** (client Redis)
-
-### Dipendenze Interne
-- `pn-commons:2.10.0` (commons PagoPA)
-- Endpoint di **MIL Auth** (`mil-auth-client.yaml`): OAuth2 client credentials per ottenere token di accesso
-- Endpoint di **EMD Core** (`emd-core-client.yaml`): API principale per invio messaggi e recupero payload
-
-### Dipendenze Esterne
-- **MIL Auth Service**: REST via OAuth2 client credentials (`POST /token`)
-- **EMD Core API**: REST per message submission e retrieval (`POST /message-core/sendMessage`, `GET /payment/retrievalTokens/{retrievalId}`)
 
 ## Architettura
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     PnEmdIntegrationController                  │
-│         (implements MessageApi, PaymentApi, CheckTppApi)        │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────────────────┐
-│                     EmdCoreServiceImpl                           │
-│                   (orchestrator, delegates)                     │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │
-        ┌──────────────────┼──────────────────┐
-        │                  │                  │
-┌───────▼────────┐  ┌──────▼────────┐  ┌────▼──────────┐
-│ EmdMessageSvc  │  │EmdRetrievalSvc│  │EmdPaymentSvc  │
-│ (send message) │  │(cache-aside)  │  │(payment urls) │
-└───────┬────────┘  └──────┬────────┘  └────┬──────────┘
-        │                  │                 │
-        └──────────────────┼─────────────────┘
-                           │
-        ┌──────────────────┴──────────────────┐
-        │                                     │
-┌───────▼────────────────┐      ┌────────────▼────────┐
-│   EmdClientImpl         │      │ AccessTokenExpiring │
-│ (HTTP calls to EMD)    │      │ Map (token cache)   │
-└───────┬────────────────┘      └────────────┬────────┘
-        │                                    │
-        │                        ┌───────────▼────────────┐
-        │                        │  MilAuthClientImpl      │
-        │                        │  (get auth token)      │
-        │                        └───────────┬────────────┘
-        │                                    │
-        │                   ┌────────────────┼──────────────┐
-        └───────────────────┤                              │
-                            │                              │
-                    ┌───────▼───────┐         ┌────────────▼──────┐
-                    │  MIL Auth API │         │ EMD Core API      │
-                    │  (OAuth2)     │         │ (multi-channel)   │
-                    └───────────────┘         └───────────────────┘
+PnEmdIntegrationController
+  └─ EmdCoreServiceImpl          (orchestratore: delega tutto, nessuna logica propria)
+       ├─ EmdMessageServiceImpl   → EmdClientImpl → EMD Core (message)
+       ├─ EmdRetrievalServiceImpl → EmdClientImpl + RetrievalPayloadRedisService (cache-aside)
+       └─ EmdPaymentServiceImpl   → EmdClientImpl → EMD Core (payment)
+
+Token chain:
+AccessTokenExpiringMap → MilAuthClient → MilAuthClientImpl → MIL Auth API
 ```
 
-**Storage**: Redis (RetrievalPayloadRedisService per cache-aside pattern, TTL 10m)
+Il controller implementa le interfacce generate da OpenAPI (`MessageApi`, `PaymentApi`, `CheckTppApi`). `EmdCoreServiceImpl` è un puro delegatore; la logica di dominio vive nei service `Emd*ServiceImpl`. Ogni service di dominio ha una variante `*Disabled` selezionata via `@ConditionalOnProperty` per il feature toggle. `AccessTokenExpiringMap` (basato su `net.jodah.ExpiringMap`) mantiene in memoria il token MIL con refresh anticipato rispetto alla scadenza effettiva.
 
-## API & Documentazione
 
-### Swagger/OpenAPI
-- **API Server**: `docs/openapi/api-private.yaml` — endpoint privati (MessageApi, PaymentApi, CheckTppApi)
-- **Client EMD Core**: `docs/wsclient/emd-core-client.yaml` — client generato per EMD Core
-- **Client MIL Auth**: `docs/wsclient/mil-auth-client.yaml` — client generato per token OAuth2
+## API e documentazione
 
-### Flussi e Sequenze
+Le specifiche OpenAPI degli endpoint esposti sono in [docs/openapi/api-private.yaml](docs/openapi/api-private.yaml). I client per MIL Auth ed EMD Core sono generati in fase di build da spec remote referenziate nel `pom.xml`.
 
-| Endpoint | Metodo | Flusso | Descrizione |
-|----------|--------|--------|------------|
-| `/emd-integration-private/send-message` | POST | [`InvioMessaggioCortesia.md`](docs/sequences/InvioMessaggioCortesia.md) | Invio messaggio di cortesia (digitale/analogico) verso EMD Core |
-| `/emd-integration-private/payment-url` | GET | [`PagamentoTramiteAppBanca.md`](docs/sequences/PagamentoTramiteAppBanca.md) | Generazione URL di pagamento per integrazione bancaria |
-| `/emd-integration-private/emd/check-tpp` | GET | [`AccessoAlDettaglioDellaNotifica.md`](docs/sequences/AccessoAlDettaglioDellaNotifica.md) section 1B | Verifica TPP chiamando EMD Core (payload fresco, non cachato) |
-| `/emd-integration-private/token/check-tpp` | GET | [`AccessoAlDettaglioDellaNotifica.md`](docs/sequences/AccessoAlDettaglioDellaNotifica.md) section 1B | Verifica TPP recuperando payload cachato in Redis (veloce) |
+| Metodo | Path | Metodo controller | Sequence diagram |
+|--------|------|-------------------|------------------|
+| POST | `/emd-integration-private/send-message` | `sendMessage` | [InvioMessaggioCortesia](docs/sequences/InvioMessaggioCortesia.md) |
+| GET | `/emd-integration-private/payment-url` | `getPaymentUrl` | [PagamentoTramiteAppBanca](docs/sequences/PagamentoTramiteAppBanca.md) |
+| GET | `/emd-integration-private/emd/check-tpp` | `emdCheckTPP` | [AccessoAlDettaglioDellaNotifica](docs/sequences/AccessoAlDettaglioDellaNotifica.md) |
+| GET | `/emd-integration-private/token/check-tpp` | `tokenCheckTPP` | [AccessoAlDettaglioDellaNotifica](docs/sequences/AccessoAlDettaglioDellaNotifica.md) |
 
-**Nota sui due check-tpp:**
-- **`emdCheckTPP`** chiama EMD Core ad ogni richiesta (fresco, sempre aggiornato)
-- **`tokenCheckTPP`** restituisce il payload già cachato in Redis (cache-aside pattern, TTL 10m) — usato dal BFF per performance
+I due endpoint `check-tpp` hanno comportamenti diversi: `emdCheckTPP` chiama sempre EMD Core e restituisce un payload fresco; `tokenCheckTPP` applica il pattern cache-aside su Redis (miss → EMD Core + scrittura in cache) ed è pensato per essere invocato dal BFF a ogni richiesta utente.
 
-### Diagrammi Architetturali
-- `docs/sequences/messaggiCortesia.excalidraw.png` — Diagramma Excalidraw dell'architettura messaggi
 
 ## Configurazione
 
-### Variabili d'Ambiente Principali
-```
-# Integrazione abilitata
-PN_EMDINTEGRATION_ISINTEGRATIONENABLED=true
+Le property vanno definite in `config/application.properties` (formato Spring Boot, dotted-lowercase). Spring Boot supporta il relaxed binding: per passarle come env var, converti punti e trattini in underscore e metti tutto in maiuscolo. Esempio: `pn.emd-integration.mil-base-path` → `PN_EMDINTEGRATION_MILBASEPATH`.
 
-# Servizi di dominio abilitati (feature flags)
-PN.EMD-INTEGRATION.MESSAGE.ENABLED=true
-PN.EMD-INTEGRATION.RETRIEVAL.ENABLED=true
-PN.EMD-INTEGRATION.PAYMENT.ENABLED=true
+### Feature toggle
 
-# MIL Auth
-PN.EMD-INTEGRATION.MIL-CLIENT-ID=<client-id>
-PN.EMD-INTEGRATION.MIL-CLIENT-SECRET=<client-secret>
-PN.EMD-INTEGRATION.MIL-BASE-PATH=https://api-mcshared.{env}.cstar.pagopa.it/auth
+| Property | Tipo | Default | Esempio |
+|----------|------|---------|---------|
+| `pn.emd-integration.enabled` | boolean | `true` | `true` |
+| `pn.emd-integration.message.enabled` | boolean | `true` | `true` |
+| `pn.emd-integration.retrieval.enabled` | boolean | `true` | `true` |
+| `pn.emd-integration.payment.enabled` | boolean | `true` | `true` |
+| `pn.emd-integration.enable-api-v2` | boolean | `true` | `true` |
 
-# EMD Core
-PN.EMD-INTEGRATION.EMD-CORE-BASE-PATH=https://emdapi.{env}.cstar.pagopa.it
+### Autenticazione MIL Auth
 
-# Redis (non-local)
-PN.EMD-INTEGRATION.REDIS-CACHE.HOST-NAME=<elasticache-endpoint>
-PN.EMD-INTEGRATION.REDIS-CACHE.PORT=6379
-PN.EMD-INTEGRATION.REDIS-CACHE.USER-ID=<iam-user>
-PN.EMD-INTEGRATION.REDIS-CACHE.CACHE-NAME=<cache-name>
-PN.EMD-INTEGRATION.REDIS-CACHE.CACHE-REGION=<aws-region>
-PN.EMD-INTEGRATION.REDIS-CACHE.MODE=SERVERLESS (o MANAGED)
+| Property | Tipo | Default | Esempio |
+|----------|------|---------|---------|
+| `pn.emd-integration.mil-client-id` | String | — | `<client-id>` |
+| `pn.emd-integration.mil-client-secret` | String | — | `<client-secret>` |
+| `pn.emd-integration.mil-base-path` | String (URL) | — | `https://api-mcshared.<env>.cstar.pagopa.it/auth` |
+| `pn.emd-integration.mil-token-expiration-buffer` | long (ms) | — | `30000` |
 
-# Cache TTL
-PN.EMD-INTEGRATION.RETRIEVAL-PAYLOAD-CACHE-TTL=PT10M
+### EMD Core
 
-# CORS
-CORS.ALLOWED.DOMAINS=http://localhost:8090,http://localhost:8091
-```
+| Property | Tipo | Default | Esempio |
+|----------|------|---------|---------|
+| `pn.emd-integration.emd-core-message-base-path` | String (URL) | — | `https://emdapi.<env>.cstar.pagopa.it/message-core` |
+| `pn.emd-integration.emd-core-payment-base-path` | String (URL) | — | `https://emdapi.<env>.cstar.pagopa.it/payment` |
+| `pn.emd-integration.original-message-url` | String (URL) | — | `https://cittadini.<env>.pagopa.it` |
+| `pn.emd-integration.emd-payment-endpoint` | String (URL) | — | `https://<tpp-endpoint>` |
+| `pn.emd-integration.courtesy-message-content` | String | — | `Hai ricevuto una notifica!` |
+
+### Cache Redis
+
+| Property | Tipo | Default | Esempio |
+|----------|------|---------|---------|
+| `pn.emd-integration.redis-cache.host-name` | String | `localhost` | `<elasticache-endpoint>` |
+| `pn.emd-integration.redis-cache.port` | int | `6379` | `6379` |
+| `pn.emd-integration.redis-cache.user-id` | String | — | `<iam-user>` |
+| `pn.emd-integration.redis-cache.cache-name` | String | — | `<cache-name>` |
+| `pn.emd-integration.redis-cache.cache-region` | String | — | `eu-south-1` |
+| `pn.emd-integration.redis-cache.mode` | enum | — | `SERVERLESS` o `MANAGED` |
+| `pn.emd-integration.retrieval-payload-cache-ttl` | Duration | `PT10M` | `PT10M` |
+
+La modalità `SERVERLESS` abilita TLS e aggiunge il parametro `ResourceType=ServerlessCache` all'URL pre-signed usato come password IAM; la modalità `MANAGED` usa il connection pool Jedis. In profilo `local` (avvio con `docker compose up`) Redis è usato senza SSL e senza autenticazione.
+
+### Altro
+
+| Property | Tipo | Default | Esempio |
+|----------|------|---------|---------|
+| `cors.allowed.domains` | String (CSV) | — | `http://localhost:8090,http://localhost:8091` |
+| `aws.region-code` | String | — | `eu-south-1` |
+| `aws.endpoint-url` | String (URL) | — | `http://localhost:4566` |
+
 
 ## Esecuzione
 
-### Compilazione
-```bash
-./mvnw clean install
-```
+### Prerequisiti
 
-### Avvio locale
+Prima di avviare l'applicazione in locale è necessario far partire l'istanza Redis dichiarata in `docker-compose.yml`.
 
-1. **Avviare Redis**
 ```bash
 docker compose up
 ```
 
-2. **Avviare l'applicazione**
+### Compilazione
+
+```bash
+./mvnw clean install
+```
+
+Il build esegue anche la code generation OpenAPI (server stub da `docs/openapi/api-private.yaml`, client MIL Auth ed EMD Core da spec remote definite in `pom.xml`). I package generati sono sotto `it.pagopa.pn.emdintegration.generated.openapi.*` e non devono essere modificati a mano.
+
+### Avvio locale
+
 ```bash
 ./mvnw spring-boot:run
 ```
 
-L'applicazione sarà disponibile su `http://localhost:8080`.
+Gli override delle property locali vanno in `config/application.properties` (profilo `local` attivo di default). L'applicazione sarà disponibile su `http://localhost:8080`.
 
 ### Test
 
 ```bash
-# Eseguire tutti i test
 ./mvnw test
+```
 
-# Eseguire un test specifico
+Per eseguire una singola classe o metodo di test:
+
+```bash
 ./mvnw test -Dtest=EmdMessageServiceImplTest
-
-# Eseguire un singolo metodo di test
 ./mvnw test -Dtest=EmdMessageServiceImplTest#testSubmitMessageAnalog
 ```
+
+I test sono unitari (nessun `@SpringBootTest`), con dipendenze mockate via Mockito e pipeline reattive verificate con `reactor.test.StepVerifier`.
