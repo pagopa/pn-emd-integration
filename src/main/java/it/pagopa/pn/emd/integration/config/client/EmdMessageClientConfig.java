@@ -20,7 +20,7 @@ public class EmdMessageClientConfig extends CommonBaseClient {
 
     @Bean("emdMessageSubmitApi")
     SubmitApi submitApi() {
-        var apiClient = new ApiClient(initWebClient(this.builder));
+        var apiClient = new ApiClient(initWebClient(this.builder, "EMD"));
         apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCoreMessageBasePath());
         return new SubmitApi(apiClient);
     }
