@@ -35,8 +35,8 @@ class TokenProviderTest {
     void getAccessTokens_returnsAccessToken() {
         AccessToken expectedToken = new AccessToken();
         when(milAuthClient.getAccessTokens(any(AccessTokenRequestDto.class))).thenReturn(Mono.just(expectedToken));
-        when(pnEmdIntegrationConfigs.getMilClientId()).thenReturn("client_id");
-        when(pnEmdIntegrationConfigs.getMilClientSecret()).thenReturn("client_secret");
+        when(pnEmdIntegrationConfigs.getKeycloakClientId()).thenReturn("client_id");
+        when(pnEmdIntegrationConfigs.getKeycloakClientSecret()).thenReturn("client_secret");
 
         Mono<AccessToken> result = tokenProvider.getAccessTokens();
 
@@ -46,8 +46,8 @@ class TokenProviderTest {
     @Test
     void getAccessTokens_handlesError() {
         when(milAuthClient.getAccessTokens(any(AccessTokenRequestDto.class))).thenReturn(Mono.error(new RuntimeException("Error")));
-        when(pnEmdIntegrationConfigs.getMilClientId()).thenReturn("client_id");
-        when(pnEmdIntegrationConfigs.getMilClientSecret()).thenReturn("client_secret");
+        when(pnEmdIntegrationConfigs.getKeycloakClientId()).thenReturn("client_id");
+        when(pnEmdIntegrationConfigs.getKeycloakClientSecret()).thenReturn("client_secret");
 
         Mono<AccessToken> result = tokenProvider.getAccessTokens();
 
