@@ -39,6 +39,7 @@ public class EmdCoreServiceImpl implements EmdCoreService {
     @Override
     public Mono<PaymentUrlResponse> getPaymentUrl(String retrievalId, String noticeCode, String paTaxId, Integer amount) {
         log.debug("EmdCoreService delegating getPaymentUrl to EmdPaymentService");
-        return emdPaymentService.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount);
+        return emdRetrievalService.getEmdRetrievalPayload(retrievalId)
+                .then(Mono.defer(() -> emdPaymentService.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount)));
     }
 }
