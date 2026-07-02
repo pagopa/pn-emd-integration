@@ -154,4 +154,21 @@ class PnEmdIntegrationControllerTest {
                                                    response.getBody().getPaymentUrl().equals(expectedUrl))
                     .verifyComplete();
     }
+
+    @Test
+    void getPaymentUrlHandlesNotFound() {
+        String retrievalId = "retrievalId";
+        String noticeCode = "noticeCode";
+        String paTaxId = "paTaxId";
+        Integer amount = 1000;
+
+        when(emdCoreService.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount))
+                .thenReturn(Mono.error(new PnEmdIntegrationNotFoundException("Not Found", null, null)));
+
+        Mono<ResponseEntity<PaymentUrlResponse>> result = pnEmdIntegrationController.getPaymentUrl(retrievalId, noticeCode, paTaxId, amount, null);
+
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof PnEmdIntegrationNotFoundException && throwable.getMessage().equals("Not Found"))
+                .verify();
+    }
 }
