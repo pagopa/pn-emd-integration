@@ -1,9 +1,7 @@
 package it.pagopa.pn.emd.integration.service;
 
-import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
-import it.pagopa.pn.emd.integration.dto.AccessTokenRequestDto;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
-import it.pagopa.pn.emd.integration.middleware.client.MilAuthClient;
+import it.pagopa.pn.emd.integration.dto.KeycloakTokenResponseDto;
+import it.pagopa.pn.emd.integration.middleware.client.KeycloakClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,16 +10,12 @@ import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 class TokenProviderTest {
 
     @Mock
-    private MilAuthClient milAuthClient;
-
-    @Mock
-    private PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
+    private KeycloakClient keycloakClient;
 
     @InjectMocks
     private TokenProvider tokenProvider;
@@ -33,23 +27,19 @@ class TokenProviderTest {
 
     @Test
     void getAccessTokens_returnsAccessToken() {
-        AccessToken expectedToken = new AccessToken();
-        when(milAuthClient.getAccessTokens(any(AccessTokenRequestDto.class))).thenReturn(Mono.just(expectedToken));
-        when(pnEmdIntegrationConfigs.getKeycloakClientId()).thenReturn("client_id");
-        when(pnEmdIntegrationConfigs.getKeycloakClientSecret()).thenReturn("client_secret");
+        KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
+        when(keycloakClient.getAccessToken()).thenReturn(Mono.just(expectedToken));
 
-        Mono<AccessToken> result = tokenProvider.getAccessTokens();
+        Mono<KeycloakTokenResponseDto> result = tokenProvider.getAccessTokens();
 
         assertEquals(expectedToken, result.block());
     }
 
     @Test
     void getAccessTokens_handlesError() {
-        when(milAuthClient.getAccessTokens(any(AccessTokenRequestDto.class))).thenReturn(Mono.error(new RuntimeException("Error")));
-        when(pnEmdIntegrationConfigs.getKeycloakClientId()).thenReturn("client_id");
-        when(pnEmdIntegrationConfigs.getKeycloakClientSecret()).thenReturn("client_secret");
+        when(keycloakClient.getAccessToken()).thenReturn(Mono.error(new RuntimeException("Error")));
 
-        Mono<AccessToken> result = tokenProvider.getAccessTokens();
+        Mono<KeycloakTokenResponseDto> result = tokenProvider.getAccessTokens();
 
         assertThrows(RuntimeException.class, result::block);
     }

@@ -1,7 +1,7 @@
 package it.pagopa.pn.emd.integration.cache;
 
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
+import it.pagopa.pn.emd.integration.dto.KeycloakTokenResponseDto;
 import it.pagopa.pn.emd.integration.service.TokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,11 +33,11 @@ class AccessTokenExpiringMapTest {
 
     @Test
     void getAccessToken_returnsNewTokenWhenMapIsEmpty() {
-        AccessToken expectedToken = new AccessToken();
+        KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 
-        Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();
+        Mono<KeycloakTokenResponseDto> result = accessTokenExpiringMap.getAccessToken();
 
         StepVerifier.create(result)
                 .expectNext(expectedToken)
@@ -46,12 +46,12 @@ class AccessTokenExpiringMapTest {
 
     @Test
     void getAccessToken_returnsNewTokenWhenMapContainsOtherKeys() {
-        AccessToken expectedToken = new AccessToken();
+        KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
         accessTokenExpiringMap.expiringMap.put("otherKey", expectedToken);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 
-        Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();
+        Mono<KeycloakTokenResponseDto> result = accessTokenExpiringMap.getAccessToken();
 
         StepVerifier.create(result)
                 .expectNext(expectedToken)
@@ -60,13 +60,13 @@ class AccessTokenExpiringMapTest {
 
     @Test
     void getAccessToken_returnsExistingTokenWhenNotExpired() {
-        AccessToken expectedToken = new AccessToken();
+        KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
         accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
         accessTokenExpiringMap.expiringMap.setExpiration("milToken", 3600, TimeUnit.SECONDS);
         when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(300L);
 
-        Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();
+        Mono<KeycloakTokenResponseDto> result = accessTokenExpiringMap.getAccessToken();
 
         StepVerifier.create(result)
                 .expectNext(expectedToken)
@@ -75,14 +75,14 @@ class AccessTokenExpiringMapTest {
 
     @Test
     void getAccessToken_returnsNewTokenWhenExpired() {
-        AccessToken expectedToken = new AccessToken();
+        KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
         accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
         accessTokenExpiringMap.expiringMap.setExpiration("milToken", 100, TimeUnit.SECONDS);
         when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(300L);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 
-        Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();
+        Mono<KeycloakTokenResponseDto> result = accessTokenExpiringMap.getAccessToken();
 
         StepVerifier.create(result)
                 .expectNext(expectedToken)
@@ -91,14 +91,14 @@ class AccessTokenExpiringMapTest {
 
     @Test
     void getAccessToken_returnsNewTokenWhenEntryIsAlmostExpired() {
-        AccessToken expectedToken = new AccessToken();
+        KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
         accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
         accessTokenExpiringMap.expiringMap.setExpiration("milToken", 3, TimeUnit.SECONDS);
         when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(3000L);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 
-        Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();
+        Mono<KeycloakTokenResponseDto> result = accessTokenExpiringMap.getAccessToken();
 
         StepVerifier.create(result)
                 .expectNext(expectedToken)
