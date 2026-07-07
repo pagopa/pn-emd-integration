@@ -33,7 +33,7 @@ public class AccessTokenExpiringMap {
         }
         try {
             long expiration = expiringMap.getExpectedExpiration(TOKEN_KEY);
-            if (expiration <= pnEmdIntegrationConfigs.getMilTokenExpirationBuffer()) {
+            if (expiration <= pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()) {
                 return retrieveNewAccessToken();
             } else {
                 log.info("Using cached Access Token");

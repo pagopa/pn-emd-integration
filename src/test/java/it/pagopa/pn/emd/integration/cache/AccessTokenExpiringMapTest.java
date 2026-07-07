@@ -64,7 +64,7 @@ class AccessTokenExpiringMapTest {
         expectedToken.setExpiresIn(3600);
         accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
         accessTokenExpiringMap.expiringMap.setExpiration("milToken", 3600, TimeUnit.SECONDS);
-        when(pnEmdIntegrationConfigs.getMilTokenExpirationBuffer()).thenReturn(300L);
+        when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(300L);
 
         Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();
 
@@ -79,7 +79,7 @@ class AccessTokenExpiringMapTest {
         expectedToken.setExpiresIn(3600);
         accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
         accessTokenExpiringMap.expiringMap.setExpiration("milToken", 100, TimeUnit.SECONDS);
-        when(pnEmdIntegrationConfigs.getMilTokenExpirationBuffer()).thenReturn(300L);
+        when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(300L);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 
         Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();
@@ -95,7 +95,7 @@ class AccessTokenExpiringMapTest {
         expectedToken.setExpiresIn(3600);
         accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
         accessTokenExpiringMap.expiringMap.setExpiration("milToken", 3, TimeUnit.SECONDS);
-        when(pnEmdIntegrationConfigs.getMilTokenExpirationBuffer()).thenReturn(3000L);
+        when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(3000L);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 
         Mono<AccessToken> result = accessTokenExpiringMap.getAccessToken();

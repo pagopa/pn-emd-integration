@@ -18,7 +18,7 @@ public class TokenApiConfig extends CommonBaseClient {
     @Bean
     TokenApi tokenApi() {
         var apiClient = new ApiClient(initWebClient(ApiClient.buildWebClientBuilder()));
-        apiClient.setBasePath(pnEmdIntegrationConfigs.getMilBasePath());
+        apiClient.setBasePath(pnEmdIntegrationConfigs.getKeycloakTokenEndpoint());
         return new TokenApi(apiClient);
     }
 }
