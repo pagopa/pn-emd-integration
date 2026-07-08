@@ -62,8 +62,8 @@ class AccessTokenExpiringMapTest {
     void getAccessToken_returnsExistingTokenWhenNotExpired() {
         KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
-        accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
-        accessTokenExpiringMap.expiringMap.setExpiration("milToken", 3600, TimeUnit.SECONDS);
+        accessTokenExpiringMap.expiringMap.put("keycloakToken", expectedToken);
+        accessTokenExpiringMap.expiringMap.setExpiration("keycloakToken", 3600, TimeUnit.SECONDS);
         when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(300L);
 
         Mono<KeycloakTokenResponseDto> result = accessTokenExpiringMap.getAccessToken();
@@ -77,8 +77,8 @@ class AccessTokenExpiringMapTest {
     void getAccessToken_returnsNewTokenWhenExpired() {
         KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
-        accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
-        accessTokenExpiringMap.expiringMap.setExpiration("milToken", 100, TimeUnit.SECONDS);
+        accessTokenExpiringMap.expiringMap.put("keycloakToken", expectedToken);
+        accessTokenExpiringMap.expiringMap.setExpiration("keycloakToken", 100, TimeUnit.SECONDS);
         when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(300L);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 
@@ -93,8 +93,8 @@ class AccessTokenExpiringMapTest {
     void getAccessToken_returnsNewTokenWhenEntryIsAlmostExpired() {
         KeycloakTokenResponseDto expectedToken = new KeycloakTokenResponseDto();
         expectedToken.setExpiresIn(3600);
-        accessTokenExpiringMap.expiringMap.put("milToken", expectedToken);
-        accessTokenExpiringMap.expiringMap.setExpiration("milToken", 3, TimeUnit.SECONDS);
+        accessTokenExpiringMap.expiringMap.put("keycloakToken", expectedToken);
+        accessTokenExpiringMap.expiringMap.setExpiration("keycloakToken", 3, TimeUnit.SECONDS);
         when(pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()).thenReturn(3000L);
         when(tokenProvider.getAccessTokens()).thenReturn(Mono.just(expectedToken));
 

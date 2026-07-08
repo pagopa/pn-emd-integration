@@ -20,7 +20,7 @@ public class AccessTokenExpiringMap {
 
     private final TokenProvider tokenProvider;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
-    private static final String TOKEN_KEY = "milToken";
+    private static final String TOKEN_KEY = "keycloakToken";
 
     protected ExpiringMap<String, KeycloakTokenResponseDto> expiringMap = ExpiringMap.builder()
             .asyncExpirationListener((tokenKey, entry) -> log.info("A token has expired"))
