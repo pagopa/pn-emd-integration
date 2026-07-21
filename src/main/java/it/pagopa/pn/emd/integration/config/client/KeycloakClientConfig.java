@@ -18,6 +18,6 @@ public class KeycloakClientConfig extends CommonBaseClient {
 
     @Bean("keycloakWebClient")
     WebClient keycloakWebClient() {
-        return initWebClient(this.builder).mutate().baseUrl(pnEmdIntegrationConfigs.getKeycloakTokenEndpoint()).build();
+        return initWebClient(this.builder, "EMD-OIDC").mutate().baseUrl(pnEmdIntegrationConfigs.getKeycloakTokenEndpoint()).build();
     }
 }
