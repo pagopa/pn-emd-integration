@@ -5,7 +5,7 @@ import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
 import it.pagopa.pn.emd.integration.exceptions.PnEmdIntegrationNotFoundException;
 import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdpayment.model.RetrievalResponseDTO;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
+import it.pagopa.pn.emd.integration.dto.KeycloakTokenResponseDto;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.RetrievalPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -165,7 +165,7 @@ class EmdRetrievalServiceImplTest {
     }
 
     private void mockAccessTokenExpiringMap() {
-        AccessToken accessToken = new AccessToken();
+        KeycloakTokenResponseDto accessToken = new KeycloakTokenResponseDto();
         accessToken.setAccessToken("token");
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
     }
