@@ -8,7 +8,7 @@
 		<relativePath />
 	</parent>
 	<artifactId>pn-emd-integration</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
+	<version>1.4.0-SNAPSHOT</version>
 	<name>pn-emd-integration</name>
 	<description>microservice for emd services integration</description>
 	<scm>
@@ -144,38 +144,6 @@
 								<apiPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.api</apiPackage>
 								<configPackage>${project.groupId}.emdintegration.generated.openapi.server.v1.config</configPackage>
 							</configOptions>				
-						</configuration>
-					</execution>
-					<execution>
-						<phase>generate-resources</phase>
-						<id>generate-auth-client</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<inputSpec>https://raw.githubusercontent.com/pagopa/mil-auth/195c7d3b5a30dba3107dc3ac5a116df01bdeda19/src/main/resources/META-INF/openapi.yaml</inputSpec>
-							<generatorName>java</generatorName>
-							<library>webclient</library>
-							<generateApiTests>false</generateApiTests>
-							<generateModelTests>false</generateModelTests>
-							<typeMappings><typeMapping>OffsetDateTime=Instant</typeMapping></typeMappings>
-							<importMappings><importMapping>java.time.OffsetDateTime=java.time.Instant</importMapping></importMappings>
-							<globalProperties>
-								<apis>Token</apis>
-							</globalProperties>
-							<configOptions>
-								<useSpringBoot3>true</useSpringBoot3>
-								<useJakartaEe>true</useJakartaEe>
-								<apiPackage>${project.groupId}.emdintegration.generated.openapi.msclient.milauth.api</apiPackage>
-								<modelPackage>${project.groupId}.emdintegration.generated.openapi.msclient.milauth.model</modelPackage>
-								<annotationLibrary>none</annotationLibrary>
-								<dateLibrary>java8</dateLibrary>
-								<documentationProvider>source</documentationProvider>
-								<openApiNullable>false</openApiNullable>
-								<useAbstractionForFiles>true</useAbstractionForFiles>
-								<useBeanValidation>false</useBeanValidation>
-								<additionalModelTypeAnnotations>@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY)</additionalModelTypeAnnotations>
-							</configOptions>
 						</configuration>
 					</execution>
 					<execution>

@@ -1,7 +1,7 @@
 package it.pagopa.pn.emd.integration.cache;
 
 import it.pagopa.pn.emd.integration.config.PnEmdIntegrationConfigs;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
+import it.pagopa.pn.emd.integration.dto.KeycloakTokenResponseDto;
 import it.pagopa.pn.emd.integration.service.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,20 +20,20 @@ public class AccessTokenExpiringMap {
 
     private final TokenProvider tokenProvider;
     private final PnEmdIntegrationConfigs pnEmdIntegrationConfigs;
-    private static final String TOKEN_KEY = "milToken";
+    private static final String TOKEN_KEY = "keycloakToken";
 
-    protected ExpiringMap<String, AccessToken> expiringMap = ExpiringMap.builder()
+    protected ExpiringMap<String, KeycloakTokenResponseDto> expiringMap = ExpiringMap.builder()
             .asyncExpirationListener((tokenKey, entry) -> log.info("A token has expired"))
             .variableExpiration()
             .build();
 
-    public Mono<AccessToken> getAccessToken() {
+    public Mono<KeycloakTokenResponseDto> getAccessToken() {
         if (expiringMap.isEmpty() || !expiringMap.containsKey(TOKEN_KEY)) {
             return retrieveNewAccessToken();
         }
         try {
             long expiration = expiringMap.getExpectedExpiration(TOKEN_KEY);
-            if (expiration <= pnEmdIntegrationConfigs.getMilTokenExpirationBuffer()) {
+            if (expiration <= pnEmdIntegrationConfigs.getKeycloakTokenExpirationBuffer()) {
                 return retrieveNewAccessToken();
             } else {
                 log.info("Using cached Access Token");
@@ -46,7 +46,7 @@ public class AccessTokenExpiringMap {
     }
 
 
-    private Mono<AccessToken> retrieveNewAccessToken() {
+    private Mono<KeycloakTokenResponseDto> retrieveNewAccessToken() {
         log.info("New Access Token requested");
         return tokenProvider.getAccessTokens()
                 .map(accessToken -> {
