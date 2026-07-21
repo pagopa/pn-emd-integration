@@ -18,15 +18,15 @@ import static it.pagopa.pn.emd.integration.utils.Utils.fetchTemplate;
 @Data
 @Import({SharedAutoConfiguration.class})
 public class PnEmdIntegrationConfigs {
-    private String milClientSecret;
-    private String milClientId;
-    private String milBasePath;
+    private String keycloakClientSecret;
+    private String keycloakClientId;
+    private String keycloakTokenEndpoint;
     private String emdCoreMessageBasePath;
     private String emdCorePaymentBasePath;
     private String originalMessageUrl;
     private String emdPaymentEndpoint;
     // Token expiration buffer in milliseconds
-    private long milTokenExpirationBuffer;
+    private long keycloakTokenExpirationBuffer;
 
     private CacheConfigs redisCache;
     private Duration retrievalPayloadCacheTtl;

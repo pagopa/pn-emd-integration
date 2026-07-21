@@ -7,7 +7,7 @@ import it.pagopa.pn.emd.integration.middleware.client.EmdClientImpl;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.Outcome;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SendMessageRequest;
 import it.pagopa.pn.emdintegration.generated.openapi.msclient.emdmessage.model.SubmitMessage200Response;
-import it.pagopa.pn.emdintegration.generated.openapi.msclient.milauth.model.AccessToken;
+import it.pagopa.pn.emd.integration.dto.KeycloakTokenResponseDto;
 import it.pagopa.pn.emdintegration.generated.openapi.server.v1.dto.SendMessageRequestBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,7 +69,7 @@ class EmdMessageServiceImplTest {
         requestBody.setOriginId("originId");
         requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.ANALOG);
         requestBody.setSchedulingAnalogDate(new Date());
-        AccessToken accessToken = new AccessToken();
+        KeycloakTokenResponseDto accessToken = new KeycloakTokenResponseDto();
         accessToken.setAccessToken("token");
         SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
@@ -94,7 +94,7 @@ class EmdMessageServiceImplTest {
         requestBody.setAssociatedPayment(true);
         requestBody.setOriginId("originId");
         requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
-        AccessToken accessToken = new AccessToken();
+        KeycloakTokenResponseDto accessToken = new KeycloakTokenResponseDto();
         accessToken.setAccessToken("token");
         SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
@@ -120,7 +120,7 @@ class EmdMessageServiceImplTest {
         requestBody.setOriginId("originId");
         requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.DIGITAL);
         requestBody.setSchedulingAnalogDate(new Date());
-        AccessToken accessToken = new AccessToken();
+        KeycloakTokenResponseDto accessToken = new KeycloakTokenResponseDto();
         accessToken.setAccessToken("token");
         SubmitMessage200Response response = new SubmitMessage200Response();
         response.setOutcome(Outcome.OK);
@@ -145,7 +145,7 @@ class EmdMessageServiceImplTest {
         requestBody.setAssociatedPayment(true);
         requestBody.setOriginId("originId");
         requestBody.setDeliveryMode(SendMessageRequestBody.DeliveryModeEnum.ANALOG);
-        AccessToken accessToken = new AccessToken();
+        KeycloakTokenResponseDto accessToken = new KeycloakTokenResponseDto();
         accessToken.setAccessToken("token");
 
         when(accessTokenExpiringMap.getAccessToken()).thenReturn(Mono.just(accessToken));
