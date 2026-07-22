@@ -20,7 +20,7 @@ public class EmdRetrievalClientConfig extends CommonBaseClient {
 
     @Bean("emdPaymentApi")
     PaymentApi paymentApi() {
-        var apiClient = new ApiClient(initWebClient(this.builder));
+        var apiClient = new ApiClient(initWebClient(this.builder, "EMD"));
         apiClient.setBasePath(pnEmdIntegrationConfigs.getEmdCorePaymentBasePath());
         return new PaymentApi(apiClient);
     }

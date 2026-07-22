@@ -32,6 +32,14 @@ Parameters:
     Type: String
     Description: 'Where to send Logs'
 
+  EnableDownstreamSubscriptionFilter:
+    Type: String
+    Default: false
+    Description: Enable downstream subscription filter
+    AllowedValues:
+      - true
+      - false
+
 Resources:
   EmdIntegrationLogGroup:
     Type: AWS::CloudFormation::Stack
@@ -43,6 +51,7 @@ Resources:
         LogGroupName: !Sub '${ProjectName}-emd-integration'
         LogsKinesisSourceStreamArn: !Ref LogsKinesisSourceStreamArn
         LogGroupRetention: !Ref LogRetention
+        LogEnableDownstreamSubscriptionFilter: !Ref EnableDownstreamSubscriptionFilter
 
 Outputs:
   EcsLogGroup:
