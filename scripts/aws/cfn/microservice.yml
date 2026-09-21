@@ -252,6 +252,17 @@ Parameters:
     Default: ''
     Description: 'Applicative environment variable file checksum'
 
+  CpuArchitecture:
+    Type: String
+    Default: 'ARM'
+    Description: CPU architecture for the Fargate tasks
+
+  JavaToolOptions:
+    Type: String
+    Default: '-Dreactor.netty.ioWorkerCount=50'
+    Description: Java tool options for the Fargate tasks
+
+
 Resources:
 
   # PN-TemplateBeMs microservice
@@ -310,6 +321,8 @@ Resources:
         EcsLogGroup: !Ref EcsLogGroup
         LogAlarmStrategyV1: !Ref LogAlarmStrategy
         TaskRoleManagedPolicyArn: !Ref EmdIntegrationMicroserviceTaskManagedPolicy
+        CpuArchitecture: !Ref CpuArchitecture
+        JavaToolOptions: !Ref JavaToolOptions
 
   EmdIntegrationMicroserviceTaskManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
