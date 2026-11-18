@@ -252,6 +252,11 @@ Parameters:
     Default: ''
     Description: 'Applicative environment variable file checksum'
 
+  JavaToolOptions:
+    Type: String
+    Default: ''
+    Description: Java tool options for the Fargate tasks
+
 Resources:
 
   # PN-TemplateBeMs microservice
@@ -310,7 +315,8 @@ Resources:
         EcsLogGroup: !Ref EcsLogGroup
         LogAlarmStrategyV1: !Ref LogAlarmStrategy
         TaskRoleManagedPolicyArn: !Ref EmdIntegrationMicroserviceTaskManagedPolicy
-
+        JavaToolOptions: !Ref JavaToolOptions
+        
   EmdIntegrationMicroserviceTaskManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
