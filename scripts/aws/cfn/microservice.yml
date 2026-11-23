@@ -252,11 +252,6 @@ Parameters:
     Default: ''
     Description: 'Applicative environment variable file checksum'
 
-  JavaToolOptions:
-    Type: String
-    Default: ''
-    Description: Java tool options for the Fargate tasks
-
   CpuArchitecture:
     Type: String
     Default: 'ARM'
@@ -264,7 +259,12 @@ Parameters:
     AllowedValues:
       - 'ARM'
       - 'AMD'
-      
+
+  JavaToolOptions:
+    Type: String
+    Default: '-Dreactor.netty.ioWorkerCount=50'
+    Description: Java tool options for the Fargate tasks
+
 Resources:
 
   # PN-TemplateBeMs microservice
