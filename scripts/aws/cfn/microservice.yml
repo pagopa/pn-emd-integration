@@ -256,12 +256,14 @@ Parameters:
     Type: String
     Default: 'ARM'
     Description: CPU architecture for the Fargate tasks
+    AllowedValues:
+      - 'ARM'
+      - 'AMD'
 
   JavaToolOptions:
     Type: String
     Default: '-Dreactor.netty.ioWorkerCount=50'
     Description: Java tool options for the Fargate tasks
-
 
 Resources:
 
@@ -321,8 +323,8 @@ Resources:
         EcsLogGroup: !Ref EcsLogGroup
         LogAlarmStrategyV1: !Ref LogAlarmStrategy
         TaskRoleManagedPolicyArn: !Ref EmdIntegrationMicroserviceTaskManagedPolicy
-        CpuArchitecture: !Ref CpuArchitecture
         JavaToolOptions: !Ref JavaToolOptions
+        CpuArchitecture: !Ref CpuArchitecture
 
   EmdIntegrationMicroserviceTaskManagedPolicy:
     Type: AWS::IAM::ManagedPolicy
